@@ -9,19 +9,17 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import newpackage.newpackage.NewClasssample;
 
 
 /**
- * SCC class, we will call this class with the test WordCountTest.
+ * Query class, we will call this class with the test WordCountTest.
  */
-public class SCC {
+public class Query {
   /**
    * We use a logger to print the output. Sl4j is a common library which works with log4j, the
    * logging system used by Apache Spark.
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(SCC.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Query.class);
 
   /**
    * This is the entry point when the task is called from command line with spark-submit.sh.
@@ -29,7 +27,7 @@ public class SCC {
    */
   public static void main(String[] args) {
     checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
-    new SCC().run(args[0]);
+    new Query().run(args[0]);
   }
 
   /**
@@ -46,7 +44,7 @@ public class SCC {
      * Initialises a Spark context.
      */
     SparkConf conf = new SparkConf()
-        .setAppName(SCC.class.getName())
+        .setAppName(Query.class.getName())
         .setMaster(master);
     JavaSparkContext context = new JavaSparkContext(conf);
 

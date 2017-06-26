@@ -1,3 +1,5 @@
 /ADMM/target/*
 /paper/target/*
 /SCC/target/*
+/Parse data/target/*
+/query/target/*
