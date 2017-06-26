@@ -42,8 +42,8 @@ Parallel processing:
     + reduce result
 
 Need more package for full app processing 
-    + Data preparation: parsing text data to matrix, remove stop work, build VSM
-    + transform matrix to new space and query
+- Data preparation: parsing text data to matrix, remove stop work, build VSM
+- transform matrix to new space and query
 
 
 # Spark
@@ -61,10 +61,10 @@ Spark submit on ubuntu (standalone mode):
 - add worker to master
 - submit job to master
 
-./sbin/start-master.sh -h localhost -p 7077
-./sbin/start-slave.sh spark://localhost:7077
-./bin/spark-shell --master spark://localhost:7077
+
 
 https://spark.apache.org/docs/latest/spark-standalone.html
-
+- ./sbin/start-master.sh -h localhost -p 7077
+- ./sbin/start-slave.sh spark://localhost:7077
+- ./bin/spark-shell --master spark://localhost:7077
 Author: Patrick HuyPhan(huyphan.aj@gmail.com)
