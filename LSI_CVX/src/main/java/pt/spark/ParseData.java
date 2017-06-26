@@ -9,6 +9,9 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import scala.collection.Map;
 
 
 /**
@@ -44,11 +47,11 @@ public class ParseData {
     /*
      * Performs a work count sequence of tasks and prints the output with a logger.
      */
-    context.textFile(inputFilePath)
-        .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
-        .mapToPair(word -> new Tuple2<>(word, 1))
-        .reduceByKey((a, b) -> a + b)
-        .foreach(result -> LOGGER.info(
-            String.format("Word [%s] count [%d].", result._1(), result._2)));
+    JavaRDD<String> row =  context.textFile(inputFilePath).flatMap(text -> Arrays.asList(text.split(" ")).iterator());
+    
+    JavaPairRDD<String, Integer > kv = row.mapToPair(word -> new Tuple2<>(word, 1)).reduceByKey((a, b) -> a + b);
+    
+    kv.foreach(result -> LOGGER.info(String.format("Word [%s] count [%d].", result._1(), result._2)));
+    
   }
 }

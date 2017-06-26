@@ -42,7 +42,7 @@ public class Query {
     JavaSparkContext context = new JavaSparkContext(conf);
 
     /*
-     * Performs a work count sequence of tasks and prints the output with a logger.
+     * read matrix from file
      */
     context.textFile(inputFilePath)
         .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
@@ -50,5 +50,18 @@ public class Query {
         .reduceByKey((a, b) -> a + b)
         .foreach(result -> LOGGER.info(
             String.format("Word [%s] count [%d].", result._1(), result._2)));
+    
+    
+        double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
+  LinkedList<Vector> rowsList = new LinkedList<>();
+  for (int i = 0; i < array.length; i++) {
+    Vector currentRow = Vectors.dense(array[i]);
+    rowsList.add(currentRow);
+  }
+  JavaRDD<Vector> rows = context.parallelize(rowsList);
+
+  // Create a RowMatrix from JavaRDD<Vector>.
+  RowMatrix mat = new RowMatrix(rows.rdd());
+  
   }
 }

@@ -18,6 +18,9 @@ Parallel processing:
         - key-value: <(rowID-colID):value>
     -broadcast data: ???    
 
+https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/SparseMatrix.html
+
+
 - Read matrix data: 
     + where is data stored? 
     + What data will be mapped and reduced?
