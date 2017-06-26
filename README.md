@@ -40,13 +40,13 @@ Parallel processing:
     + submit cosine job
     + reduce result
 
-Need more package for full app processing: 
+Need more package for full app processing 
     + Data preparation: parsing text data to matrix, remove stop work, build VSM
     + transform matrix to new space and query
 
-Need run with configuration from file
 
-#Spark
+# Spark
+Need run with configuration from file
 Spark config:
 - local dir
 - worker dir
