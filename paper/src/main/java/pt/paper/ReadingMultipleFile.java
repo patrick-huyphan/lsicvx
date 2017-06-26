@@ -1,4 +1,4 @@
-package DocTermBuilder;
+package pt.DocTermBuilder;
 
 //public class T {
 //}
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
-import paper.Matrix;
+import pt.paper.Matrix;
 
 //import com.google.common.io.Files;
 //
@@ -170,9 +170,9 @@ public class ReadingMultipleFile {
         Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
 
         System.out.println("");
-        System.out.println("No of Documents – " + listOfFiles.length);
-        System.out.println("No of keywords – " + countKeyword);
-        System.out.println("No of Documents – " + numOfDoc);
+        System.out.println("No of Documents ??? " + listOfFiles.length);
+        System.out.println("No of keywords ??? " + countKeyword);
+        System.out.println("No of Documents ??? " + numOfDoc);
         System.out.println("");
 
         BufferedWriter bw0 = new BufferedWriter(new FileWriter(output + "/keywordsList0.txt"));
@@ -224,7 +224,7 @@ public class ReadingMultipleFile {
         } // while ends 
         br.close();
 //            bw.close();
-            // System.out.println("no of keywords – "+ii); 
+            // System.out.println("no of keywords ??? "+ii); 
 
 
         
@@ -321,9 +321,9 @@ public class ReadingMultipleFile {
 //        Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
 
         System.out.println("");
-        System.out.println("No of Documents – " + listOfFiles.length);
-        System.out.println("No of keywords – " + countKeyword);
-        System.out.println("No of Documents – " + numOfDoc);
+        System.out.println("No of Documents ??? " + listOfFiles.length);
+        System.out.println("No of keywords ??? " + countKeyword);
+        System.out.println("No of Documents ??? " + numOfDoc);
         System.out.println("raw "+row);
            
 //        numOfDoc = numOfDoc;
@@ -512,8 +512,8 @@ public class ReadingMultipleFile {
 
 //        bw.close();
         System.out.println("");
-        System.out.println("No of Documents – " + input.length);
-        System.out.println("No of keywords – " + keywordList.size());
+        System.out.println("No of Documents ??? " + input.length);
+        System.out.println("No of keywords ??? " + keywordList.size());
         System.out.println("");
 
         HashMap<String, Integer> dicCodeToIndex = new HashMap<String, Integer>();
@@ -594,7 +594,7 @@ public class ReadingMultipleFile {
             } // while ends
 //				System.out.println();
         } // while ends 
-        // System.out.println("no of keywords – "+ii); 
+        // System.out.println("no of keywords ??? "+ii); 
 //        }
 
         System.out.println("************************** Count Matrix *************************");
@@ -656,7 +656,7 @@ public class ReadingMultipleFile {
         }
 
 //		for (int i = 0; i < listOfFiles.length; i++) {
-//			System.out.println("Total no of words in document : " + i + " –> " + tottal_no_words_in_doc[i]);
+//			System.out.println("Total no of words in document : " + i + " ???> " + tottal_no_words_in_doc[i]);
 //		}
     }
 

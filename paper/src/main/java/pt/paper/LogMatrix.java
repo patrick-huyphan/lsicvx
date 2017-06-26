@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DocTermBuilder;
+package pt.DocTermBuilder;
 
-import static DocTermBuilder.ReadingMultipleFile.countMatrix;
-import static DocTermBuilder.ReadingMultipleFile.keywordList;
-import static DocTermBuilder.ReadingMultipleFile.listOfFiles;
+import static pt.DocTermBuilder.ReadingMultipleFile.countMatrix;
+import static pt.DocTermBuilder.ReadingMultipleFile.keywordList;
+import static pt.DocTermBuilder.ReadingMultipleFile.listOfFiles;
 //import static DocTermBuilder.ReadingMultipleFile.tdidf;
 import java.io.FileWriter;
 import java.io.IOException;

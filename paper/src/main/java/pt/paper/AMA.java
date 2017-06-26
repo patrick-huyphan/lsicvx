@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package paper;
+package pt.paper;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -134,7 +134,7 @@ public class AMA extends Clustering{
     }
 
     /*
-     * Z = Xj + rho sum_e((Uej)*(áº¸j - áº¸j,))
+     * Z = Xj + rho sum_e((Uej)*(??????j - ??????j,))
      */
     private double[] calcZ(List<EdgeNode> u, int col)
     {

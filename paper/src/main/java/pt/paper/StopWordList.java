@@ -1,4 +1,4 @@
-package DocTermBuilder;
+package pt.DocTermBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,26 +14,26 @@ public class StopWordList
 	public StopWordList()
 	{
 		String [] stopW= {"a","about","above","across","after","afterwards","again","against","all","almost","alone","along","already","also","although","always","am",
-				"among","amongst","amoungst","amount","an","and","another","any","anyhow","anyone","anything","anyway","anywhere","are","aren’t","around","as","at","back",
+				"among","amongst","amoungst","amount","an","and","another","any","anyhow","anyone","anything","anyway","anywhere","are","arenât","around","as","at","back",
 				"be","became","because","become","becomes","becoming","been","before","beforehand","behind","being","below","beside","besides","between","beyond","bill",
-				"both","bottom","but","by","call","can","cannot","cant","can’t","co","computer","con","could","couldnt","couldn’t","cry","de","describe","detail","did",
-				"didn’t","do","does","doesn’t","doing","done","don’t","down","due","during","each","eg","eight","either","eleven","else","elsewhere","empty","enough",
+				"both","bottom","but","by","call","can","cannot","cant","canât","co","computer","con","could","couldnt","couldnât","cry","de","describe","detail","did",
+				"didnât","do","does","doesnât","doing","done","donât","down","due","during","each","eg","eight","either","eleven","else","elsewhere","empty","enough",
 				"etc","even","ever","every","everyone","everything","everywhere","except","few","fifteen","fify","fill","find","fire","first","five","for","former",
-				"formerly","forty","found","four","from","front","full","further","get","give","go","had","hadn’t","has","hasnt","hasn’t","have","haven’t","having",
-				"he","he’d","he’ll","hence","her","here","hereafter","hereby","herein","here’s","hereupon","hers","herse”","herself","he’s","him","himse”","himself",
-				"his","how","however","how’s","hundred","i","i’d","ie","if","i’ll","i’m","in","inc","indeed","interest","into","is","isn’t","it","its","it’s","itse\\”",
-				"itself","i’ve","keep","last","latter","latterly","least","less","let’s","ltd","made","many","may","me","meanwhile","might","mill","mine","more","moreover",
-				"most","mostly","move","much","must","mustn’t","my","myse\\”","myself","name","namely","neither","never","nevertheless","next","nine","no","nobody",
+				"formerly","forty","found","four","from","front","full","further","get","give","go","had","hadnât","has","hasnt","hasnât","have","havenât","having",
+				"he","heâd","heâll","hence","her","here","hereafter","hereby","herein","hereâs","hereupon","hers","herseâ","herself","heâs","him","himseâ","himself",
+				"his","how","however","howâs","hundred","i","iâd","ie","if","iâll","iâm","in","inc","indeed","interest","into","is","isnât","it","its","itâs","itse\\â",
+				"itself","iâve","keep","last","latter","latterly","least","less","letâs","ltd","made","many","may","me","meanwhile","might","mill","mine","more","moreover",
+				"most","mostly","move","much","must","mustnât","my","myse\\â","myself","name","namely","neither","never","nevertheless","next","nine","no","nobody",
 				"none","noone","nor","not","nothing","now","nowhere","of","off","often","on","once","one","only","onto","or","other","others","otherwise","ought",
 				"our","ours","ourselves","out","over","own","part","per","perhaps","please","put","rather","re","same","see","seem","seemed","seeming","seems","serious",
-				"several","shan’t","she","she’d","she’ll","she’s","should","shouldn’t","show","side","since","sincere","six","sixty","so","some","somehow","someone","something",
-				"sometime","sometimes","somewhere","still","such","system","take","ten","than","that","that’s","the","their","theirs","them","themselves","then",
-				"thence","there","thereafter","thereby","therefore","therein","there’s","thereupon","these","they","they’d","they’ll","they’re","they’ve","thick",
+				"several","shanât","she","sheâd","sheâll","sheâs","should","shouldnât","show","side","since","sincere","six","sixty","so","some","somehow","someone","something",
+				"sometime","sometimes","somewhere","still","such","system","take","ten","than","that","thatâs","the","their","theirs","them","themselves","then",
+				"thence","there","thereafter","thereby","therefore","therein","thereâs","thereupon","these","they","theyâd","theyâll","theyâre","theyâve","thick",
 				"thin","third","this","those","though","three","","through","throughout","thru","thus","to","together","too","top","toward","towards","twelve","twenty",
-				"two","un","under","until","up","upon","us","very","via","was","wasn’t","we","we’d","well","we’ll","were","we’re","weren’t","we’ve","what","whatever",
-				"what’s","when","whence","whenever","when’s","where","whereafter","whereas","whereby","wherein","where’s","whereupon","wherever","whether","which","while",
-				"whither","who","whoever","whole","whom","who’s","whose","why","why’s","will","with","within","without","won’t","would","wouldn’t","yet","you","you’d",
-				"you’ll","your","you’re","yours","yourself","yourselves","you’ve"};
+				"two","un","under","until","up","upon","us","very","via","was","wasnât","we","weâd","well","weâll","were","weâre","werenât","weâve","what","whatever",
+				"whatâs","when","whence","whenever","whenâs","where","whereafter","whereas","whereby","wherein","whereâs","whereupon","wherever","whether","which","while",
+				"whither","who","whoever","whole","whom","whoâs","whose","why","whyâs","will","with","within","without","wonât","would","wouldnât","yet","you","youâd",
+				"youâll","your","youâre","yours","yourself","yourselves","youâve"};
 		
     	
 
@@ -45,7 +45,7 @@ public class StopWordList
 	public boolean stopWordV(String term)
 	{
 		String [] stopV= {
-                    "bitly","goog","itviec","www","http","amznto", "onfbme", "facebook", "youtube","ô_kê","and",    
+                   "bitly","goog","itviec","www","http","amznto", "onfbme", "facebook", "youtube","ô_kê","and",    
                     "báo_thanh_niên", "@gmailcom", "@hotmailcom", "ads@quangcaovnstarvn", "@fecreditcomvn","chợ_tốt","click",
                     
                                 "vì","ví","muốn","mà_còn", "mình","nhanh","như","the_", "think","thing","thì","thật", "thế",  
@@ -117,20 +117,20 @@ public class StopWordList
 	{
 		String [] terms={"active",
 //				"activit","analy","angular", "architect", "audience","automa","awesome", "backend","balanc","bridge","certifica",
-//				"chỉnh_sửa","configura","country_manag","công_ty","database","deliver","depend","develop","differen","commerce","elisoft","experience","featur","financ",
+//				"chá»nh_sá»­a","configura","country_manag","cÃ´ng_ty","database","deliver","depend","develop","differen","commerce","elisoft","experience","featur","financ",
 //				"firefox","follow","freel","front","frontend","fullstack","graphic","hardware","htmlcss","imple","java_","know",
-//				"lợi_ích","machine_learn","magento","maint","manag","method","nặng_","objectiv","onsite","operat","opportunit","payment","pattern",
+//				"lá»£i_Ã­ch","machine_learn","magento","maint","manag","method","náº·ng_","objectiv","onsite","operat","opportunit","payment","pattern",
 //				"platform","practic","product","program","project_mana","require","responsibilit","rollout",
 //				"ruby",	//"ruby_dev","ruby_on_rail",
 //				"php",
 //				"machine",
 //				"mobile_",//"mobile_dev","mobile_project_manag",
 //				
-//				"rộng_","sai_","quản_l",
+//				"rá»ng_","sai_","quáº£n_l",
 //				"senior_develop","senior_java","senior_software","senior_web",
-//				"startup","technical_","technolog","test","thương_mại","thời_gian","tiếng_anh","train","tuyển_","design",
-//				"tự_động","universit","visual_studio","web_develop","window","wordpress","đơn_giản","trí_tuệ","agile_","browser","build","bắt_đầu","coursera",
-//				"engine","essential","exten","includ","linus_","lập_trình","marketing_","respons","runn","tổng_giám","contribut","customer_","environ","preview","tổng_hợp","thuận_",
+//				"startup","technical_","technolog","test","thÆ°Æ¡ng_máº¡i","thá»i_gian","tiáº¿ng_anh","train","tuyá»n_","design",
+//				"tá»±_Äá»ng","universit","visual_studio","web_develop","window","wordpress","ÄÆ¡n_giáº£n","trÃ­_tuá»","agile_","browser","build","báº¯t_Äáº§u","coursera",
+//				"engine","essential","exten","includ","linus_","láº­p_trÃ¬nh","marketing_","respons","runn","tá»ng_giÃ¡m","contribut","customer_","environ","preview","tá»ng_há»£p","thuáº­n_",
 //				"framework","librar","tech_","solu","software","smart","script","robo","html","certi","front",
 				"japanese"
 				
@@ -148,11 +148,11 @@ public class StopWordList
 	public String sameMapping(String term, HashMap<String, String> kv)
 	{
 		String [][] terms={{"ruby", "ruby_onrails",""},
-				{"bank, banker,ngân_hàng"},
+				{"bank, banker,ngÃ¢n_hÃ ng"},
 				{"java"},
 				{"php"},
-				{"giao_thức"},
-				{"giao_dịch"}
+				{"giao_thá»©c"},
+				{"giao_dá»ch"}
 				};
 		
 		for(String[] w: terms)

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package paper;
+package pt.paper;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import static paper.Clustering.MAX_LOOP;
+import static pt.paper.Clustering.MAX_LOOP;
 
 /**
  *

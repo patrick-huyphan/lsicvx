@@ -1,4 +1,4 @@
-package paper;
+package pt.paper;
 
 //import java.awt.List;
 import java.io.BufferedReader;

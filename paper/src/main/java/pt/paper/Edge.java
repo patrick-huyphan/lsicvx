@@ -1,4 +1,4 @@
-package paper;
+package pt.paper;
 
 import java.util.Comparator;
 

@@ -1,4 +1,4 @@
-package paper;
+package pt.paper;
 
 import java.io.FileWriter;
 import java.io.IOException;

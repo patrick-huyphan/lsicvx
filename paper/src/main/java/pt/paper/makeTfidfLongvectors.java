@@ -1,4 +1,4 @@
-package DocTermBuilder;
+package pt.DocTermBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;

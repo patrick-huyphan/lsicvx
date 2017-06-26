@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package paper;
+package pt.paper;
 
-import static DocTermBuilder.ReadingMultipleFile.countMatrix;
-import static DocTermBuilder.ReadingMultipleFile.keywordList;
-import static DocTermBuilder.ReadingMultipleFile.listOfFiles;
-import DocTermBuilder.Mystemmer;
-import DocTermBuilder.StopWordList;
+import static pt.DocTermBuilder.ReadingMultipleFile.countMatrix;
+import static pt.DocTermBuilder.ReadingMultipleFile.keywordList;
+import static pt.DocTermBuilder.ReadingMultipleFile.listOfFiles;
+import pt.DocTermBuilder.Mystemmer;
+import pt.DocTermBuilder.StopWordList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -146,8 +146,8 @@ public class ReadData {
 
 //        bw.close();
         System.out.println("");
-        System.out.println("No of Documents – " + input.length);
-        System.out.println("No of keywords – " + keywordList.size());
+        System.out.println("No of Documents ??? " + input.length);
+        System.out.println("No of keywords ??? " + keywordList.size());
         System.out.println("");
 
         HashMap<String, Integer> dicCodeToIndex = new HashMap<String, Integer>();
@@ -212,7 +212,7 @@ public class ReadData {
                 }
             } // while ends
         } // while ends 
-        // System.out.println("no of keywords – "+ii); 
+        // System.out.println("no of keywords ??? "+ii); 
 //        }
 
         System.out.println("************************** Count Matrix *************************");
@@ -246,7 +246,7 @@ public class ReadData {
         }
 
 //		for (int i = 0; i < listOfFiles.length; i++) {
-//			System.out.println("Total no of words in document : " + i + " –> " + tottal_no_words_in_doc[i]);
+//			System.out.println("Total no of words in document : " + i + " ???> " + tottal_no_words_in_doc[i]);
 //		}
         return tottal_no_words_in_doc;
     }
@@ -404,9 +404,9 @@ public class ReadData {
         Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
 
         System.out.println("");
-        System.out.println("No of Documents – " + listOfFiles.length);
-        System.out.println("No of keywords – " + countKeyword);
-        System.out.println("No of Documents – " + numOfDoc);
+        System.out.println("No of Documents ??? " + listOfFiles.length);
+        System.out.println("No of keywords ??? " + countKeyword);
+        System.out.println("No of Documents ??? " + numOfDoc);
         System.out.println("");
         // this key list stores all key used and un-used
         BufferedWriter bw0 = new BufferedWriter(new FileWriter(output + "/keywordsList1st.txt"));
@@ -457,7 +457,7 @@ public class ReadData {
         } // while ends 
         br.close();
 //            bw.close();
-            // System.out.println("no of keywords – "+ii); 
+            // System.out.println("no of keywords ??? "+ii); 
 
 
         
@@ -560,9 +560,9 @@ public class ReadData {
 //        Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
 
         System.out.println("");
-        System.out.println("No of Documents – " + listOfFiles.length);
-        System.out.println("No of keywords – " + countKeyword);
-        System.out.println("No of Documents – " + numOfDoc);
+        System.out.println("No of Documents ??? " + listOfFiles.length);
+        System.out.println("No of keywords ??? " + countKeyword);
+        System.out.println("No of Documents ??? " + numOfDoc);
         System.out.println("raw "+row);
            
 //        numOfDoc = numOfDoc;

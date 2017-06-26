@@ -1,4 +1,4 @@
-package DocTermBuilder;
+package pt.DocTermBuilder;
 
 public class Mystemmer {
 
@@ -19,7 +19,7 @@ public class Mystemmer {
               return word.replace(word.trim(), word.substring(0, word.length()-1)); 
         else if(word.toLowerCase().endsWith("?")) 
               return word.replace(word.trim(), word.substring(0, word.length()-1)); 
-         else if(word.toLowerCase().endsWith("’")) 
+         else if(word.toLowerCase().endsWith("???")) 
               return word.replace(word.trim(), word.substring(0, word.length()-1)); 
         else if(word.toLowerCase().endsWith("\"")) 
               return word.replace(word.trim(), word.substring(0, word.length()-1)); 
@@ -41,7 +41,7 @@ public class Mystemmer {
               return word.replace(word.trim(), word.substring(1)); 
         else if (word.toLowerCase().startsWith("{")) 
               return word.replace(word.trim(), word.substring(1)); 
-        else if (word.toLowerCase().startsWith("’")) 
+        else if (word.toLowerCase().startsWith("???")) 
               return word.replace(word.trim(), word.substring(1)); 
         else if (word.toLowerCase().startsWith("\"")) 
               return word.replace(word.trim(), word.substring(1)); 
@@ -114,15 +114,15 @@ public class Mystemmer {
        else 
            return word; 
     }
-//    String stopW[] = {"thì","là", "mà", "đang"};
+//    String stopW[] = {"th??","l??", "m??", "??ang"};
 //    public boolean stopWordV(String temp)
 //    {
 //    	if (temp.toLowerCase().contains("bitly")
 // 		|| temp.toLowerCase().contains("goog")
 // 		|| temp.toLowerCase().contains("itviec")
 // 		|| temp.toLowerCase().contains("www")
-//		|| temp.toLowerCase().contains("vì")
-//		|| temp.toLowerCase().contains("ví")
+//		|| temp.toLowerCase().contains("v??")
+//		|| temp.toLowerCase().contains("v??")
 //		|| temp.toLowerCase().contains("http")
 //		|| temp.toLowerCase().contains("amznto")
 //		
