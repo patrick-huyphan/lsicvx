@@ -16,6 +16,7 @@ Parallel processing:
 - Data structure: 
     - sparse matrix with row and column
         - key-value: <(rowID-colID):value>
+    -broadcast data: ???    
 
 - Read matrix data: 
     + where is data stored? 
@@ -46,7 +47,8 @@ Need more package for full app processing
 
 
 # Spark
-Need run with configuration from file
+Need run with configuration from file.
+
 Spark config:
 - local dir
 - worker dir
@@ -59,6 +61,10 @@ Spark submit on ubuntu (standalone mode):
 - add worker to master
 - submit job to master
 
+./sbin/start-master.sh -h localhost -p 7077
+./sbin/start-slave.sh spark://localhost:7077
+./bin/spark-shell --master spark://localhost:7077
 
+https://spark.apache.org/docs/latest/spark-standalone.html
 
 Author: Patrick HuyPhan(huyphan.aj@gmail.com)
