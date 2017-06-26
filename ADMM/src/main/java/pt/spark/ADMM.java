@@ -27,13 +27,13 @@ public class ADMM {
    */
   public static void main(String[] args) {
     checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
-    new ADMM().run(args[0]);
+    new ADMM().run(args[0], args[1]);
   }
 
   /**
    * The task body
    */
-  public void run(String inputFilePath) {
+  public void run(String inputFilePath, String outFilePath) {
     /*
      * This is the address of the Spark cluster. We will call the task from WordCountTest and we
      * use a local standalone cluster. [*] means use all the cores available.

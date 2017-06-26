@@ -9,8 +9,6 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import newpackage.newpackage.NewClasssample;
 
 
 /**
@@ -27,15 +25,15 @@ public class SCC {
    * This is the entry point when the task is called from command line with spark-submit.sh.
    * See {@see http://spark.apache.org/docs/latest/submitting-applications.html}
    */
-  public static void main(String[] args) {
-    checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
-    new SCC().run(args[0]);
-  }
+//  public static void main(String[] args) {
+//    checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
+//    new SCC().run(args[0],args[1]);
+//  }
 
   /**
    * The task body
    */
-  public void run(String inputFilePath) {
+  public void run(String inputFilePath, String outFilePath) {
     /*
      * This is the address of the Spark cluster. We will call the task from WordCountTest and we
      * use a local standalone cluster. [*] means use all the cores available.

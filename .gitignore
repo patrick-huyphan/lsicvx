@@ -1,5 +1,6 @@
-/ADMM/target/*
 /paper/target/*
+/ADMM/target/*
 /SCC/target/*
 /Parse data/target/*
-/query/target/*
+/Query/target/*
+/LSI_CVX/target/

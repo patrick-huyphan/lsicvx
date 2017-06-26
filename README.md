@@ -14,8 +14,8 @@ Paper: Full flow, normal processing with SCC and ADMM
 
 Parallel processing:
 - Data structure: 
-    - matrix with row and column
-    - key-value:???
+    - sparse matrix with row and column
+        - key-value: <(rowID-colID):value>
 
 - Read matrix data: 
     + where is data stored? 
@@ -41,8 +41,10 @@ Parallel processing:
     + reduce result
 
 Need more package for full app processing: 
-    + parsing text data to matrix
+    + Data preparation: parsing text data to matrix, remove stop work, build VSM
     + transform matrix to new space and query
+
+Need run with configuration from file
 
 #Spark
 Spark config:
