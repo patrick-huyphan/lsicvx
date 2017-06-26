@@ -11,6 +11,7 @@ SW requirement:
 TODO:
 Full flow:
 - Read matrix data: where is data stored? 
+
 - SCC: what data should be read, flow processing
 
 - ADMM: what data should be read, flow processing

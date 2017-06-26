@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
+import newpackage.newpackage.NewClasssample;
+
 
 /**
  * SCC class, we will call this class with the test WordCountTest.
@@ -41,6 +43,7 @@ public class SCC {
      */
     String master = "local[*]";
 
+    NewClasssample as = new NewClasssample();
     /*
      * Initialises a Spark context.
      */
