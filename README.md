@@ -67,4 +67,6 @@ https://spark.apache.org/docs/latest/spark-standalone.html
 - ./sbin/start-master.sh -h localhost -p 7077
 - ./sbin/start-slave.sh spark://localhost:7077
 - ./bin/spark-shell --master spark://localhost:7077
+
+
 Author: Patrick HuyPhan(huyphan.aj@gmail.com)
