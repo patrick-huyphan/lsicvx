@@ -13,5 +13,12 @@ Full flow:
 - Read matrix data: where is data stored? 
 
 - SCC: what data should be read, flow processing
-
+    + map matrix
+    + lambda, rho
+    + row calculate
+    + reduce row
 - ADMM: what data should be read, flow processing
+    + map matrix D.
+    + map matrix B.
+    + column calculate
+    + reduce column
