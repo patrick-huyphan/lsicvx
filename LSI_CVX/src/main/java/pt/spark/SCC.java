@@ -58,7 +58,7 @@ public class SCC {
             String.format("Word [%s] count [%d].", result._1(), result._2)));
   
 
-    double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
+  double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
   LinkedList<Vector> rowsList = new LinkedList<>();
   for (int i = 0; i < array.length; i++) {
     Vector currentRow = Vectors.dense(array[i]);
@@ -74,6 +74,8 @@ public class SCC {
 //  RowMatrix U = svd.U();
 //  Vector s = svd.s();
 //  Matrix V = svd.V();
+
+
 
 
     context.stop();

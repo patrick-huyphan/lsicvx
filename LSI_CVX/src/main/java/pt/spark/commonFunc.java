@@ -5,8 +5,11 @@
  */
 package pt.spark;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -41,14 +44,40 @@ public class commonFunc {
     }
     
     public static JavaPairRDD<String, Integer>  readMatrixToRDD( JavaSparkContext context, String input)
-    {
+    {  
         return context.textFile(input)
              .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
              .mapToPair(word -> new Tuple2<>(word, 1))
              .reduceByKey((a, b) -> a + b);
     }
     
-        public static int  sampleRDD( JavaSparkContext context, Matrix m)
+    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext context, double[][] input)
+    {
+        LinkedList<Vector> rowsList = new LinkedList<>();
+        for (int i = 0; i < input.length; i++) {
+          Vector currentRow = Vectors.dense(input[i]);
+          rowsList.add(currentRow);
+        }
+        JavaRDD<Vector> rows = context.parallelize(rowsList);
+
+        // Create a RowMatrix from JavaRDD<Vector>.
+        RowMatrix mat = new RowMatrix(rows.rdd());
+        return mat;
+    }
+    public static JavaRDD<List<Double>>  readMatrixToRDD( JavaSparkContext context, double[][]m)
+    {
+        
+        List<List<Double>> x = new ArrayList<List<Double>>();
+        for(double[] i: m)
+        {
+            List<Double> tmp = Arrays.stream(i).boxed().collect(Collectors.toList());
+            x.add(tmp);
+        }
+        
+        return context.parallelize(x);
+    }
+        
+    public static int  sampleRDD( JavaSparkContext context, Matrix m)
     {
         //Create Java RDD of type integer with list of integers
         final JavaRDD<Integer> intRDD = context.parallelize(Arrays.asList(1, 2, 3, 4, 50, 61, 72, 8, 9, 19, 31, 42, 53, 6, 7, 23));
