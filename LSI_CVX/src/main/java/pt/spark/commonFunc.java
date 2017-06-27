@@ -9,13 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.mllib.linalg.distributed.MatrixEntry;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import org.apache.spark.rdd.*;
 import org.apache.spark.mllib.linalg.*;
+import scala.Tuple2;
 
 /**
  *
@@ -36,15 +40,12 @@ public class commonFunc {
         return context.parallelize( V);//m.rowIter().toList());
     }
     
-    public static JavaRDD<Vector>  readMatrixToRDD( JavaSparkContext context, String input)
+    public static JavaPairRDD<String, Integer>  readMatrixToRDD( JavaSparkContext context, String input)
     {
-
-   context.textFile(inputFilePath)
-        .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
-        .mapToPair(word -> new Tuple2<>(word, 1))
-        .reduceByKey((a, b) -> a + b);
-         
-        return context.parallelize( V);//m.rowIter().toList());
+        return context.textFile(input)
+             .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
+             .mapToPair(word -> new Tuple2<>(word, 1))
+             .reduceByKey((a, b) -> a + b);
     }
     
         public static int  sampleRDD( JavaSparkContext context, Matrix m)
@@ -61,5 +62,12 @@ public class commonFunc {
         System.out.println(sumTransformed);
         
         return sumTransformed;
+    }
+        
+    class GetLength implements Function<String, Integer> {
+    public Integer call(String s) { return s.length(); }
+    }
+    class Sum implements Function2<Integer, Integer, Integer> {
+      public Integer call(Integer a, Integer b) { return a + b; }
     }
 }

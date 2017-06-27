@@ -52,6 +52,8 @@ public class ParseData {
     JavaPairRDD<String, Integer > kv = row.mapToPair(word -> new Tuple2<>(word, 1)).reduceByKey((a, b) -> a + b);
     
     kv.foreach(result -> LOGGER.info(String.format("Word [%s] count [%d].", result._1(), result._2)));
+   
     
+    context.stop();
   }
 }

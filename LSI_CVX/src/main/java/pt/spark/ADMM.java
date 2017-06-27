@@ -9,6 +9,11 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.LinkedList;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 
 
 /**
@@ -62,6 +67,8 @@ public class ADMM {
 
   // Create a RowMatrix from JavaRDD<Vector>.
   RowMatrix mat = new RowMatrix(rows.rdd());
+  
+  context.stop();
   }
 
 }

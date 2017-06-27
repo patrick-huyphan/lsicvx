@@ -9,6 +9,12 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.LinkedList;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.linalg.distributed.RowMatrix;
+import breeze.linalg.*;
 
 
 /**
@@ -64,9 +70,12 @@ public class SCC {
   RowMatrix mat = new RowMatrix(rows.rdd());
 
   // Compute the top 3 singular values and corresponding singular vectors.
-  SingularValueDecomposition<RowMatrix, Matrix> svd = mat.computeSVD(3, true, 1.0E-9d);
-  RowMatrix U = svd.U();
-  Vector s = svd.s();
-  Matrix V = svd.V();
+//  SingularValueDecomposition<RowMatrix, Matrix> svd = mat.computeSVD(3, true, 1.0E-9d);
+//  RowMatrix U = svd.U();
+//  Vector s = svd.s();
+//  Matrix V = svd.V();
+
+
+    context.stop();
   }
 }

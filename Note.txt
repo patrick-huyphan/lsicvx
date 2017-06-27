@@ -1,1 +1,37 @@
+Flow processing:
+- save doc-term as sparse matrix => in future, this job should be done by spark
+- echelon and save to file as sparse matrix => in future, this job should be done by spark
+ 
+Spark start:
+- read matrix data to rowmatrix
+- SCC
+-> input: doc-term row matrix (n-m)
+-> output: present matrix (k-m)
+
+-> transpose to term-doc, 
+-> broadcast matrix
+-> broadcast lambda, rho
+-> apply SCC for each row in matrix
+init  variable
+loop:
+    update x,u,v, 
+    check stop
+
+
+-> return id of present vector
+-> get present vector as new matrix
+
+- ADMM 
+-> input from SCC(B: k-m) and original row matrix(D: n-m) 
+-> output: return projection matrix: matrix n-k for latent space
+
+-> broadcast matrix D, B
+-> broadcast lambda, rho
+-> apply ADMM for each colum in D
+init  variable
+loop:
+    update x,u,v, 
+    check stop
+
+
 Release note:
