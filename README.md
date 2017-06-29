@@ -1,4 +1,4 @@
-# lsiCVX
+# lsiCVX, in development processing...
 Using spark to process:
 - clustering data with SCC
 - find projection matrix with ADMM
@@ -16,7 +16,8 @@ Parallel processing:
 - Data structure: 
     - sparse matrix with row and column
         - key-value: <(rowID-colID):value>
-    -broadcast data: ???    
+    - spark matrix struct? matrix, rowmatrix, sparse matrix...  
+    - broadcast data: ???    
 
 https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/SparseMatrix.html
 
@@ -71,5 +72,11 @@ https://spark.apache.org/docs/latest/spark-standalone.html
 - ./sbin/start-slave.sh spark://localhost:7077
 - ./bin/spark-shell --master spark://localhost:7077
 
+
+# Ref
+http://snap.stanford.edu/snapvx/
+http://snap.stanford.edu/snapvx/developer_doc.pdf
+http://di.eteri.ch/projects/admm_paper.pdf
+http://www.programcreek.com/java-api-examples/index.php?api=org.apache.spark.broadcast.Broadcast
 
 Author: Patrick HuyPhan(huyphan.aj@gmail.com)

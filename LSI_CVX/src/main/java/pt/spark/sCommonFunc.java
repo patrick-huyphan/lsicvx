@@ -28,9 +28,9 @@ import scala.Tuple2;
  *
  * @author patrick_huy
  */
-public class commonFunc {
+public class sCommonFunc {
     
-    public static JavaRDD<Vector>  matrixToRDD( JavaSparkContext context, Matrix m)
+    public static JavaRDD<Vector>  matrixToRDD( JavaSparkContext sc, Matrix m)
     {
 //        List<Vector> V = 
         m.rowIter();
@@ -40,31 +40,49 @@ public class commonFunc {
         
 //        val columns = m.toArray.grouped(m.numRows);
         
-        return context.parallelize( V);//m.rowIter().toList());
+        return sc.parallelize( V);//m.rowIter().toList());
     }
     
-    public static JavaPairRDD<String, Integer>  readMatrixToRDD( JavaSparkContext context, String input)
+    public static JavaPairRDD<String, Integer>  readMatrixToRDD( JavaSparkContext sc, String input)
     {  
-        return context.textFile(input)
+        return sc.textFile(input)
              .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
              .mapToPair(word -> new Tuple2<>(word, 1))
              .reduceByKey((a, b) -> a + b);
     }
     
-    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext context, double[][] input)
+    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, double[][] input)
     {
         LinkedList<Vector> rowsList = new LinkedList<>();
         for (int i = 0; i < input.length; i++) {
           Vector currentRow = Vectors.dense(input[i]);
           rowsList.add(currentRow);
         }
-        JavaRDD<Vector> rows = context.parallelize(rowsList);
+        JavaRDD<Vector> rows = sc.parallelize(rowsList);
+
+//        rows.broadcast();
+        rows.cache();
+        
+        // Create a RowMatrix from JavaRDD<Vector>.
+        RowMatrix mat = new RowMatrix(rows.rdd());
+        return mat;
+    }
+    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, String input)
+    {
+        int numR = 10;
+        LinkedList<Vector> rowsList = new LinkedList<>();
+        List<Tuple2<Integer, Double>> itrbl = new ArrayList<>();
+        for (int i = 0; i < numR; i++) {
+          Vector currentRow = Vectors.sparse(i, itrbl);
+          rowsList.add(currentRow);
+        }
+        JavaRDD<Vector> rows = sc.parallelize(rowsList);
 
         // Create a RowMatrix from JavaRDD<Vector>.
         RowMatrix mat = new RowMatrix(rows.rdd());
         return mat;
     }
-    public static JavaRDD<List<Double>>  readMatrixToRDD( JavaSparkContext context, double[][]m)
+    public static JavaRDD<List<Double>>  readMatrixToRDD( JavaSparkContext sc, double[][]m)
     {
         
         List<List<Double>> x = new ArrayList<List<Double>>();
@@ -74,13 +92,13 @@ public class commonFunc {
             x.add(tmp);
         }
         
-        return context.parallelize(x);
+        return sc.parallelize(x);
     }
         
-    public static int  sampleRDD( JavaSparkContext context, Matrix m)
+    public static int  sampleRDD( JavaSparkContext sc, Matrix m)
     {
         //Create Java RDD of type integer with list of integers
-        final JavaRDD<Integer> intRDD = context.parallelize(Arrays.asList(1, 2, 3, 4, 50, 61, 72, 8, 9, 19, 31, 42, 53, 6, 7, 23));
+        final JavaRDD<Integer> intRDD = sc.parallelize(Arrays.asList(1, 2, 3, 4, 50, 61, 72, 8, 9, 19, 31, 42, 53, 6, 7, 23));
         // Create a new Java RDD by removing numbers greater than 10 from integer RDD
         final JavaRDD<Integer> filteredRDD = intRDD.filter((x) -> (x > 10 ? false : true));
         // Create a new transformed RDD by transforming the numbers to their squares

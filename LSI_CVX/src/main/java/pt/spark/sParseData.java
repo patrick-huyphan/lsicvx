@@ -26,16 +26,16 @@ import org.apache.spark.sql.types.StructType;
 
 
 /**
- * ParseData class, we will call this class to:
- * - read text data which already prepared( tokenize and remove stop work, reduce same meaning work).
+ * sParseData class, we will call this class to:
+ - read text data which already prepared( tokenize and remove stop work, reduce same meaning work).
  * - build VSM
  */
-public class ParseData {
+public class sParseData {
   /**
    * We use a logger to print the output. Sl4j is a common library which works with log4j, the
    * logging system used by Apache Spark.
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(ParseData.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(sParseData.class);
 
   /**
    * The task body
@@ -51,7 +51,7 @@ public class ParseData {
      * Initialises a Spark context.
      */
     SparkConf conf = new SparkConf()
-        .setAppName(ParseData.class.getName())
+        .setAppName(sParseData.class.getName())
         .setMaster(master);
     JavaSparkContext context = new JavaSparkContext(conf);
 

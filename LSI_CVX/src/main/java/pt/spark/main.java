@@ -9,6 +9,37 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class main {
 
@@ -24,19 +55,19 @@ public class main {
     
     String master = "local[*]";
     // currently, not support: matrix data should be prepared before
-    new ParseData().run(master, args[0],args[1]);
+    new sParseData().run(master, args[0],args[1]);
     
     // read output from parse data
-    new Echelon().run(master, args[0],args[1]);
+    new sEchelon().run(master, args[0],args[1]);
     
     // read output from echelon: 
-    new SCC().run(master, args[0],args[1]);
+    new sSCC().run(master, args[0],args[1]);
     
-    // read outpur from parse data and echelon and SCC: Ax-B
-    new ADMM().run(master, args[0],args[1]);
+    // read outpur from parse data and echelon and sSCC: Ax-B
+    new sADMM().run(master, args[0],args[1]);
     
-    // read output from parse+ ADMM 
-    new Query().run(master, args[0],args[1]);
+    // read output from parse+ sADMM 
+    new sQuery().run(master, args[0],args[1]);
   }
  
 }

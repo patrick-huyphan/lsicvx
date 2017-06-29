@@ -9,7 +9,7 @@ Spark start:
 -> output: present matrix (k-m)
 
 -> transpose to term-doc, 
--> broadcast transpose matrix, all node can refer to this matrix
+-> broadcast transposed matrix, all node can refer to this matrix
 -> broadcast lambda, rho
 -> apply SCC for each row in matrix
 init  variable
