@@ -51,16 +51,20 @@ public class sCommonFunc {
              .reduceByKey((a, b) -> a + b);
     }
     
-    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, double[][] input)
+    public static JavaRDD<Vector>  array2RDDVector( JavaSparkContext sc, double[][] input)
     {
         LinkedList<Vector> rowsList = new LinkedList<>();
         for (int i = 0; i < input.length; i++) {
           Vector currentRow = Vectors.dense(input[i]);
           rowsList.add(currentRow);
         }
-        JavaRDD<Vector> rows = sc.parallelize(rowsList);
+        return sc.parallelize(rowsList);
+    }
+        
+    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, double[][] input)
+    {
+        JavaRDD<Vector> rows = array2RDDVector(sc, input);
 
-//        rows.broadcast();
         rows.cache();
         
         // Create a RowMatrix from JavaRDD<Vector>.
@@ -93,6 +97,12 @@ public class sCommonFunc {
         }
         
         return sc.parallelize(x);
+    }
+
+    public static JavaPairRDD<Tuple2<Integer,Integer>,Double>  readCSVMatrixToRDD( JavaSparkContext sc, String fileName)
+    {
+        return sc.textFile(fileName).
+                flatMapToPair(text -> Arrays.asList(new Tuple2<>(new Tuple2<>(Integer.parseInt(text.split(" ")[0]),Integer.parseInt(text.split(" ")[1])),Double.parseDouble(text.split(" ")[2]))).iterator());
     }
         
     public static int  sampleRDD( JavaSparkContext sc, Matrix m)
