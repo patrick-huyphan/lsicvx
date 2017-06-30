@@ -55,10 +55,10 @@ public class main {
     
     String master = "local[*]";
     // currently, not support: matrix data should be prepared before
-    new sParseData().run(master, args[0],args[1]);
+//    new sParseData().run(master, args[0],args[1]);
     
     // read output from parse data
-    new sEchelon().run(master, args[0],args[1]);
+//    new sEchelon().run(master, args[0],args[1]);
     
     // read output from echelon: 
     new sSCC().run(master, args[0],args[1]);

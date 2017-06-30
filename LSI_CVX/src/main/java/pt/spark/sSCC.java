@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
 
 
@@ -69,28 +71,21 @@ public class sSCC {
   // Create a RowMatrix from JavaRDD<Vector>.
    JavaRDD<Vector> matI = sCommonFunc.array2RDDVector(context, array);
 
-  
-  // Compute the top 3 singular values and corresponding singular vectors.
-//  SingularValueDecomposition<RowMatrix, Matrix> svd = mat.computeSVD(3, true, 1.0E-9d);
-//  RowMatrix U = svd.U();
-//  Vector s = svd.s();
-//  Matrix V = svd.V();
-
 
   /*
 TODO: 
     - init E set
-    - init U,V,D,X0
   */
 
-  double rho = 0.8;
+//  double rho0 = 0.8;
 //  double lamda = 0.6;
 //  double lamda2 = 0.6;
 //  double eps_abs= 1e-6;
 //  double eps_rel= 1e-6;
-  
+  // (<r,c>,w)
   List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = new ArrayList<>();  
-//  context.broadcast(rho);
+  
+  Broadcast<Double>  rho0 = context.broadcast(0.8);
   Broadcast<Double>  lamda = context.broadcast(0.6);
   Broadcast<Double>  lamda2 = context.broadcast(0.01);
   Broadcast<Double>  eps_abs = context.broadcast(1e-6);
@@ -101,41 +96,83 @@ TODO:
   
   
 
+  
   // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
-    solveADMM(context, mat, E, lamda, lamda2, eps_abs, eps_rel);
+  matI.map(new Function<Vector, Vector>() {
+        @Override
+        public Vector call(Vector t1) throws Exception {
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return solveADMM(context, t1, mat, E, rho0, lamda, lamda2, eps_abs, eps_rel);
+        }
+    });
+    
             
     context.stop();
   }
   
-  private void solveADMM( JavaSparkContext sc, 
+  private Vector solveADMM( JavaSparkContext sc,
+          Vector curruntI,
           Broadcast<JavaRDD<Vector>> mat,
           Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> e,
+          Broadcast<Double>  rho0,
           Broadcast<Double>  lamda,
           Broadcast<Double>  lamda2,
           Broadcast<Double>  eps_abs,
           Broadcast<Double>  eps_rel)
   {
+/*
+TODO: 
+        - init U,V,D,X0
+      (<r,c>,v[])
+*/
+      double rho = rho0.value();
       List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> D = null;
       List<Double> x = null;
-      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> z = null;
-      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> u = null; 
+      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> z0 = null;
+      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> u0 = null; 
+      
+      List<Double> x0 = null;
+      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> z = initZ(e);
+      List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> u = initU(e); 
       boolean stop = false;
       
-      while(stop)
+      int loop = 0;
+      while(loop<100)
       {
           D = calD(e, z, u);
           x = updateX(mat, e,D);
           z = updateZ(e,x,u,z);
           u = updateU(e,x,u,z);
+          if(loop>1)
+            stop = checkStop(x, rho, z0, u0);
+          if(loop > 1 && stop)
+              break;
           
-          stop = checkStop();
+          loop++;
+          x= x0;
+          z= z0;
+          u= u0;
       }
+      
+//        double[] tmp = new double[x.size()];
+//        int j = 0;
+//        for(double i:x)
+//        {
+//            tmp[j] = i;
+//            j++;
+//        }
+//        Double[] array = x.stream().toArray(Double[]::new);
+      return Vectors.dense(ArrayUtils.toPrimitive(x.stream().toArray(Double[]::new)));
   }
 
 
-  private boolean checkStop()
+  private boolean checkStop(List<Double> x0, 
+          double cRho,
+          List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> z,
+          List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> u)
   {
-      updateRho();
+      double r = 0, s = 0;
+      updateRho(cRho, r,s);
       return false;
   }
   
@@ -157,22 +194,39 @@ TODO:
             List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> ret = null;
       return ret;
   }
+   
+    private List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> initU(Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> e)
+  {
+            List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> ret = null;
+      return ret;
+  }
     
   private List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> updateZ(Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> e, List<Double>x, List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> U, List<Tuple2<Tuple2<Integer, Integer>, List<Double>>>V)
   {
             List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> ret = null;
       return ret;
   }
-    
+   
+  private List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> initZ(Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> e)
+  {
+            List<Tuple2<Tuple2<Integer, Integer>, List<Double>>> ret = null;
+      return ret;
+  }
+  
+
   private void updateRho()
   {
       
   }     
 
-    private void eps_primal()
-  {
-      
-  }
+    private double updateRho(double rho, double r, double s)
+    {
+        if(r>8*s)
+            rho =  rho* 0.5;//(r/s);//2*rho;
+        if(s>8*r)
+            rho =  rho* 2;//(r/s);//rho/2;
+        return rho;
+    }
     
     private void eps_dual()
   {
