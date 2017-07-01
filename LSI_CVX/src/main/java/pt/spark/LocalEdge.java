@@ -1,8 +1,8 @@
-package pt.paper;
+package pt.spark;
 
 import java.util.Comparator;
 
-public class LocalEdge implements Comparator<LocalEdge>{
+public class LocalEdge extends Object implements Comparator<LocalEdge>{
 
 	int sourcevertex;
     int destinationvertex;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pt.paper;
+package pt.spark;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import java.util.List;
  *
  * @author patrick_huy
  */
-public class LocalMatrix implements Cloneable, java.io.Serializable {
-    LocalVector[] rows;
+public class LocalVector2D implements Cloneable, java.io.Serializable {
+    LocalVector1D[] rows;
     int m, n;
     DecimalFormat twoDForm = new DecimalFormat(" 0.0000000");
 
@@ -24,12 +24,12 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
      * @param n Number of rows.
      * @param m Number of colums.
      */
-    public LocalMatrix(int n, int m) {
+    public LocalVector2D(int n, int m) {
         this.m = m;
         this.n = n;
-        rows = new LocalVector[n];
+        rows = new LocalVector1D[n];
         for (int i = 0; i < n; i++)
-            rows[i] = new LocalVector(m);
+            rows[i] = new LocalVector1D(m);
     }
     /**
      * Construct a matrix quickly without checking arguments.
@@ -38,7 +38,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
      * @param m Number of rows.
      * @param n Number of colums.
      */
-    public LocalMatrix(double[][] A, int n, int m) {
+    public LocalVector2D(double[][] A, int n, int m) {
 //        this.A = A;
         this.m = m;
         this.n = n;
@@ -46,11 +46,11 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
             if (A[i].length != m) {
                 throw new IllegalArgumentException("All rows must have the same length.");
             }
-            rows[i] = new LocalVector(A[i]);
+            rows[i] = new LocalVector1D(A[i]);
         }
     }
 
-    public LocalMatrix(double vals[], int n) {
+    public LocalVector2D(double vals[], int n) {
         this.n = n;
         m = (n != 0 ? vals.length / n : 0);
         if (m * n != vals.length) {
@@ -61,7 +61,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
             for (int j = 0; j < m; j++) {
                 A[i][j] = vals[i + j * n];
             }
-            rows[i] = new LocalVector(A[i], false);
+            rows[i] = new LocalVector1D(A[i], false);
         }
     }
     
@@ -77,14 +77,14 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         rows[i].put(j, value);
     }
 
-    public LocalVector getRow(int index) {
+    public LocalVector1D getRow(int index) {
         return rows[index];
     }
 
-    public LocalVector getColumn(int index) {
-    	LocalVector ret = new LocalVector(n);
+    public LocalVector1D getColumn(int index) {
+    	LocalVector1D ret = new LocalVector1D(n);
     	int j = 0;
-    	for(LocalVector row : rows)
+    	for(LocalVector1D row : rows)
     	{
     			ret.put(j, row.get(index),false);
     			j++;
@@ -93,7 +93,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
     }
 
     public void setRow(int index, double row[]) {
-        rows[index] = new LocalVector(row);
+        rows[index] = new LocalVector1D(row);
     }
 
     public void setColumn(int index, double col[]) {
@@ -103,13 +103,13 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         }
     }
 
-    public LocalMatrix copy() {
-        LocalMatrix X = new LocalMatrix(n,m);
+    public LocalVector2D copy() {
+        LocalVector2D X = new LocalVector2D(n,m);
         System.arraycopy(rows, 0, X.rows, 0, n);
         return X;
     }
-    public LocalMatrix changeRow(int row1, int row2) {
-        LocalMatrix X = this.copy();
+    public LocalVector2D changeRow(int row1, int row2) {
+        LocalVector2D X = this.copy();
         for (int i = 0; i < n; i++) {
             double value = X.get(row1, i);
             X.set(row1, i, X.get(row2, i));
@@ -118,8 +118,8 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         return X;
     }
 
-    public LocalMatrix changeColumn(int col1, int col2) {
-        LocalMatrix X = this.copy();
+    public LocalVector2D changeColumn(int col1, int col2) {
+        LocalVector2D X = this.copy();
         for (int i = 0; i < n; i++) {
             double value = X.get(i, col1);
             X.set(i, col1, X.get(i, col2));
@@ -221,7 +221,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
 
     public static double[] getCol(double A[][], int col) {
         double[] ret = new double[A.length];
-//        LocalMatrix.printMat(A, "");
+//        LocalVector2D.printMat(A, "");
         for (int i = 0; i < A.length; i++) {
 //            System.out.println(i+"-"+col+": "+A[i][col]);
             ret[i] = A[i][col];
@@ -390,7 +390,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         for (i = m - 1; i >= 0; i--) {
             double[] curentCol = getCol(eMat, i);
             
-            if (LocalVector.isZeroVector(curentCol)) {
+            if (LocalVector1D.isZeroVector(curentCol)) {
                 eMat = RemoveColumn(eMat, i);
                 ret = RemoveColumn(ret, i);
                 System.out.println("echelon() zero col "+i);
@@ -411,7 +411,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
                     TODO:
                     check and remove dependent-row
                     */                    
-                    if (LocalVector.isDepen(checkCol, curentCol)) {
+                    if (LocalVector1D.isDepen(checkCol, curentCol)) {
                         eMat = RemoveColumn(eMat, tmp);
                         ret = RemoveColumn(ret, tmp);
                         System.out.println("paper.Paper.echelon() checking "+ i+" "+j+" "+tmp);
@@ -434,7 +434,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
 //        int numZ = 0;
 //        for(int t = eMat.length-1; t>0;t--)
 //        {
-//            if(LocalVector.isZeroVector(getRow(eMat, t)))
+//            if(LocalVector1D.isZeroVector(getRow(eMat, t)))
 //            {
 //                numZ++;
 ////                System.out.println( t+" is zero "+ numZ);
@@ -444,15 +444,15 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         int k = eMat[0].length;
         for(int t = 1; t<k; t++)
         {
-//                    System.out.println("paper.LocalMatrix.echelon() "+t+" "+k);
+//                    System.out.println("paper.LocalVector2D.echelon() "+t+" "+k);
             if(t>= eMat.length){
-//                System.out.println("paper.LocalMatrix.echelon() "+t+" "+k +" "+ eMat.length);
+//                System.out.println("paper.LocalVector2D.echelon() "+t+" "+k +" "+ eMat.length);
                 while((t>=eMat.length)&&(k > eMat.length))
                 {
                     if(eMat[t-1][k-1] == 0)
                     {
-                        eMat = LocalMatrix.RemoveColumn(eMat, t+1);
-                        ret = LocalMatrix.RemoveColumn(ret, t+1);
+                        eMat = LocalVector2D.RemoveColumn(eMat, t+1);
+                        ret = LocalVector2D.RemoveColumn(ret, t+1);
 
                         for(int e=0; e<m; e++)
                         {
@@ -469,8 +469,8 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
             {
                 while((k > eMat.length) && (eMat[t][t] == 0))
                 {
-                    eMat = LocalMatrix.RemoveColumn(eMat, t);
-                    ret = LocalMatrix.RemoveColumn(ret, t);
+                    eMat = LocalVector2D.RemoveColumn(eMat, t);
+                    ret = LocalVector2D.RemoveColumn(ret, t);
                     
                     for(int e=0; e<m; e++)
                     {
@@ -495,8 +495,8 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         System.out.println("paper.Matrix.echelon() " + ret.length +" - "+ret[0].length);
 //        printMat(ret, "after echelon");
 
-//        LocalMatrix.printMat(eMat, " emath");
-//        LocalMatrix.printMat(ret, " echelon");
+//        LocalVector2D.printMat(eMat, " emath");
+//        LocalVector2D.printMat(ret, " echelon");
         return ret;
     }
 
@@ -504,7 +504,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         List<LocalEdge> E = new ArrayList<>();
         for (int i = 0; i < A.length; i++) {
             for (int j = i + 1; j < A.length; j++) {
-                double sim = LocalVector.cosSim(A[i], A[i]);
+                double sim = LocalVector1D.cosSim(A[i], A[i]);
                 if(sim>0){
                     E.add(new LocalEdge(i, j, sim));
                 }
@@ -552,7 +552,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
     public static double[][] scale(double[][] A, double rate) {
         double[][] ret = new double[A.length][A.length];
         for(int i = 0; i< A.length; i++)
-//            LocalVector.scale(A[i], rate);
+//            LocalVector1D.scale(A[i], rate);
             for(int j = 0 ; j<A[0].length;j++)
                 ret[i][j]= A[i][j]*rate;
         return ret;
@@ -582,7 +582,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         if (A[0].length != B.length) {
             throw new UnsupportedOperationException("Not support Am=! b.m");
         }
-//        System.out.println("paper.LocalMatrix.mul()" +A.length+" "+A[0].length+" "+B.length);
+//        System.out.println("paper.LocalVector2D.mul()" +A.length+" "+A[0].length+" "+B.length);
         double[] ret = new double[A.length];
         for (int i = 0; i < A.length; i++) {
             double value = 0;
@@ -664,7 +664,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
     public static double[][] centered(double[][] A) {
         double[][] ret = new double[A.length][A[0].length];
         for (int i = 0; i < A[0].length; i++) {
-            double tmp = LocalVector.sum(LocalMatrix.getCol(A, i))/A.length;
+            double tmp = LocalVector1D.sum(LocalVector2D.getCol(A, i))/A.length;
             for(int j = 0; j< A.length; j++)
             {          		
                 ret[j][i]= A[j][i]-tmp; 
@@ -676,21 +676,21 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
     public static double[][] orthogonolGramShmidt(double[][] A) {
         double[][] ret = Copy(A);
         for (int i = 1; i < A[0].length; i++) {
-            double[] xi = LocalMatrix.getCol(A, i);
+            double[] xi = LocalVector2D.getCol(A, i);
             double[] sumj = new double[A.length];
             for (int j = 0; j < i; j++) {
-                double[] vj = LocalMatrix.getCol(ret, j);
-                double xj =  LocalVector.dotProduct(xi, vj)/LocalVector.dotProduct(vj, vj);
-                sumj = LocalVector.plus(sumj, LocalVector.scale(vj, xj));
+                double[] vj = LocalVector2D.getCol(ret, j);
+                double xj =  LocalVector1D.dotProduct(xi, vj)/LocalVector1D.dotProduct(vj, vj);
+                sumj = LocalVector1D.plus(sumj, LocalVector1D.scale(vj, xj));
             }
-            double[]  vi = LocalVector.plus(xi, LocalVector.scale(sumj, -1));
+            double[]  vi = LocalVector1D.plus(xi, LocalVector1D.scale(sumj, -1));
             /*
             TODO: around vi
             */
 //            for(double v:vi)
 //            {
 //            }
-            ret = LocalMatrix.updateCol(ret, vi, i);
+            ret = LocalVector2D.updateCol(ret, vi, i);
         }
         return ret;
     }
@@ -705,16 +705,16 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
 //        return centered(ret);
 
         double[][] ret = Copy(A);// new double[A.length][A[0].length];
-        ret = LocalMatrix.updateCol(ret, LocalVector.NVec(LocalMatrix.getCol(A, 0)), 0);
+        ret = LocalVector2D.updateCol(ret, LocalVector1D.NVec(LocalVector2D.getCol(A, 0)), 0);
         for (int i = 1; i < A[0].length; i++) {
-            double[] xi = LocalMatrix.getCol(A, i);
+            double[] xi = LocalVector2D.getCol(A, i);
             double[] sumj = new double[A.length];
             for (int j = 0; j < i; j++) {
-                double[] vj = LocalMatrix.getCol(ret, j);
-                double xj =  LocalVector.dotProduct(xi, vj)/LocalVector.dotProduct(vj, vj);
-                sumj = LocalVector.plus(sumj, LocalVector.scale(vj, xj));
+                double[] vj = LocalVector2D.getCol(ret, j);
+                double xj =  LocalVector1D.dotProduct(xi, vj)/LocalVector1D.dotProduct(vj, vj);
+                sumj = LocalVector1D.plus(sumj, LocalVector1D.scale(vj, xj));
             }
-            ret = LocalMatrix.updateCol(ret, LocalVector.NVec(LocalVector.plus(xi, LocalVector.scale(sumj, -1))), i);
+            ret = LocalVector2D.updateCol(ret, LocalVector1D.NVec(LocalVector1D.plus(xi, LocalVector1D.scale(sumj, -1))), i);
         }
         return ret;
     }
@@ -727,7 +727,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
     public static double[][] standardized(double[][] A) {
         double[][] ret = new double[A.length][A[0].length];
         for (int i = 0; i < A[0].length; i++) {
-            double tmp = LocalVector.norm(LocalMatrix.getCol(A, i));
+            double tmp = LocalVector1D.norm(LocalVector2D.getCol(A, i));
             for(int j = 0; j< A.length; j++)
             {
                 ret[j][i] = A[j][i]/tmp;
@@ -807,7 +807,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
         double ret[][] = new double[Q.length][D.length];
         for(int i =0; i< Q.length; i++)
         for(int j =0; j< D.length; j++)
-            ret[i][j] = LocalVector.cosSim(Q[i],D[j]);
+            ret[i][j] = LocalVector1D.cosSim(Q[i],D[j]);
         return ret;
     }
 }

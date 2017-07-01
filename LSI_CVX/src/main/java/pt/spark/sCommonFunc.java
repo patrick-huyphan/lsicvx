@@ -22,6 +22,7 @@ import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import org.apache.spark.rdd.*;
 import org.apache.spark.mllib.linalg.*;
+import org.apache.spark.mllib.linalg.distributed.IndexedRowMatrix;
 import scala.Tuple2;
 
 /**
@@ -32,6 +33,16 @@ public class sCommonFunc {
     
     public static JavaRDD<Vector>  matrixToRDD( JavaSparkContext sc, Matrix m)
     {
+        // Create a dense matrix ((1.0, 2.0), (3.0, 4.0), (5.0, 6.0))
+        Matrix dm = Matrices.dense(3, 2, // row, column
+                new double[] {1.0, 3.0, 5.0, 2.0, 4.0, 6.0}); // value
+
+        // Create a sparse matrix ((9.0, 0.0), (0.0, 8.0), (0.0, 6.0))
+        Matrix sm = Matrices.sparse(3, 2,   // num of row, column
+                new int[] {0, 1, 3},        // index of colPtrs:    the index corresponding to the start of a new column 
+                new int[] {0, 2, 1},        // index of rowIndices:   the row index of the entry. They must be in strictly increasing order for each column 
+                new double[] {9, 6, 8});    // non-zero value
+
         List<Vector> V = null;
         
 //        val columns = m.toArray.grouped(m.numRows);
@@ -56,18 +67,92 @@ public class sCommonFunc {
         }
         return sc.parallelize(rowsList);
     }
-        
-    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, double[][] input)
+    /*
+    TODO:
+    convert betwen 2Darray and:
+    - rowmatrix
+    - rowindex matrix
+    - coodiantematrix
+    */
+    public static SparseMatrix loadSparseMatrix(double[][] array)
     {
-        JavaRDD<Vector> rows = array2RDDVector(sc, input);
-
-//        rows.cache();
-        
-        // Create a RowMatrix from JavaRDD<Vector>.
-        RowMatrix mat = new RowMatrix(rows.rdd());
-        return mat;
+        return loadDenseMatrix(array).toSparse();
     }
-    public static RowMatrix  readMatrixToRowMatrix( JavaSparkContext sc, String input)
+    
+    public static SparseMatrix loadSparseMatrix(String inputFile)
+    {
+        return loadDenseMatrix(inputFile).toSparse();
+    }
+    public static DenseMatrix loadDenseMatrix(double[][] array)
+    {
+        int length = array[0].length;
+        double[] array1D = new double[array.length* length];
+        // load to 1d array of column matrix
+        for(int i = 0; i< length; i++)
+            for(int j = 0; j< array.length; j++)
+            {
+                //TODO: check
+                array1D[i+ j*array.length] = array[j][i];
+            }
+        return new DenseMatrix(array.length, length, array1D, true) ;
+    }
+    
+    public static DenseMatrix loadDenseMatrix(String inputFile)
+    {
+        double[][] array = null;
+        return loadDenseMatrix(array);
+    }        
+    public static CoordinateMatrix loadCM(JavaSparkContext sc, double[][] array)
+    {
+        List<MatrixEntry> listEntry = new ArrayList<>();
+        for(int i = 0; i< array.length; i++)
+        {
+            for(int j =0; j< array[0].length; j++)
+                listEntry.add(new MatrixEntry(i, j, array[i][j]));
+        }
+        return new CoordinateMatrix(sc.parallelize(listEntry).rdd());
+    }
+       
+    public static CoordinateMatrix loadCM(JavaSparkContext sc, DenseMatrix denseMatrix)
+    {
+        List<MatrixEntry> listEntry = new ArrayList<>();
+        for(int i = 0; i< denseMatrix.numRows(); i++)
+        {
+            for(int j =0; j< denseMatrix.numCols(); j++)
+                listEntry.add(new MatrixEntry(i, j, denseMatrix.apply(i, j)));
+        }
+        return new CoordinateMatrix(sc.parallelize(listEntry).rdd());
+    }
+        
+    public static  IndexedRowMatrix loadIndexRM(JavaSparkContext sc, double[][] array)
+    {
+        return loadCM(sc, array).toIndexedRowMatrix();
+    }
+
+    public static RowMatrix loadRowM(JavaSparkContext sc, double[][] array)
+    {
+        return loadIndexRM(sc, array).toRowMatrix();
+    }
+    
+    public static CoordinateMatrix  loadCM( JavaSparkContext sc, String input)
+    {
+        // read file to array or read file and add to list
+        double[][] array= null;
+        return loadCM(sc, array);
+
+//        List<MatrixEntry> listEntry = new ArrayList<>();
+//        for(int i = 0; i< array.length; i++)
+//        {
+//            for(int j =0; j< array[0].length; j++)
+//                listEntry.add(new MatrixEntry(i, j, array[i][j]));
+//        }
+//        return new CoordinateMatrix(sc.parallelize(listEntry).rdd());
+    }
+    public static  IndexedRowMatrix loadIndexRM(JavaSparkContext sc, String input)
+    {
+        return loadCM(sc, input).toIndexedRowMatrix();
+    }
+    public static RowMatrix  loadRowM( JavaSparkContext sc, String input)
     {
         int numR = 10;
         LinkedList<Vector> rowsList = new LinkedList<>();
@@ -95,6 +180,62 @@ public class sCommonFunc {
         return sc.parallelize(x);
     }
 
+    /*
+    TODO
+    */
+        
+    public static DenseMatrix toDenseMatrix(CoordinateMatrix CM)
+    {
+        int m = (int)CM.numCols();
+        int n = (int)CM.numRows();
+        RDD<MatrixEntry> matEntry = CM.entries();
+        matEntry.collect();
+        double[][] ret = new double[n][m];
+        for(int i = 0; i<n; i++)
+        {
+            for(int j = 0; j<m; j++)
+            {
+                ret[i][j] = 0;
+                
+            }
+        }
+//        DenseMatrix ret = null;
+        return null;
+    }
+    
+    public static double[][] to2DArray(CoordinateMatrix CM)
+    {
+        int m = (int)CM.numCols();
+        int n = (int)CM.numRows();
+        double[][] ret = new double[n][m];
+        for(int i = 0; i<n; i++)
+        {
+            for(int j = 0; j<m; j++)
+            {
+                ret[i][j] = 0;
+                CM.entries();
+            }
+        }
+        return ret;
+    }
+
+    
+    public static double[][] to2DArray(DenseMatrix dM)
+    {
+        int m = dM.numCols();
+        int n = dM.numRows();
+        double[][] ret = new double[n][m];
+        for(int i = 0; i<n; i++)
+        {
+            for(int j = 0; j<m; j++)
+                ret[i][j] = dM.apply(i, j);
+        }
+        return ret;
+    }
+    public static double[][] to2DArray(SparseMatrix sM)
+    {
+        return to2DArray(sM.toDense());
+    }    
     public static JavaPairRDD<Tuple2<Integer,Integer>,Double>  readCSVMatrixToRDD( JavaSparkContext sc, String fileName)
     {
         return sc.textFile(fileName).
