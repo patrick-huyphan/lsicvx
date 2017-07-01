@@ -35,7 +35,7 @@ public class sADMM {
   /**
    * The task body
    */
-  public void run(String master, String inputFilePath, String outFilePath) {
+  public void run(String master, LinkedList<Vector> rowsListDocTerm0, LinkedList<Vector> rowsListDocTerm1, String inputFilePath, String outFilePath) {
     /*
      * This is the address of the Spark cluster. We will call the task from WordCountTest and we
      * use a local standalone cluster. [*] means use all the cores available.
@@ -53,6 +53,7 @@ public class sADMM {
     /*
      * Performs a work count sequence of tasks and prints the output with a logger.
      */
+    //read B matrix from scc
     sc.textFile(inputFilePath)
         .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
         .mapToPair(word -> new Tuple2<>(word, 1))
@@ -60,16 +61,19 @@ public class sADMM {
         .foreach(result -> LOGGER.info(
             String.format("Word [%s] count [%d].", result._1(), result._2)));
     
-        double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
-  LinkedList<Vector> rowsList = new LinkedList<>();
-  for (int i = 0; i < array.length; i++) {
-    Vector currentRow = Vectors.dense(array[i]);
-    rowsList.add(currentRow);
-  }
-  JavaRDD<Vector> rows = sc.parallelize(rowsList);
+//        double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
+
+//  LinkedList<Vector> rowsList = new LinkedList<>();
+//  for (int i = 0; i < array.length; i++) {
+//    Vector currentRow = Vectors.dense(array[i]);
+//    rowsList.add(currentRow);
+//  }
+  JavaRDD<Vector> rows0 = sc.parallelize(rowsListDocTerm0);
+  JavaRDD<Vector> rows1 = sc.parallelize(rowsListDocTerm1);
 
   // Create a RowMatrix from JavaRDD<Vector>.
-  RowMatrix mat = new RowMatrix(rows.rdd());
+  RowMatrix mat0 = new RowMatrix(rows0.rdd());
+  RowMatrix mat1 = new RowMatrix(rows1.rdd());
   
   
   double rho = 0.8;
@@ -78,7 +82,8 @@ public class sADMM {
   double eps_rel= 1e-6;
   // each solveADMM process for 1 column of input matrix
   Broadcast<Double> rhob= sc.broadcast(rho);
-    Broadcast<RowMatrix> t = sc.broadcast(mat);
+    Broadcast<RowMatrix> t0 = sc.broadcast(mat0);
+    Broadcast<RowMatrix> t1 = sc.broadcast(mat1);
   
   solveADMM();
   

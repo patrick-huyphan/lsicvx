@@ -32,10 +32,6 @@ public class sCommonFunc {
     
     public static JavaRDD<Vector>  matrixToRDD( JavaSparkContext sc, Matrix m)
     {
-//        List<Vector> V = 
-        m.rowIter();
-        int[] row; //= m.rowIter().toList();
-        int[] colum;
         List<Vector> V = null;
         
 //        val columns = m.toArray.grouped(m.numRows);
@@ -65,7 +61,7 @@ public class sCommonFunc {
     {
         JavaRDD<Vector> rows = array2RDDVector(sc, input);
 
-        rows.cache();
+//        rows.cache();
         
         // Create a RowMatrix from JavaRDD<Vector>.
         RowMatrix mat = new RowMatrix(rows.rdd());
