@@ -23,6 +23,10 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -210,7 +214,7 @@ TODO:
         {
             for(int j = i+1; j< tmp.length; j++)
             {
-                double value =  pt.paper.Vector.cosSim(tmp[i].toArray(), tmp[j].toArray());
+                double value =  pt.paper.LocalVector.cosSim(tmp[i].toArray(), tmp[j].toArray());
                 ret.add(new Tuple2<>(new Tuple2<>(i,j),value));
                 ret.add(new Tuple2<>(new Tuple2<>(j,i),value));
             }

@@ -2,13 +2,13 @@ package pt.paper;
 
 import java.util.Comparator;
 
-public class Edge implements Comparator<Edge>{
+public class LocalEdge implements Comparator<LocalEdge>{
 
 	int sourcevertex;
     int destinationvertex;
     double weight;
 
-    public Edge(int sourcevertex, int destinationvertex, double weight) {
+    public LocalEdge(int sourcevertex, int destinationvertex, double weight) {
 		super();
 		this.sourcevertex = sourcevertex;
 		this.destinationvertex = destinationvertex;
@@ -16,7 +16,7 @@ public class Edge implements Comparator<Edge>{
 	}
     
     @Override
-    public int compare(Edge edge1, Edge edge2)
+    public int compare(LocalEdge edge1, LocalEdge edge2)
     {
         if (edge1.weight < edge2.weight)
             return -1;

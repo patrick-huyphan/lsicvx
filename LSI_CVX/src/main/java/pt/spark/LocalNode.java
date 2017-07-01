@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 /**
- *  The <tt>Node</tt> class represents an ordered symbol table of generic
+ *  The <tt>LocalNode</tt> class represents an ordered symbol table of generic
  *  key-value pairs.
  *  It supports the usual <em>put</em>, <em>get</em>, <em>contains</em>,
  *  <em>delete</em>, <em>size</em>, and <em>is-empty</em> methods.
@@ -52,14 +52,14 @@ import java.util.TreeMap;
  *  @param <Key> the generic type of keys in this symbol table
  *  @param <Value> the generic type of values in this symbol table
  */
-public class Node<Key extends Comparable<Key>, Value> implements Iterable<Key> {
+public class LocalNode<Key extends Comparable<Key>, Value> implements Iterable<Key> {
 
     private TreeMap<Key, Value> st;
 
     /**
      * Initializes an empty symbol table.
      */
-    public Node() {
+    public LocalNode() {
         st = new TreeMap<Key, Value>();
     }
 
@@ -213,10 +213,10 @@ public class Node<Key extends Comparable<Key>, Value> implements Iterable<Key> {
     }
 
 //    /**
-//     * Unit tests the <tt>Node</tt> data type.
+//     * Unit tests the <tt>LocalNode</tt> data type.
 //     */
 //    public static void main(String[] args) {
-//        Node<String, Integer> st = new Node<String, Integer>();
+//        LocalNode<String, Integer> st = new LocalNode<String, Integer>();
 //        for (int i = 0; !StdIn.isEmpty(); i++) {
 //            String key = StdIn.readString();
 //            st.put(key, i);

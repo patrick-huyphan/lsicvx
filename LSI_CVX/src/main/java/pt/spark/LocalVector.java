@@ -12,25 +12,25 @@ import java.util.List;
  *
  * @author patrick_huy
  */
-public class Vector implements Cloneable, java.io.Serializable {
+public class LocalVector implements Cloneable, java.io.Serializable {
 
     private int n;
     DecimalFormat twoDForm = new DecimalFormat(" 0.0000000");
-    private transient Node<Integer, Double> st;  // the vector, represented by index-value pairs
+    private transient LocalNode<Integer, Double> st;  // the vector, represented by index-value pairs
 
-    public Node<Integer, Double> getNode() {
+    public LocalNode<Integer, Double> getNode() {
         return  st;
     }
     
-    public Vector(int n) {
+    public LocalVector(int n) {
         this.n  = n;
-        this.st = new Node<Integer, Double>();
+        this.st = new LocalNode<Integer, Double>();
     }
 
-    public Vector(double row[]) {
+    public LocalVector(double row[]) {
 //    	System.out.println("1");
 //    	int count = 0;
-        this.st = new Node<Integer, Double>();
+        this.st = new LocalNode<Integer, Double>();
 //        System.out.println("2");
         for(int i = 0; i<row.length; i++)
         {
@@ -44,10 +44,10 @@ public class Vector implements Cloneable, java.io.Serializable {
 //        this.weigh = 0;
     }
     
-    public Vector(List<Double> row) {
+    public LocalVector(List<Double> row) {
 //    	System.out.println("1");
 //    	int count = 0;
-        this.st = new Node<Integer, Double>();
+        this.st = new LocalNode<Integer, Double>();
 //        System.out.println("2");
         for(int i = 0; i<row.size(); i++)
         {
@@ -60,10 +60,10 @@ public class Vector implements Cloneable, java.io.Serializable {
         this.n  = row.size();//count;
 //        this.weigh = 0;
     }
-    public Vector(double row[], Boolean rmz) {
+    public LocalVector(double row[], Boolean rmz) {
 //    	System.out.println("1");
 //    	int count = 0;
-        this.st = new Node<Integer, Double>();
+        this.st = new LocalNode<Integer, Double>();
 //        System.out.println("2");
         for(int i = 0; i<row.length; i++)
         {
@@ -84,9 +84,9 @@ public class Vector implements Cloneable, java.io.Serializable {
     public boolean equals(Object object)
     {
         boolean sameVect = false;
-        if (object != null && object instanceof Vector)
+        if (object != null && object instanceof LocalVector)
         {
-//        	sameVect = isDepen(a, b)Vector((Vector) object);
+//        	sameVect = isDepen(a, b)LocalVector((LocalVector) object);
 //            if(sameSame)
 //            	System.err.println("equals "+ ((SparseVector) object).toString());
         }
@@ -148,7 +148,7 @@ public class Vector implements Cloneable, java.io.Serializable {
         maga = Math.sqrt(maga);
         magb = Math.sqrt(magb);
         double d = dotp / (maga * magb);
-//        System.out.println("paper.Vector.cosSim() "+d +" " + Double.NaN);
+//        System.out.println("paper.LocalVector.cosSim() "+d +" " + Double.NaN);
         return (Double.isNaN(d)) ? 0 : d;
     }
 
@@ -203,7 +203,7 @@ public class Vector implements Cloneable, java.io.Serializable {
 //            }
 //            if(sum ==0)
 //            {
-//                System.out.println("paper.Vector.isDepen() "+i);
+//                System.out.println("paper.LocalVector.isDepen() "+i);
 //                return true;
 //            }
 //        }
@@ -259,7 +259,7 @@ public class Vector implements Cloneable, java.io.Serializable {
      */
     public static double[] proxN1(double[] a, double sic) {
         double[] ret = new double[a.length];
-//        Vector.printV(a, "proxN1 sic=" + sic, true);
+//        LocalVector.printV(a, "proxN1 sic=" + sic, true);
         for (int i = 0; i < a.length; i++) {
                 double value = a[i];
                 
@@ -283,9 +283,9 @@ public class Vector implements Cloneable, java.io.Serializable {
     public static double[] proxN2(double[] a, double sic) {
         double[] ret = copy(a);
 
-        double norm = Vector.norm(a);
+        double norm = LocalVector.norm(a);
         double rate = 1. - 1. / (sic * norm);
-        ret = (norm >= 1. / sic) ? Vector.scale(ret, rate): ret;// .scale(0);//
+        ret = (norm >= 1. / sic) ? LocalVector.scale(ret, rate): ret;// .scale(0);//
 
         return ret;
     }
@@ -495,7 +495,7 @@ public class Vector implements Cloneable, java.io.Serializable {
         
         public static void printV(double[] a, String mess, boolean full)
         {
-            if(!full && Vector.isZeroVector(a))
+            if(!full && LocalVector.isZeroVector(a))
             {
                 System.out.print(mess+" Vec 0");
                 return;
