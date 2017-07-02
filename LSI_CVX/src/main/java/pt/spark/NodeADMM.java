@@ -17,10 +17,19 @@ import pt.spark.LocalVector2D;
  * B(n-k) projection, orthogonal matrix
  * D(n-m) term doc matrix
  */
-public class NodeADMM extends LSI{
+public class NodeADMM {
 //    double [][] D;
 //    double [][] B;
 //    double [][] X;
+    
+        double [][] D;
+    double [][] B;
+    double [][] X;
+    double lambda;
+    static final int MAX_LOOP = 100;
+    int k;// k row in A
+    int m;// m column in A
+    int n;// n row in D
 
     /**
      *
@@ -35,15 +44,30 @@ public class NodeADMM extends LSI{
     double rho;
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
     
-    public NodeADMM(double [][] _Ddata, double [][] _Bdata, double _rho,double _lambda, double e1, double e2) {
-        super(_Ddata, _Bdata, _lambda);
+    public NodeADMM(int id, double [][] _Ddata, double [][] _Bdata, 
+            double[][] Bt,
+            double[][] BtB,
+//            double[][] Am,
+//            double[][] Bm,
+            double[][] AtB,
+            double _rho,double _lambda, 
+            double e1, double e2) {
+
+        n = _Ddata.length;// n row in D
+        m = _Ddata[0].length;// m column in A
+        k = _Bdata[0].length;// k row in A
+        lambda = _lambda;
+        
+        D = _Ddata;
+        B = _Bdata;
+        X = new double[k][m];
         B = LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
-        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
-        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
-        double[][] Am = LocalVector2D.Transpose(BtB);
-        double[][] Bm = LocalVector2D.scale(Am, -1);
-        double[][] AtB = LocalVector2D.mul(Am, Bm);
+//        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
+//        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
+//        double[][] Am = LocalVector2D.Transpose(BtB);
+//        double[][] Bm = LocalVector2D.scale(Am, -1);
+//        double[][] AtB = LocalVector2D.mul(Am, Bm);
         
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(AtB, "AtB");    
@@ -59,7 +83,7 @@ public class NodeADMM extends LSI{
 //        Matrix.printMat(IMtxRho, "IMtxRho");
 //        System.out.println("paper.NodeADMM.<init>() rho "+ _rho);
         
-        for(int i = 0;i<m; i++)
+//        for(int i = 0;i<m; i++)
         {
             rho = _rho;
             boolean stop = false;
@@ -68,7 +92,7 @@ public class NodeADMM extends LSI{
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= LocalVector1D.rVector(k, 0.4);
             double[] u = LocalVector1D.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
-            double[] d=  LocalVector2D.getCol(D, i); //[n]*m
+            double[] d=  LocalVector2D.getCol(D, id); //[n]*m
             double[] Btd= LocalVector2D.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
@@ -113,7 +137,7 @@ public class NodeADMM extends LSI{
             }
             System.out.println(".");
 //            Vector.printV(x, "x_"+ i, true);
-            X = LocalVector2D.updateCol(X, x,i);
+            X = LocalVector2D.updateCol(X, x,id);
         }
 //        Matrix.printMat(X, "return");
     }

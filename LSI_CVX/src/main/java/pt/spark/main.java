@@ -14,6 +14,7 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
 
@@ -53,7 +54,7 @@ public class main {
 
         
         // read output from echelon: 
-        JavaRDD<Tuple2<Integer, Vector>> scc = new sSCC().run(master, rowsListTermDoc, args[0], args[1]);
+        JavaPairRDD<Integer, Vector> scc = new sSCC().run(master, rowsListTermDoc, args[0], args[1]);
 
         
         
@@ -77,7 +78,7 @@ public class main {
         new sQuery().run(master, args[0], args[1]);
     }
     
-    private static LinkedList<Tuple2<Integer,Vector>> getPresentMat( JavaRDD<Tuple2<Integer, Vector>> scc, LinkedList<Tuple2<Integer,Vector>> rowsListDocTerm )
+    private static LinkedList<Tuple2<Integer,Vector>> getPresentMat( JavaPairRDD<Integer, Vector> scc, LinkedList<Tuple2<Integer,Vector>> rowsListDocTerm )
     {
         List<Tuple2<Integer,Vector>> sccL = scc.collect();
         // reduce same term
