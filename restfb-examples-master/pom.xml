@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>restfb</groupId>
-    <artifactId>restfb-example</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>restfb</artifactId>
+    <version>GetData_1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>RestFB examples</name>
+    <name>RestFB GetData</name>
     <description>Source code examples for RestFB usage</description>
     <url>https://github.com/restfb/restfb-examples</url>
 
