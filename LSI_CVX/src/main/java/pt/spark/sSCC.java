@@ -204,14 +204,18 @@ TODO:
         - init U,V,D,X0
       (<r,c>,v[])
          */
-        System.out.println("pt.spark.sSCC.solveADMM() "+curruntI._1);
+        System.out.println("pt.spark.sSCC.solveADMM() "+curruntI._1 +" "+numberOfVertices+"-"+numOfFeature);
         double[][] _A = new double[numberOfVertices][numOfFeature];// rebuild from mat
         
 //        List<Tuple2<Integer, Vector>> matT = mat.collect();
         for(int i = 0; i< mat.size(); i++)
         {
             System.out.println("pt.spark.sSCC.run() driver "+mat.get(i)._1+"\t "+ mat.get(i)._2.toString());
-            System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
+//            System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
+            for(int j = 0; j< mat.get(i)._2.size(); j++)
+            {
+                _A[i][j] = mat.get(i)._2.apply(j);
+            }
         }
         
         List<LocalEdge> _edges = new ArrayList(); //rebuild from e
