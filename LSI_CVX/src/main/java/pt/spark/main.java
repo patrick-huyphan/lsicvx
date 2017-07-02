@@ -47,11 +47,11 @@ public class main {
                 .setMaster(master);
         JavaSparkContext context = new JavaSparkContext(conf);
         
-        JavaPairRDD<Integer, Vector> scc = new sSCC().run(context, termDocData, args[0], args[1]);
+        List<Tuple2<Integer,Vector>> scc = new sSCC().run(context, termDocData, args[0], args[1]);
 
         double[][] rowsListDocTermRd = getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        LinkedList<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(context, docTermData, rowsListDocTermRd, args[0], args[1]);
+        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(context, docTermData, rowsListDocTermRd, args[0], args[1]);
 
         // read output from parse+ sADMM 
         new sQuery().run(context, args[0], args[1]);
@@ -59,9 +59,9 @@ public class main {
         context.close();
     }
     
-    private static double[][] getPresentMat( JavaPairRDD<Integer, Vector> scc, double[][] rowsListDocTerm )
+    private static double[][] getPresentMat( List<Tuple2<Integer,Vector>> scc, double[][] rowsListDocTerm )
     {
-        List<Tuple2<Integer,Vector>> sccL = scc.collect();
+//        List<Tuple2<Integer,Vector>> sccL = scc.collect();
         // reduce same term
         
         //add term to new list

@@ -15,6 +15,8 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.List;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.broadcast.Broadcast;
 //import org.apache.spark.mllib.optimization.tfocs.SolverL1RLS
 
@@ -35,7 +37,7 @@ public class sADMM {
   /**
    * The task body
    */
-  public static LinkedList<Tuple2<Integer,Vector>> run(JavaSparkContext sc, 
+  public static List<Tuple2<Integer, Vector>> run(JavaSparkContext sc, 
           double[][] D, 
           double[][]  B,//rowsListDocTermB, 
           String inputFilePath, 
@@ -130,7 +132,7 @@ public class sADMM {
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
     JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
 
-    matI.mapToPair((Tuple2<Integer, Vector> t) -> {
+      JavaPairRDD<Integer, Vector> retMat =  matI.mapToPair((Tuple2<Integer, Vector> t) -> {
             System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
             return  new Tuple2<>(t._1, 
                 solveADMM(t._1, 
@@ -147,8 +149,14 @@ public class sADMM {
             }
     );
   
+      List<Tuple2<Integer, Vector>> retList =  retMat.collect();
+//      double[][] retArray = new double[k][n];
+//      for(Tuple2<Integer, Vector> r: retList)
+//      {
+//          System.out.println("pt.spark.sADMM.run() "+ r._1+" \n" +r._2.toString());
+//      }
 //  sc.stop();
-  return null;
+  return retList;
   }
 
   
@@ -157,8 +165,6 @@ public class sADMM {
           double[][]_Bdata, 
           double[][]Bt, 
           double[][]BtB, 
-//          double[][]Am, 
-//          double[][]Bm, 
           double[][]AtB, 
           double _lamda,double _rho,double e1 ,double e2)
   {

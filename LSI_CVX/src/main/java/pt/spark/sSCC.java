@@ -49,7 +49,7 @@ public class sSCC {
  * @param outFilePath
  * @return 
  */
-    public static JavaPairRDD<Integer, Vector> run(JavaSparkContext context, 
+    public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context, 
             double[][] A,
             String inputFilePath, 
             String outFilePath) {
@@ -69,7 +69,7 @@ public class sSCC {
             rowsList.add( new Tuple2<>(i,row));
         }
 
-        List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsList);
+        List<LocalEdge> eSet = buildE(rowsList);
 ////TODO: init global data : X, u, xAvr        
         int [] ni = retSize(numberOfVertices, eSet);
 ////        Matrix.printMat(A, "centered");
@@ -125,7 +125,7 @@ public class sSCC {
         Broadcast<Double> lamda2 = context.broadcast(0.01);
         Broadcast<Double> eps_abs = context.broadcast(1e-6);
         Broadcast<Double> eps_rel = context.broadcast(1e-6);
-        Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
+        Broadcast<List<LocalEdge>> E = context.broadcast(eSet);
 
         Broadcast<double[]> _u = context.broadcast(u);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
@@ -169,24 +169,27 @@ public class sSCC {
 
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
 
-        double[][] retArray = new double[numOfFeature][numOfFeature];
+//        double[][] retArray = new double[numOfFeature][numOfFeature];
         
-        ret.foreach((Tuple2<Integer, Vector> t) -> {
-            System.out.println("pt.spark.sSCC.run() return: "+ t._1+ "\n" + t._2.toString());
+        List<Tuple2<Integer, Vector>> retList= ret.collect();
+                
+//        for(Tuple2<Integer, Vector> t: retList) 
+//        {
+//            System.out.println("pt.spark.sSCC.return: "+ t._1+ "\n" + t._2.toString());
 //            System.arraycopy(t._2, 0, retArray[t._1], 0, t._2.size());
-        });
+//        }
         
 //        ret.saveAsObjectFile(outFilePath +"\\scc");
 //        context.stop();
         System.out.println("pt.spark.sSCC.run() end");
-        return ret;
+        return retList;
     }
 
     private static Vector solveADMM(Tuple2<Integer, Vector> curruntI,
             double[][] _A,
             int numberOfVertices,
             int numOfFeature,
-            List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
+            List<LocalEdge> _edges,
             double[][] _X,
             int[]   ni,
             double [] xAvr,
@@ -215,11 +218,11 @@ TODO:
 //            }
 //        }
         
-        List<LocalEdge> _edges = new ArrayList(); //rebuild from e
-        for(int i =0; i< e.size(); i++)
-        {
-            _edges.add(new LocalEdge(e.get(i)._1._1, e.get(i)._1._2, e.get(i)._2));
-        }
+//        List<LocalEdge> _edges = new ArrayList(); //rebuild from e
+//        for(int i =0; i< e.size(); i++)
+//        {
+//            _edges.add(new LocalEdge(e.get(i)._1._1, e.get(i)._1._2, e.get(i)._2));
+//        }
        
         NodeSCC xNode = new NodeSCC(curruntI._1, 
                 _A, 
@@ -232,26 +235,26 @@ TODO:
         return Vectors.dense(xNode.X);
     }
 
-    private static List<Tuple2<Tuple2<Integer, Integer>, Double>> buildE(LinkedList<Tuple2<Integer, Vector>> rowsList) {
-        List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
+    private static List<LocalEdge> buildE(LinkedList<Tuple2<Integer, Vector>> rowsList) {
+        List<LocalEdge> ret = new ArrayList<>();
         for(int i = 0; i< rowsList.size(); i++)
         {
             for(int j = i+1; j< rowsList.size(); j++)
             {
                 double value =  LocalVector1D.cosSim(rowsList.get(i)._2.toArray(), rowsList.get(j)._2.toArray());
-                ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1,rowsList.get(j)._1),value));
-                ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1,rowsList.get(i)._1),value));
+                ret.add(new LocalEdge(rowsList.get(i)._1,rowsList.get(j)._1,value));
+                ret.add(new LocalEdge(rowsList.get(j)._1,rowsList.get(i)._1,value));
             }
         }
         return ret;
     }
-    private static int[] retSize(int numberOfVertices, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges)
+    private static int[] retSize(int numberOfVertices, List<LocalEdge> edges)
     {
         int [] ret = new int[numberOfVertices];
-        for(Tuple2<Tuple2<Integer, Integer>, Double> e: edges)
+        for(LocalEdge e: edges)
         {
-            ret[e._1._1] = ret[e._1._1]+1;
-            ret[e._1._2] = ret[e._1._2]+1;
+            ret[e.sourcevertex] = ret[e.sourcevertex]+1;
+            ret[e.destinationvertex] = ret[e.destinationvertex]+1;
         }
         return ret;
     }
