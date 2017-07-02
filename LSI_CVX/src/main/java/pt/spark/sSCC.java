@@ -171,14 +171,15 @@ public class sSCC {
         );
 
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
+
+        double[][] retArray = new double[numOfFeature][numOfFeature];
         
-//        ret.reduce((Tuple2<Integer, Vector> v1, Tuple2<Integer, Vector> v2) -> {
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        double[][] ret2 = new double[numOfFeature][numOfFeature];
+        ret.foreach((Tuple2<Integer, Vector> t) -> {
+            System.out.println("pt.spark.sSCC.run() return: "+ t._1+ "\n" + t._2.toString());
+            System.arraycopy(t._2, 0, retArray[t._1], 0, t._2.size());
+        });
         
-//        return ret2;
-//        });
-        ret.saveAsObjectFile(outFilePath +"\\scc");
+//        ret.saveAsObjectFile(outFilePath +"\\scc");
         context.stop();
         System.out.println("pt.spark.sSCC.run() end");
         return ret;
