@@ -100,7 +100,7 @@ public class sSCC {
                 .setMaster(master);
         JavaSparkContext context = new JavaSparkContext(conf);
 
-        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
+
         
 //        matI.foreach((Tuple2<Integer, Vector> t) -> {
 //            System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
@@ -123,7 +123,7 @@ public class sSCC {
         Broadcast<Double> eps_abs = context.broadcast(1e-6);
         Broadcast<Double> eps_rel = context.broadcast(1e-6);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
+        
 
 
         Broadcast<double[]> _u = context.broadcast(u);
@@ -134,6 +134,9 @@ public class sSCC {
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         
+        Broadcast<LinkedList<Tuple2<Integer, Vector>>> mat = context.broadcast(rowsList);
+        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
+//        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
         matI.cache();
         
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
@@ -163,7 +166,7 @@ public class sSCC {
     }
 
     private static Vector solveADMM(Tuple2<Integer, Vector> curruntI,
-            JavaRDD<Tuple2<Integer, Vector>> mat,
+            LinkedList<Tuple2<Integer, Vector>> mat,
             int numberOfVertices,
             int numOfFeature,
             List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
@@ -183,10 +186,10 @@ TODO:
         System.out.println("pt.spark.sSCC.solveADMM() "+curruntI._1);
         double[][] _A = new double[numberOfVertices][numOfFeature];// rebuild from mat
         
-        List<Tuple2<Integer, Vector>> matT = mat.collect();
-        for(int i = 0; i< matT.size(); i++)
+//        List<Tuple2<Integer, Vector>> matT = mat.collect();
+        for(int i = 0; i< mat.size(); i++)
         {
-            System.arraycopy(matT.get(i)._2, 0, _A[matT.get(i)._1], matT.get(i)._1*matT.get(i)._2.size(), matT.get(i)._2.size());
+            System.arraycopy(mat.get(i)._2, 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
         }
         
         List<LocalEdge> _edges = new ArrayList(); //rebuild from e
