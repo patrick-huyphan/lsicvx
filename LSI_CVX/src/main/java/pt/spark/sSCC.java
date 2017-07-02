@@ -83,6 +83,11 @@ public class sSCC {
 //            xAvr[i] = pt.paper.LocalVector1D.avr(pt.paper.LocalVector2D.getCol(A, i));
 //        }
 
+
+        for(Tuple2<Integer, Vector> mi: rowsList)
+        {
+            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
+        }
         List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsList);
         
 //    String master = "local[*]";
@@ -96,10 +101,7 @@ public class sSCC {
 
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
-        for(Tuple2<Integer, Vector> mi: matI.collect())
-        {
-            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
-        }
+
         
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
