@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
@@ -84,10 +85,10 @@ public class sSCC {
 //        }
 
 
-        for(Tuple2<Integer, Vector> mi: rowsList)
-        {
-            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
-        }
+//        for(Tuple2<Integer, Vector> mi: rowsList)
+//        {
+//            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
+//        }
         List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsList);
         
 //    String master = "local[*]";
@@ -101,7 +102,9 @@ public class sSCC {
 
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
-
+        matI.foreach((Tuple2<Integer, Vector> t) -> {
+            System.out.println("pt.spark.sSCC.run() "+t._1+"\t "+ t._2.toString());
+        });
         
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
