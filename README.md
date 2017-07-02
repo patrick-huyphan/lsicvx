@@ -79,4 +79,15 @@ http://snap.stanford.edu/snapvx/developer_doc.pdf
 http://di.eteri.ch/projects/admm_paper.pdf
 http://www.programcreek.com/java-api-examples/index.php?api=org.apache.spark.broadcast.Broadcast
 
-Author: Patrick HuyPhan(huyphan.aj@gmail.com)
+# Main content prj
+- Paper: full flow in single processing
+- LSI_CVX: full flow in parallel processing
+
+
+# Un-use project
+- Scc
+- ADMM
+- Parse data
+- Query
+# Author:
+Patrick HuyPhan(huyphan.aj@gmail.com)
