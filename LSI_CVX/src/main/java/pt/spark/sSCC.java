@@ -102,9 +102,7 @@ public class sSCC {
 
 
         
-//        matI.foreach((Tuple2<Integer, Vector> t) -> {
-//            System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
-//        });
+
         
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
@@ -137,8 +135,11 @@ public class sSCC {
         Broadcast<LinkedList<Tuple2<Integer, Vector>>> mat = context.broadcast(rowsList);
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
 //        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
-        matI.cache();
-        
+//        matI.cache();
+        matI.foreach((Tuple2<Integer, Vector> t) -> {
+            System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
+        });
+        System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
         {
             System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
@@ -151,6 +152,7 @@ public class sSCC {
                         _X.value(),
                         _ni.value(),
                         _xAvr.value(),
+                        _u.value(),
                         rho0.value(), 
                         lamda.value(), 
                         lamda2.value(), 
@@ -173,6 +175,7 @@ public class sSCC {
             double[][] _X,
             int[]   ni,
             double [] xAvr,
+            double [] ui,
             Double rho0,
             Double lamda,
             Double lamda2,
@@ -189,7 +192,7 @@ TODO:
 //        List<Tuple2<Integer, Vector>> matT = mat.collect();
         for(int i = 0; i< mat.size(); i++)
         {
-            System.arraycopy(mat.get(i)._2, 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
+            System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
         }
         
         List<LocalEdge> _edges = new ArrayList(); //rebuild from e
