@@ -96,6 +96,11 @@ public class sSCC {
 
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
+        for(Tuple2<Integer, Vector> mi: matI.collect())
+        {
+            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
+        }
+        
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
         
@@ -123,6 +128,9 @@ public class sSCC {
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
+        
+        matI.cache();
+        
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) -> new Tuple2<>(t1._1, 
                 solveADMM(t1, 
                         mat.value(),
@@ -164,7 +172,7 @@ TODO:
         - init U,V,D,X0
       (<r,c>,v[])
          */
-        System.out.println("pt.spark.sSCC.solveADMM()");
+        System.out.println("pt.spark.sSCC.solveADMM() "+curruntI._1);
         double[][] _A = new double[numberOfVertices][numOfFeature];// rebuild from mat
         
         List<Tuple2<Integer, Vector>> matT = mat.collect();
