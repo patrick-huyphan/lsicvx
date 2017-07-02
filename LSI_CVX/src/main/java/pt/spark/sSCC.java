@@ -138,7 +138,23 @@ public class sSCC {
 //        matI.cache();
         matI.foreach((Tuple2<Integer, Vector> t) -> {
             
-            System.out.println("pt.spark.sSCC.run() driver "+t._1+" "+lamda.value()+"\n "+ t._2.toString());
+//            System.out.println("pt.spark.sSCC.run() driver "+t._1+" "+lamda.value()+"\n "+ t._2.toString());
+
+                solveADMM(t, 
+                        mat.value(),
+                        _numberOfVertices.value(),
+                        _numOfFeature.value(),
+                        E.value(), 
+                        _X.value(),
+                        _ni.value(),
+                        _xAvr.value(),
+                        _u.value(),
+                        rho0.value(), 
+                        lamda.value(), 
+                        lamda2.value(), 
+                        eps_abs.value(), 
+                        eps_rel.value());//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//                    }
         });
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
