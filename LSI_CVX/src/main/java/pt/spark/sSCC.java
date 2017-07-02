@@ -159,23 +159,22 @@ public class sSCC {
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
         {
-            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
-            return new Tuple2<>(t1._1,t1._2);
-//                    new Tuple2<>(t1._1, 
-//                solveADMM(t1, 
-//                        mat.value(),
-//                        _numberOfVertices.value(),
-//                        _numOfFeature.value(),
-//                        E.value(), 
-//                        _X.value(),
-//                        _ni.value(),
-//                        _xAvr.value(),
-//                        _u.value(),
-//                        rho0.value(), 
-//                        lamda.value(), 
-//                        lamda2.value(), 
-//                        eps_abs.value(), 
-//                        eps_rel.value()));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
+            return  new Tuple2<>(t1._1, 
+                solveADMM(t1, 
+                        mat.value(),
+                        _numberOfVertices.value(),
+                        _numOfFeature.value(),
+                        E.value(), 
+                        _X.value(),
+                        _ni.value(),
+                        _xAvr.value(),
+                        _u.value(),
+                        rho0.value(), 
+                        lamda.value(), 
+                        lamda2.value(), 
+                        eps_abs.value(), 
+                        eps_rel.value()));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                     }
         );
 
@@ -211,6 +210,7 @@ TODO:
 //        List<Tuple2<Integer, Vector>> matT = mat.collect();
         for(int i = 0; i< mat.size(); i++)
         {
+            System.out.println("pt.spark.sSCC.run() driver "+mat.get(i)._1+"\t "+ mat.get(i)._2.toString());
             System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
         }
         
