@@ -56,6 +56,7 @@ public class sSCC {
 
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
+        System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
         
 //  double rho0 = 0.8;
@@ -136,6 +137,7 @@ public class sSCC {
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
         
         context.stop();
+        System.out.println("pt.spark.sSCC.run() end");
         return ret;
     }
 
@@ -157,6 +159,7 @@ TODO:
         - init U,V,D,X0
       (<r,c>,v[])
          */
+        System.out.println("pt.spark.sSCC.solveADMM()");
         double[][] _A = new double[numberOfVertices][numOfFeature];// rebuild from mat
         
         List<Tuple2<Integer, Vector>> matT = mat.collect();

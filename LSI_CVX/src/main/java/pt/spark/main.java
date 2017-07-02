@@ -35,7 +35,7 @@ public class main {
 
         // read output from parse data
 //    new sEchelon().run(master, args[0],args[1]);
-        double[][] docTermData = pt.paper.CSVFile.readMatrixData("data.csv");//args[0]);
+        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
         
         //TODO: parallel echelon 
         double[][] echelon = LocalVector2D.echelon(docTermData);//
