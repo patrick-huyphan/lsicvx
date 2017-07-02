@@ -45,40 +45,12 @@ public class sSCC {
             LinkedList<Tuple2<Integer, Vector>> rowsList, 
             String inputFilePath, 
             String outFilePath) {
-//    String master = "local[*]";
-//    /*
-//     * Initialises a Spark context.
-//     */
-        SparkConf conf = new SparkConf()
-                .setAppName(sSCC.class.getName())
-                .setMaster(master);
-        JavaSparkContext context = new JavaSparkContext(conf);
-
-        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
-        System.out.println("pt.spark.sSCC.run()");
-//        CoordinateMatrix Cm = null;
-        
-//  double rho0 = 0.8;
-//  double lamda = 0.6;
-//  double lamda2 = 0.6;
-//  double eps_abs= 1e-6;
-//  double eps_rel= 1e-6;
-        // (<r,c>,w)
-        List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsList);
 
-        Broadcast<Double> rho0 = context.broadcast(0.8);
-        Broadcast<Double> lamda = context.broadcast(0.6);
-        Broadcast<Double> lamda2 = context.broadcast(0.01);
-        Broadcast<Double> eps_abs = context.broadcast(1e-6);
-        Broadcast<Double> eps_rel = context.broadcast(1e-6);
-        Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
-
-        int numberOfVertices = (int)matI.count();
-        int numOfFeature = matI.first()._2.size();
+        int numberOfVertices = (int)rowsList.size();
+        int numOfFeature = rowsList.get(0)._2.size();
 ////TODO: init global data : X, u, xAvr        
-                int [] ni = retSize(numberOfVertices);
+        int [] ni = retSize(numberOfVertices);
 ////        Matrix.printMat(A, "centered");
 //        //Init
         double [][] X = new double[numberOfVertices][numOfFeature];
@@ -110,6 +82,39 @@ public class sSCC {
 //            }
 //            xAvr[i] = pt.paper.LocalVector1D.avr(pt.paper.LocalVector2D.getCol(A, i));
 //        }
+
+        List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsList);
+        
+//    String master = "local[*]";
+//    /*
+//     * Initialises a Spark context.
+//     */
+        SparkConf conf = new SparkConf()
+                .setAppName(sSCC.class.getName())
+                .setMaster(master);
+        JavaSparkContext context = new JavaSparkContext(conf);
+
+        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
+        
+        System.out.println("pt.spark.sSCC.run()");
+//        CoordinateMatrix Cm = null;
+        
+//  double rho0 = 0.8;
+//  double lamda = 0.6;
+//  double lamda2 = 0.6;
+//  double eps_abs= 1e-6;
+//  double eps_rel= 1e-6;
+        // (<r,c>,w)
+
+
+        Broadcast<Double> rho0 = context.broadcast(0.8);
+        Broadcast<Double> lamda = context.broadcast(0.6);
+        Broadcast<Double> lamda2 = context.broadcast(0.01);
+        Broadcast<Double> eps_abs = context.broadcast(1e-6);
+        Broadcast<Double> eps_rel = context.broadcast(1e-6);
+        Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
+        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
+
 
         Broadcast<double[]> _u = context.broadcast(u);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
