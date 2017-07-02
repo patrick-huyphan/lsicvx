@@ -36,7 +36,7 @@ public class main {
         // read output from parse data
 //    new sEchelon().run(master, args[0],args[1]);
         double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
-        
+//        double[][] docTermData = pt.paper.CSVFile.readMatrixData("../data/data.csv");
         //TODO: parallel echelon 
         double[][] echelon = LocalVector2D.echelon(docTermData);//
         
@@ -47,8 +47,8 @@ public class main {
         
         LinkedList<Tuple2<Integer,Vector>> rowsListTermDoc = new LinkedList<>();
         for (int i = 0; i < termDocData.length; i++) {
-            Vector currentRow = Vectors.dense(termDocData[i]);
-            rowsListTermDoc.add( new Tuple2<>(i,currentRow));
+            Vector row = Vectors.dense(termDocData[i]);
+            rowsListTermDoc.add( new Tuple2<>(i,row));
         }
 
         
@@ -65,8 +65,8 @@ public class main {
         
         LinkedList<Tuple2<Integer,Vector>> rowsListDocTerm = new LinkedList<>();
         for (int i = 0; i < docTermData.length; i++) {
-            Vector currentRow = Vectors.dense(docTermData[i]);
-            rowsListDocTerm.add(new Tuple2<>(i,currentRow));
+            Vector row = Vectors.dense(docTermData[i]);
+            rowsListDocTerm.add(new Tuple2<>(i,row));
         }
 
         LinkedList<Tuple2<Integer,Vector>> rowsListDocTermRd = getPresentMat(scc, rowsListDocTerm);//new double[docTermData.length][docTermData[0].length];
