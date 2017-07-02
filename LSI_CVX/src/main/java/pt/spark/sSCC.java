@@ -102,9 +102,9 @@ public class sSCC {
 
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsList);
         
-        matI.foreach((Tuple2<Integer, Vector> t) -> {
-            System.out.println("pt.spark.sSCC.run() "+t._1+"\t "+ t._2.toString());
-        });
+//        matI.foreach((Tuple2<Integer, Vector> t) -> {
+//            System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
+//        });
         
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
@@ -136,7 +136,10 @@ public class sSCC {
         
         matI.cache();
         
-        JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) -> new Tuple2<>(t1._1, 
+        JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
+        {
+            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
+            return new Tuple2<>(t1._1, 
                 solveADMM(t1, 
                         mat.value(),
                         _numberOfVertices.value(),
@@ -149,8 +152,8 @@ public class sSCC {
                         lamda.value(), 
                         lamda2.value(), 
                         eps_abs.value(), 
-                        eps_rel.value()))//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        );
+                        eps_rel.value()));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    });
 
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
         
