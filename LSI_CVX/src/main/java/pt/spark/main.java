@@ -35,8 +35,12 @@ public class main {
 
         // read output from parse data
 //    new sEchelon().run(master, args[0],args[1]);
-        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
-        double[][] termDocData = LocalVector2D.Transpose(docTermData);
+        double[][] docTermData = pt.paper.CSVFile.readMatrixData("data.csv");//args[0]);
+        
+        //TODO: parallel echelon 
+        double[][] echelon = LocalVector2D.echelon(docTermData);//
+        
+        double[][] termDocData = LocalVector2D.Transpose(echelon);
 
 //        sCommonFunc.loadDenseMatrix(termDocData);
 //        sCommonFunc.loadDenseMatrix(docTermData);
@@ -47,6 +51,7 @@ public class main {
             rowsListTermDoc.add( new Tuple2<>(i,currentRow));
         }
 
+        
         // read output from echelon: 
         JavaRDD<Tuple2<Integer, Vector>> scc = new sSCC().run(master, rowsListTermDoc, args[0], args[1]);
 
