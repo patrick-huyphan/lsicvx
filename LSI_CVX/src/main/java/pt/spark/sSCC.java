@@ -137,28 +137,31 @@ public class sSCC {
 //        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
 //        matI.cache();
         matI.foreach((Tuple2<Integer, Vector> t) -> {
-            System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
+            
+            System.out.println("pt.spark.sSCC.run() driver "+t._1+" "+lamda.value()+"\n "+ t._2.toString());
         });
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaRDD<Tuple2<Integer, Vector>> ret = matI.map((Tuple2<Integer, Vector> t1) ->
         {
             System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
-            return new Tuple2<>(t1._1, 
-                solveADMM(t1, 
-                        mat.value(),
-                        _numberOfVertices.value(),
-                        _numOfFeature.value(),
-                        E.value(), 
-                        _X.value(),
-                        _ni.value(),
-                        _xAvr.value(),
-                        _u.value(),
-                        rho0.value(), 
-                        lamda.value(), 
-                        lamda2.value(), 
-                        eps_abs.value(), 
-                        eps_rel.value()));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                    });
+            return new Tuple2<>(t1._1,t1._2);
+//                    new Tuple2<>(t1._1, 
+//                solveADMM(t1, 
+//                        mat.value(),
+//                        _numberOfVertices.value(),
+//                        _numOfFeature.value(),
+//                        E.value(), 
+//                        _X.value(),
+//                        _ni.value(),
+//                        _xAvr.value(),
+//                        _u.value(),
+//                        rho0.value(), 
+//                        lamda.value(), 
+//                        lamda2.value(), 
+//                        eps_abs.value(), 
+//                        eps_rel.value()));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+        );
 
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
         
