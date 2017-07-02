@@ -43,13 +43,13 @@ public class sSCC {
 
 /**
  * 
- * @param master
+ * @param context
  * @param termDocData
  * @param inputFilePath
  * @param outFilePath
  * @return 
  */
-    public static JavaPairRDD<Integer, Vector> run(String master, 
+    public static JavaPairRDD<Integer, Vector> run(JavaSparkContext context, 
             double[][] A,
             String inputFilePath, 
             String outFilePath) {
@@ -115,10 +115,7 @@ public class sSCC {
 //    /*
 //     * Initialises a Spark context.
 //     */
-        SparkConf conf = new SparkConf()
-                .setAppName(sSCC.class.getName())
-                .setMaster(master);
-        JavaSparkContext context = new JavaSparkContext(conf);
+
         
         System.out.println("pt.spark.sSCC.run()");
 //        CoordinateMatrix Cm = null;
@@ -176,11 +173,11 @@ public class sSCC {
         
         ret.foreach((Tuple2<Integer, Vector> t) -> {
             System.out.println("pt.spark.sSCC.run() return: "+ t._1+ "\n" + t._2.toString());
-            System.arraycopy(t._2, 0, retArray[t._1], 0, t._2.size());
+//            System.arraycopy(t._2, 0, retArray[t._1], 0, t._2.size());
         });
         
 //        ret.saveAsObjectFile(outFilePath +"\\scc");
-        context.stop();
+//        context.stop();
         System.out.println("pt.spark.sSCC.run() end");
         return ret;
     }

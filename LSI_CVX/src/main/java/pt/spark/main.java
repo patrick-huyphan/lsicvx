@@ -40,15 +40,23 @@ public class main {
         
         double[][] termDocData = LocalVector2D.Transpose(echelon);
       
-        // read output from echelon: 
-        JavaPairRDD<Integer, Vector> scc = new sSCC().run(master, termDocData, args[0], args[1]);
+        
+        // read output from echelon:         
+        SparkConf conf = new SparkConf()
+                .setAppName(sSCC.class.getName())
+                .setMaster(master);
+        JavaSparkContext context = new JavaSparkContext(conf);
+        
+        JavaPairRDD<Integer, Vector> scc = new sSCC().run(context, termDocData, args[0], args[1]);
 
         double[][] rowsListDocTermRd = getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        LinkedList<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(master, docTermData, rowsListDocTermRd, args[0], args[1]);
+        LinkedList<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(context, docTermData, rowsListDocTermRd, args[0], args[1]);
 
         // read output from parse+ sADMM 
-        new sQuery().run(master, args[0], args[1]);
+        new sQuery().run(context, args[0], args[1]);
+        
+        context.close();
     }
     
     private static double[][] getPresentMat( JavaPairRDD<Integer, Vector> scc, double[][] rowsListDocTerm )

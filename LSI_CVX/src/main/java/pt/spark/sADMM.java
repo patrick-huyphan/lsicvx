@@ -35,7 +35,7 @@ public class sADMM {
   /**
    * The task body
    */
-  public static LinkedList<Tuple2<Integer,Vector>> run(String master, 
+  public static LinkedList<Tuple2<Integer,Vector>> run(JavaSparkContext sc, 
           double[][] D, 
           double[][]  B,//rowsListDocTermB, 
           String inputFilePath, 
@@ -75,10 +75,10 @@ public class sADMM {
         double[][] Bm = LocalVector2D.scale(Am, -1);
         double[][] AtB = LocalVector2D.mul(Am, Bm);
     
-    SparkConf conf = new SparkConf()
-        .setAppName(sADMM.class.getName())
-        .setMaster(master);
-    JavaSparkContext sc = new JavaSparkContext(conf);
+//    SparkConf conf = new SparkConf()
+//        .setAppName(sADMM.class.getName())
+//        .setMaster(master);
+//    JavaSparkContext sc = new JavaSparkContext(conf);
 
     /*
      * Performs a work count sequence of tasks and prints the output with a logger.
@@ -147,7 +147,7 @@ public class sADMM {
             }
     );
   
-  sc.stop();
+//  sc.stop();
   return null;
   }
 

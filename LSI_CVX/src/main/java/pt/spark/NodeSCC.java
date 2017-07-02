@@ -81,7 +81,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
 */
                 V= updateV(V, U, id);
                 U= updateU(U, V);
-
+                System.out.print(".");    
                 if((loop>1)&&(checkStop(X0, U0, V0, V)))// || (stop == true)))
                 {
                     System.out.println(id+" NodeSCC STOP at "+loop);
@@ -311,7 +311,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
 //            System.out.println("paper.AMA.buildUV() "+e.sourcevertex+" "+e.destinationvertex);
             if(e.sourcevertex == i || e.destinationvertex == i)
             {
-                System.out.println((e.sourcevertex+1)+":"+(e.destinationvertex+1));
+//                System.out.println((e.sourcevertex+1)+":"+(e.destinationvertex+1));
                 //ik
                 double[] value1 = LocalVector2D.getRow(A, e.sourcevertex) ;//new double[dataLength];
                 ret.add(new EdgeNode(e.sourcevertex, e.destinationvertex, value1));

@@ -33,7 +33,7 @@ public class sQuery {
   /**
    * The task body
    */
-  public void run(String master, String inputFilePath, String outFilePath) {
+  public void run(JavaSparkContext context, String inputFilePath, String outFilePath) {
     /*
      * This is the address of the Spark cluster. We will call the task from WordCountTest and we
      * use a local standalone cluster. [*] means use all the cores available.
@@ -43,10 +43,10 @@ public class sQuery {
 //    /*
 //     * Initialises a Spark context.
 //     */
-    SparkConf conf = new SparkConf()
-        .setAppName(sQuery.class.getName())
-        .setMaster(master);
-    JavaSparkContext context = new JavaSparkContext(conf);
+//    SparkConf conf = new SparkConf()
+//        .setAppName(sQuery.class.getName())
+//        .setMaster(master);
+//    JavaSparkContext context = new JavaSparkContext(conf);
 
     /*
      * read matrix from file
@@ -71,6 +71,6 @@ public class sQuery {
   RowMatrix mat = new RowMatrix(rows.rdd());
   
   
-  context.stop();
+//  context.stop();
   }
 }
