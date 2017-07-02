@@ -53,46 +53,11 @@ public class NodeSCC{  //extends Clustering{
 ////        Matrix.printMat(A, "centered");
 //        //Init
         X = _X;//new double[numOfFeature];
-//        for(int i = 0; i< numOfFeature; i++)
-//        {
-//            double x = 1- ((lambda2)/LocalVector1D.norm(LocalVector2D.getCol(A, i)));
-//            x = (x>0)? x:0;
-//            //update by column i
-//            for(int j = 0 ; j< numberOfVertices; j++)
-//            {
-//                X[j][i] = x*A[j][i];
-//            }
-//        }
-//        
-//        double[] u = new double[numOfFeature];
-//        for(int i = 0; i< numOfFeature; i++)
-//        {
-//            u[i] = LocalVector1D.norm(LocalVector2D.getCol(X, i));
-//        }
-//        u = LocalVector1D.scale(u, lambda2);        
-//        double[] xAvr = new double[numOfFeature];
-//        for(int i = 0; i< numOfFeature; i++)
-//        {
-//            double x = 1- (u[i]/LocalVector1D.norm(LocalVector2D.getCol(A, i)));
-//            x = (x>0)? x:0;
-//            for(int j = 0 ; j< numberOfVertices; j++)
-//            {
-//                X[j][i] = x*A[j][i];
-//            }
-//            xAvr[i] = LocalVector1D.avr(LocalVector2D.getCol(A, i));
-//        }
         
 //        for(int i = 0; i< numberOfVertices; i++)
         {
             rho = rho2;
             double[] X0;
-//            Matrix.printMat(X, "NodeSCC x "+i);
-            
-//            ListENode V0;
-//            ListENode U0;
-//            ListENode V = initV2(i);
-//            ListENode U = initU2(i);
-//            ListENode D;
             
             List<EdgeNode> V0;
             List<EdgeNode> U0;
@@ -100,9 +65,6 @@ public class NodeSCC{  //extends Clustering{
             List<EdgeNode> V = initV(id);
             List<EdgeNode> D;
             
-            
-
-
             int loop = 0;
             stop = false;
             while(loop<MAX_LOOP)
@@ -122,72 +84,16 @@ TODO: review to update related V and U, increase related node, expand cluster of
 
                 if((loop>1)&&(checkStop(X0, U0, V0, V)))// || (stop == true)))
                 {
-//                    System.out.println(i+" NodeSCC STOP at "+loop);
+                    System.out.println(id+" NodeSCC STOP at "+loop);
                     break;
                 }
                 loop++;
             }
 //            Matrix.printMat(X, "NodeSCC x "+i);
         }
-        
         LocalVector1D.printV(X, "SCC x", true);
     }
     
-
-//    @Override
-//    public final void getCluster(FileWriter fw)
-//    {
-//        int  ret[] = new int[numberOfVertices];
-//        HashMap<Integer, Integer> xxx = new HashMap<>();
-////        List<Integer>  intdex = new ArrayList<Integer>();
-//    	for(int i = 0; i<numberOfVertices; i++)
-//    	{
-//            if(!xxx.containsKey(i))
-//            {
-//                xxx.put(i, i);
-//                for(int j = i+1; j<numberOfVertices; j++)
-//                {
-//                    if(!xxx.containsKey(j))
-//                        if((LocalVector1D.isSameVec(LocalVector2D.getRow(X, i),LocalVector2D.getRow(X, j))))
-////                        if((Vector.isDepen(Matrix.getRow(X, i),Matrix.getRow(X, j))))    
-//                        {
-////                                System.out.println("same: "+i+"-"+j);
-//                                xxx.put(j, i);
-//                        }
-//                }
-//            }
-//    	}
-////    	count--;
-////    	System.out.println("Num of sub mat: "+intdex.size());
-//    	
-//    	for(int i = 0; i<numberOfVertices; i++)
-//    	{
-//            List<Integer> sub = new ArrayList<Integer>();
-//            for(int j = i; j<numberOfVertices; j++)
-//            {
-//                if(xxx.get(j)==i)
-//                { 
-//                    sub.add(j+1);
-//                }
-//            }
-//            if(!sub.isEmpty())
-//                cluster.add(sub);
-//    	}
-////    	cluster.add(intdex);
-////Test    
-//        System.out.println("paper.AMA.getCluster() "+cluster.size());
-//    	for(int i = 0; i<cluster.size(); i++)
-//    	{
-//    		List<Integer> sub = cluster.get(i);
-//    		System.out.print("Cluster "+ i+":\t");
-//    		for(int j = 0; j<sub.size(); j++)
-//    		{
-//    			System.out.print(sub.get(j) +"\t");
-//    		}
-//                System.out.println("");
-//    	}
-//
-//    }
        
 //    private int[] retSize()
 //    {
@@ -231,31 +137,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
         return X;
     }
 
-//    private double[][] updateX(ListENode D, int[] n, int i)
-//    {
-////        for(int i = 0; i<numberOfVertices; i++)
-//        {
-//            double[] sumd = new double[numOfFeature];
-//            
-//            for(int[] d:D.keySet())
-//            {
-//                if(d[0] == i)
-//                {
-////                    System.out.println("paper.NodeSCC.updateX() "+i);
-//                    sumd= LocalVector1D.scale(LocalVector1D.plus(sumd,D.get(d[0], d[1])), rho/2);
-//                }
-//            }
-////            sumd = Vector.scale(sumd, 1/n[i]);
-////            Vector.printV(sumd, "sum "+i, true);
-//            X[i] = LocalVector1D.plus(X[i], LocalVector1D.scale(sumd, n[i]));
-////            for(int j = 0; j<numOfFeature; j++)
-////            {
-//////                X[i][j] = (A[i][j] + (rho*sumd[j]))/(1+(rho*n[i])); 
-////                X[i][j] = X[i][j]+sumd[j];///(1+rho)); ///(rho*D.size()
-////            }   
-//        }
-//        return X;
-//    }
     /*
      * De = A - Be + Ce
      */
@@ -267,7 +148,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
 //        for(EdgeNode e: V)
         for(int k = 0; k< V.size(); k++)
         {
-
             EdgeNode v = V.get(k);
             if(v.source == i)
             {
@@ -283,22 +163,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         return D;
     }
     
-//    private ListENode calcD(double [][] X0,ListENode V, ListENode U, int i) //(B-C)
-//    {
-//        ListENode D = new ListENode();
-//        for(int[] e: V.keySet())
-//        {
-//            System.out.println("paper.SCC.calcD() "+ e[0]+" "+ e[1]);
-//            double[] v = V.get(e[0],e[1]);
-//            double[] d = Vector.plus(Matrix.getRow(X0, e[0]), Vector.scale(V.get(e),-1));
-//            d = Vector.plus(d,U.get(e[0],e[1]));//        Vector.plus(d, U.get(V.indexOf(e)).relatedValue);
-////            d = Vector.plus(Matrix.getRow(X0, e.source), Vector.scale(e.relatedValue,-1));
-//            D.put(e, d);//set(e, d);
-//        }
-//        return D;
-//    }
-
-    
+   
     //Ue = Ue + (Ai - Ve)
     private List<EdgeNode> updateU(List<EdgeNode> U, List<EdgeNode> V) //C
     {
@@ -318,21 +183,11 @@ TODO: review to update related V and U, increase related node, expand cluster of
         }
         return ret;        
     }
-//    private ListENode updateU(ListENode U, ListENode V, int i) //C
-//    {
-//        ListENode ret = new ListENode();
-//        for(int[] key: U.keySet())
-//        {
-//            double[] data = Vector.plus(Matrix.getRow((i==key[0])?X:A, key[0]),Vector.scale(V.get(key[0], key[1]) , -1));
-//            data = Vector.plus(U.get(key[0], key[1]), data);
-//            ret.put(key[0], key[1], data);
-//        }
-//        return ret;        
-//    }        
+      
     private List<EdgeNode> initU(int i)
     {
         List<EdgeNode> ret = new ArrayList<>();
-        HashMap<String, double[]> a = new HashMap<>();
+//        HashMap<String, double[]> a = new HashMap<>();
 //        if(null!= a.put( "s-d", 1.))
 //                    System.out.println("paper.NodeSCC.initU() insert ok "+i);
         
@@ -359,24 +214,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         return ret;        
     }
     
-//    private ListENode initU2(int i)
-//    {
-//        ListENode ret = new ListENode();
-//        
-//        for(Edge e:edges)
-//        {
-//            if(e.sourcevertex == i || e.destinationvertex == i)
-//            {
-//            //ik
-//                ret.put(e.sourcevertex, e.destinationvertex, new double[numOfFeature]);
-//            //ki
-//                ret.put(e.destinationvertex, e.sourcevertex, new double[numOfFeature]);
-//            }
-//        }
-//        for(int[] key: ret.keySet())
-//            System.out.println("paper.SCC.initU2() " + key[0]+" "+key[1]);
-//        return ret;        
-//    }
+
     private List<EdgeNode> updateV(List<EdgeNode> V, List<EdgeNode> U, int i) //B
     {
 //        System.out.println("paper.AMA.updateV()");
@@ -462,41 +300,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         }
         return ret;        
     }
-//    private ListENode updateV(ListENode V, ListENode U, int i) //B
-//    {
-////        System.out.println("paper.AMA.updateV()");
-//        ListENode ret = new ListENode();
-//        for(Edge e: edges)
-//        {
-//            if(e.sourcevertex == i || e.destinationvertex==i)
-//            {
-//                double[] Bi = V.get(e.sourcevertex, e.destinationvertex);//vik
-//                double[] Bk = V.get(e.destinationvertex, e.sourcevertex);//vki
-//                double[] Ci = U.get(e.sourcevertex, e.destinationvertex);//uik
-//                double[] Ck = U.get(e.destinationvertex, e.sourcevertex);//uki
-//
-//                double[] Ai =LocalVector2D.getCol(X, e.sourcevertex); //n
-//                double[] Ak =LocalVector2D.getCol(X, e.destinationvertex);
-//
-//                double[] AiCi = Vector.plus(Ai,Ci); // u get ik
-//                double[] AkCk = Vector.plus(Ak,Ck); // u get ki
-//                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.plus(Bi, Vector.scale(Bk, -1)),Vector.plus(Ai, Vector.scale(Ak, -1))))/rho));
-//
-//                double theta = (0.5>n)? 0.5:n; //max
-//
-//    //            System.out.println("paper.NodeSCC.updateV() "+ theta);
-//
-//                double[] b_ik = Vector.plus(Vector.scale(AiCi, theta), Vector.scale(AkCk, 1- theta));
-//                ret.put(e.sourcevertex, e.destinationvertex, b_ik);
-//
-//                double[] b_ki = Vector.plus(Vector.scale(AiCi, 1- theta), Vector.scale(AkCk, theta));
-//                ret.put(e.destinationvertex, e.sourcevertex, b_ki);
-//    //            Vector.printV(b_ik, "Bik", true);
-//    //            Vector.printV(b_ki, "Bki", true);
-//            }
-//        }
-//        return ret;        
-//    }
+
     
     private List<EdgeNode> initV(int i)
     {
@@ -522,25 +326,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
         return ret;        
     }
 
-//    private ListENode initV2(int i)
-//    {
-//        ListENode ret = new ListENode();
-//        for(Edge e:edges)
-//        {
-//            if(e.sourcevertex == i || e.destinationvertex == i)
-//            {
-////            System.out.println("paper.AMA.buildUV() "+e.sourcevertex+" "+e.destinationvertex);
-//            //ik
-//            double[] value1 = LocalVector2D.getRow(X, e.sourcevertex) ;//new double[dataLength];
-////            Vector.printV(value1, "V1", true);
-//            ret.put( new int[]{e.sourcevertex, e.destinationvertex}, value1);
-//            //ki
-//            double[] value2 = LocalVector2D.getRow(X, e.destinationvertex) ;//new double[dataLength];
-//            ret.put(new int[]{e.destinationvertex, e.sourcevertex}, value2);
-//            }
-//        }
-//        return ret;        
-//    }
     
     private double updateRho(double r, double s)
     {
@@ -582,64 +367,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         return (r<=ep) && (s<=ed);
     }
     
-    private boolean checkStop(double[][] X0, List<EdgeNode> U, List<EdgeNode> V0, List<EdgeNode> V, int i)
-    {
-        double r = primalResidual(X0,V0,i);
-        double s = dualResidual(V0, V,i);
-//        System.err.println("rho "+rho);
-        updateRho(r, s);
-        
-        double maxAB= 0;
-        for(EdgeNode b:V)
-        {
-            double be = LocalVector1D.norm(b.relatedValue);
-            double a = LocalVector1D.norm(A[b.source]);
-            double ab = (a>be)? a:be;
-            maxAB = (ab>maxAB)? ab:maxAB;
-        }
-        
-        double maxC = 0;
-        for(EdgeNode c:U)
-        {
-            double value = LocalVector1D.norm(c.relatedValue);
-            maxC = (value>maxC)? value:maxC;
-        }
-        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
-        double ed = ea+er*maxC;//Cik?
-        
-//        if(rho ==0)
-//            return true;
-//        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
-        return (r<=ep) && (s<=ed);
-    }
-//    private boolean checkStop(double[][] X0, ListENode U, ListENode V0, ListENode V)
-//    {
-//        double r = primalResidual(X0,V0);
-//        double s = dualResidual(V0, V);
-//        updateRho(r, s);
-//        
-//        double maxAB= 0;
-//        for(int[] b:V.keySet())
-//        {
-//            double be = LocalVector1D.norm(V.get(b[0], b[1]));
-//            double a = LocalVector1D.norm(A[b[0]]);
-//            double ab = (a>be)? a:be;
-//            maxAB = (ab>maxAB)? ab:maxAB;
-//        }
-//        
-//        double maxC = 0;
-//        for(int[] c:U.keySet())
-//        {
-//            double value = LocalVector1D.norm(U.get(c[0], c[1]));
-//            maxC = (value>maxC)? value:maxC;
-//        }
-//        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
-//        double ed = ea+er*maxC;//Cik?
-//        
-////        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
-//        return (r<=ep) && (s<=ed);
-//    }
-    
+     
     private double primalResidual(double[] X0, List<EdgeNode> V0)
     {
         double ret = 0;
@@ -661,16 +389,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
         }
         return ret;
     }
-//    private double primalResidual(double[][] X0, ListENode V0)
-//    {
-//        double ret = 0;
-//        for(int[] key: V0.keySet())
-//        {
-//            double normR = LocalVector1D.norm(LocalVector1D.plus(LocalVector2D.getRow(X0, key[0]), V0.get(key[0], key[1])));
-//            ret = (ret>normR)?ret:normR;
-//        }
-//        return ret;
-//    }
         
     private double dualResidual(List<EdgeNode> Vp, List<EdgeNode> V)
     {
@@ -697,18 +415,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
         }
         return ret;
     }    
-//    private double dualResidual(ListENode Vp, ListENode V)
-//    {
-//        double ret = 0;
-//        for(int[] n: V.keySet())
-//        {
-//            double[] bikp = Vp.get(n[0], n[1]);
-//            double[] ai = Vector.scale(Vector.plus(bikp, Vector.scale(V.get(n[0], n[1]), -1)),rho);
-//            double normS = Vector.norm(ai);
-//            ret = (ret>normS)?ret:normS;
-//        }
-//        return ret;
-//    }
     
     private List<LocalEdge> updateEdge()
     {

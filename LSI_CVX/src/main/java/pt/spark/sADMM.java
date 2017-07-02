@@ -36,8 +36,8 @@ public class sADMM {
    * The task body
    */
   public static LinkedList<Tuple2<Integer,Vector>> run(String master, 
-          LinkedList<Tuple2<Integer,Vector>> rowsListDocTermD, 
-          LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB, 
+          double[][] D, 
+          double[][]  B,//rowsListDocTermB, 
           String inputFilePath, 
           String outFilePath) {
     /*
@@ -50,27 +50,25 @@ public class sADMM {
      * TODO
      * Initialises a Spark context.
      */
-        int n = rowsListDocTermD.size();
-        int m = rowsListDocTermD.get(0)._2.size();
-        int k = rowsListDocTermB.get(0)._2.size();
+        int n = D.length;
+        int m = D[0].length;
+        int k = B[0].length;
         
-    double D[][] = new double[n][m];
-    double B[][] = new double[n][k];
-    for(int i = 0; i< n; i++)
-        {
-//            System.out.println("pt.spark.sSCC.run() driver "+mat.get(i)._1+"\t "+ mat.get(i)._2.toString());
-//            System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
-            for(int j = 0; j< m; j++)
-            {
-                D[i][j] = rowsListDocTermD.get(i)._2.apply(j);
-            }
-            for(int j = 0; j< k; j++)
-            {
-                B[i][j] = rowsListDocTermB.get(i)._2.apply(j);
-            }
+//    double D[][] = new double[n][m];
+//        double B[][] = new double[n][k];
+    
+        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermD = new LinkedList<>();
+        for (int i = 0; i < D.length; i++) {
+            Vector row = Vectors.dense(D[i]);
+            rowsListDocTermD.add(new Tuple2<>(i,row));
         }
-     
-
+        
+        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB = new LinkedList<>();
+        for (int i = 0; i < B.length; i++) {
+            Vector row = Vectors.dense(B[i]);
+            rowsListDocTermB.add(new Tuple2<>(i,row));
+        }
+        
         double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = LocalVector2D.Transpose(BtB);
@@ -121,42 +119,51 @@ public class sADMM {
         Broadcast<Double> lamda = sc.broadcast(0.6);
         Broadcast<Double> eps_abs = sc.broadcast(1e-6);
         Broadcast<Double> eps_rel = sc.broadcast(1e-6);
+        Broadcast<Integer> _n = sc.broadcast(n);
+        Broadcast<Integer> _m = sc.broadcast(m);
+        Broadcast<Integer> _k = sc.broadcast(k);
+        Broadcast<double[][]> _D = sc.broadcast(D);
+        Broadcast<double[][]> _B = sc.broadcast(B);
 
-JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
+        Broadcast<double[][]> _Bt = sc.broadcast(Bt);
+        Broadcast<double[][]> _BtB = sc.broadcast(BtB);
+        Broadcast<double[][]> _AtB = sc.broadcast(AtB);
+    JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
 
-matI.mapToPair((Tuple2<Integer, Vector> t) -> {
-
+    matI.mapToPair((Tuple2<Integer, Vector> t) -> {
             System.out.println("pt.spark.sSCC.run() driver "+t._1+"\t "+ t._2.toString());
             return  new Tuple2<>(t._1, 
-                solveADMM(
-                        t._1//, 
-//                        mat.value(),
-//                        _numberOfVertices.value(),
-//                        _numOfFeature.value(),
-//                        E.value(), 
-//                        _X.value(),
-//                        _ni.value(),
-//                        _xAvr.value(),
-//                        _u.value(),
-//                        rho0.value(), 
-//                        lamda.value(), 
-//                        lamda2.value(), 
-//                        eps_abs.value(), 
-//                        eps_rel.value()
-                ));//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                    }
-);
+                solveADMM(t._1, 
+                        _D.value(),
+                        _B.value(),
+                        _Bt.value(),
+                        _BtB.value(),
+                        _AtB.value(),
+                        rho0.value(),
+                        lamda.value(),
+                        eps_abs.value(),
+                        eps_rel.value())
+                );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+    );
   
   sc.stop();
   return null;
   }
 
   
-  private static Vector solveADMM(int id)
+  private static Vector solveADMM(int id,
+          double[][] _Ddata, 
+          double[][]_Bdata, 
+          double[][]Bt, 
+          double[][]BtB, 
+//          double[][]Am, 
+//          double[][]Bm, 
+          double[][]AtB, 
+          double _lamda,double _rho,double e1 ,double e2)
   {
 
-              NodeADMM xNode = null;
-//                      new NodeADMM(0, _Ddata, _Bdata, Bt, BtB, Am, Bm, AtB, 0, 0, 0, 0);
+              NodeADMM xNode = new NodeADMM(id, _Ddata, _Bdata, Bt, BtB, AtB, _lamda, _rho, e1, e2);
 //                      curruntI._1, 
 //                _A, 
 //                _X[curruntI._1],

@@ -32,59 +32,32 @@ public class main {
 
         String master = "local[*]";
         // currently, not support: matrix data should be prepared before
-//    new sParseData().run(master, args[0],args[1]);
-
         // read output from parse data
-//    new sEchelon().run(master, args[0],args[1]);
         double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData("../data/data.csv");
         //TODO: parallel echelon 
         double[][] echelon = LocalVector2D.echelon(docTermData);//
         
         double[][] termDocData = LocalVector2D.Transpose(echelon);
-
-//        sCommonFunc.loadDenseMatrix(termDocData);
-//        sCommonFunc.loadDenseMatrix(docTermData);
-        
-        LinkedList<Tuple2<Integer,Vector>> rowsListTermDoc = new LinkedList<>();
-        for (int i = 0; i < termDocData.length; i++) {
-            Vector row = Vectors.dense(termDocData[i]);
-            rowsListTermDoc.add( new Tuple2<>(i,row));
-        }
-
-        
+      
         // read output from echelon: 
-        JavaPairRDD<Integer, Vector> scc = new sSCC().run(master, rowsListTermDoc, args[0], args[1]);
+        JavaPairRDD<Integer, Vector> scc = new sSCC().run(master, termDocData, args[0], args[1]);
 
-        
-        
-//        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermRd = new LinkedList<>();
-//        for (int i = 0; i < docTermReduce.length; i++) {
-//            Vector currentRow = Vectors.dense(docTermReduce[i]);
-//            rowsListDocTermRd.add(new Tuple2<>(i,currentRow));
-//        }
-        
-        LinkedList<Tuple2<Integer,Vector>> rowsListDocTerm = new LinkedList<>();
-        for (int i = 0; i < docTermData.length; i++) {
-            Vector row = Vectors.dense(docTermData[i]);
-            rowsListDocTerm.add(new Tuple2<>(i,row));
-        }
-
-        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermRd = getPresentMat(scc, rowsListDocTerm);//new double[docTermData.length][docTermData[0].length];
+        double[][] rowsListDocTermRd = getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        LinkedList<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(master, rowsListDocTerm, rowsListDocTermRd, args[0], args[1]);
+        LinkedList<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(master, docTermData, rowsListDocTermRd, args[0], args[1]);
 
         // read output from parse+ sADMM 
         new sQuery().run(master, args[0], args[1]);
     }
     
-    private static LinkedList<Tuple2<Integer,Vector>> getPresentMat( JavaPairRDD<Integer, Vector> scc, LinkedList<Tuple2<Integer,Vector>> rowsListDocTerm )
+    private static double[][] getPresentMat( JavaPairRDD<Integer, Vector> scc, double[][] rowsListDocTerm )
     {
         List<Tuple2<Integer,Vector>> sccL = scc.collect();
         // reduce same term
         
         //add term to new list
-        LinkedList<Tuple2<Integer,Vector>> ret = null;
+        double[][] ret = null;
         
         return ret;
     }
