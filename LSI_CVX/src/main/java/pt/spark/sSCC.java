@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
@@ -142,6 +143,11 @@ public class sSCC {
 //        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
 //        matI.cache();
 
+//        matI.map((Tuple2<Integer, Vector> t1) ->
+//        {
+//            return 
+//        }
+//        );
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1) ->
         {
@@ -166,6 +172,13 @@ public class sSCC {
 
 //        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
         
+//        ret.reduce((Tuple2<Integer, Vector> v1, Tuple2<Integer, Vector> v2) -> {
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        double[][] ret2 = new double[numOfFeature][numOfFeature];
+        
+//        return ret2;
+//        });
+        ret.saveAsObjectFile(outFilePath +"\\scc");
         context.stop();
         System.out.println("pt.spark.sSCC.run() end");
         return ret;
