@@ -42,7 +42,7 @@ public class main {
         //TODO: parallel echelon 
         double[][] echelon = LocalVector2D.echelon(docTermData);//
         
-        double[][] termDocData = LocalVector2D.Transpose(echelon);
+        double[][] termDocData = LocalVector2D.Transpose(echelon); 
       
         double[][] query = new double[10][docTermData[0].length];
         
@@ -52,18 +52,23 @@ public class main {
                 .setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData, args[0], ouputdir);
+        List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData,
+//                args[0], 
+                ouputdir);
 
         double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, args[0], ouputdir);
+        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, 
+//                args[0], 
+                ouputdir);
 
         // read output from parse+ sADMM 
         new sQuery().run(sc, 
                 docTermData, 
                 pMatrix, 
                 query, 
-                args[0], ouputdir);
+//                args[0], 
+                ouputdir);
         
         sc.close();
     }

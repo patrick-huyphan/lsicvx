@@ -15,9 +15,12 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import static com.google.common.base.Preconditions.checkArgument;
+import com.sun.xml.internal.ws.api.pipe.Tube;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.broadcast.Broadcast;
+import org.apache.spark.mllib.linalg.DenseMatrix;
 //import org.apache.spark.mllib.optimization.tfocs.SolverL1RLS
 
 /**
@@ -37,16 +40,16 @@ public class sADMM {
     /**
      *
      * @param sc
-     * @param D
-     * @param B
+     * @param D: n*m
+     * @param B: k*n
      * @param inputFilePath
      * @param outFilePath
-     * @return
+     * @return X= k*m
      */
     public static List<Tuple2<Integer, Vector>> run(JavaSparkContext sc,
             double[][] D,
             double[][] B,//rowsListDocTermB, 
-            String inputFilePath,
+//            String inputFilePath,
             String outFilePath) {
         /**
          * TODO
@@ -63,6 +66,10 @@ public class sADMM {
             rowsListDocTermD.add(new Tuple2<>(i, row));
         }
 
+//        sCommonFunc.loadDenseMatrix(rowsListDocTermD).transpose(). //map(new Function1);
+        
+        
+        
 //        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB = new LinkedList<>();
 //        for (int i = 0; i < B.length; i++) {
 //            Vector row = Vectors.dense(B[i]);
@@ -116,12 +123,18 @@ public class sADMM {
         Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
-        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
+//        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
         
-        JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
-            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
-            return new Tuple2<>(t._1,
-                    solveADMM(t._1,
+        List<Integer> id = new ArrayList();
+        for (int i = 0; i < m; i++) {
+            id.add(i);
+        }
+        JavaRDD<Integer> indexs = sc.parallelize(id);
+        
+        JavaPairRDD<Integer, Vector> retMat = indexs.mapToPair((Integer t) -> {
+//            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
+            return new Tuple2<>(t,
+                    solveADMM(t,
                             _D.value(),
                             _B.value(),
                             _n.value(),
@@ -137,6 +150,25 @@ public class sADMM {
             );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         );
+//        JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
+//            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
+//            return new Tuple2<>(t._1,
+//                    solveADMM(t._1,
+//                            _D.value(),
+//                            _B.value(),
+//                            _n.value(),
+//                            _m.value(),
+//                            _k.value(),
+//                            _Bt.value(),
+//                            _BtB.value(),
+//                            _AtB.value(),
+//                            rho0.value(),
+//                            lamda.value(),
+//                            eps_abs.value(),
+//                            eps_rel.value())
+//            );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        }
+//        );
         retMat.saveAsTextFile(outFilePath + "\\ADMM");
         return retMat.collect();
     }

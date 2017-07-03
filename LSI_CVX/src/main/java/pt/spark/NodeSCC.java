@@ -97,7 +97,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
                 loop++;
             }
             System.out.println();
-//            Matrix.printMat(X, "NodeSCC x "+i);
+            LocalVector1D.printV(X, "NodeSCC x "+id, true);
         }
 //        LocalVector1D.printV(X, "SCC x", true);
     }

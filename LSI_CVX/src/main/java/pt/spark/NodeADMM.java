@@ -24,7 +24,7 @@ public class NodeADMM {
     
         double [][] D;
     double [][] B;
-    double [][] X;
+    double []X;
     double lambda;
     static final int MAX_LOOP = 100;
     int k;// k row in A
@@ -63,7 +63,7 @@ public class NodeADMM {
         
         D = _Ddata;
         B = _Bdata;
-        X = new double[k][m];
+        X = new double[k];//[m];
         B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
 //        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
@@ -133,14 +133,14 @@ public class NodeADMM {
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
                 if(stop)// && loop>1)
                 {
-//                    System.err.println(i+" Stop at "+loop);
+                    System.err.println(id+" Stop at "+loop);
                     break;
                 }
                 loop++;
             }
             System.out.println(".");
-//            Vector.printV(x, "x_"+ i, true);
-            X = LocalVector2D.updateCol(X, x,id);
+            LocalVector1D.printV(x, "x_"+ id, true);
+//            X = LocalVector2D.updateCol(X, x,id);
         }
 //        Matrix.printMat(X, "return");
     }

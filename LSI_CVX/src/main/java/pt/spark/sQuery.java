@@ -47,7 +47,7 @@ public class sQuery {
             double[][] D,
             List<Tuple2<Integer, Vector>> B,
             double[][] Q,
-            String inputFilePath,
+//            String inputFilePath,
             String outFilePath) {
 
         /**
