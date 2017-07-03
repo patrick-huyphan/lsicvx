@@ -76,6 +76,9 @@ public class sADMM {
 //            Vector row = Vectors.dense(B[i]);
 //            rowsListDocTermB.add(new Tuple2<>(i,row));
 //        }
+/**
+ * TODO: use spark suport matrix to process those array
+ */
         B = LocalVector2D.orthonormal(B);
         double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]

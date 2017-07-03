@@ -47,7 +47,6 @@ public class NodeADMM {
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
     
     public NodeADMM(Tuple2<Integer, Vector> _Ddata, 
-//            double [][] _Bdata, 
             int _n,
             int _m,
             int _k,
