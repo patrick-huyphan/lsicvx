@@ -1,5 +1,6 @@
 package pt.spark;
 
+import breeze.linalg.DenseMatrix;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
@@ -15,6 +16,15 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.ArrayList;
+import java.util.List;
+import static javafx.scene.input.KeyCode.R;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.broadcast.Broadcast;
+import org.apache.spark.mllib.linalg.Matrix;
+import org.apache.spark.rdd.RDD;
+import scala.Function1;
+import scala.Function2;
 //import scala.concurrent.Channel.LinkedList;
 
 
@@ -33,44 +43,47 @@ public class sQuery {
   /**
    * The task body
    */
-  public void run(JavaSparkContext context, String inputFilePath, String outFilePath) {
-    /*
-     * This is the address of the Spark cluster. We will call the task from WordCountTest and we
-     * use a local standalone cluster. [*] means use all the cores available.
-     * See {@see http://spark.apache.org/docs/latest/submitting-applications.html#master-urls}.
-     */
-//    String master = "local[*]";
-//    /*
-//     * Initialises a Spark context.
-//     */
-//    SparkConf conf = new SparkConf()
-//        .setAppName(sQuery.class.getName())
-//        .setMaster(master);
-//    JavaSparkContext context = new JavaSparkContext(conf);
+  public List<List<Tuple2<Integer, Double>>> run(JavaSparkContext sc, 
+          double[][] D,
+          double[][] B,
+          double[][] Q,
+          String inputFilePath, 
+          String outFilePath) {
 
-    /*
-     * read matrix from file
-     */
-    context.textFile(inputFilePath)
-        .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
-        .mapToPair(word -> new Tuple2<>(word, 1))
-        .reduceByKey((a, b) -> a + b)
-        .foreach(result -> LOGGER.info(
-            String.format("Word [%s] count [%d].", result._1(), result._2)));
-    
-    
-        double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
-  LinkedList<Vector> rowsList = new LinkedList<>();
-  for (int i = 0; i < array.length; i++) {
-    Vector currentRow = Vectors.dense(array[i]);
-    rowsList.add(currentRow);
-  }
-  JavaRDD<Vector> rows = context.parallelize(rowsList);
+  
 
-  // Create a RowMatrix from JavaRDD<Vector>.
-  RowMatrix mat = new RowMatrix(rows.rdd());
   
+  /**
+   * Input:
+   *    D n*m
+   *    X k*m
+   *    Q i*m
+   * TODO:
+   *    D' = D*Xt -> (n*m x m*k)n*k
+   *    Q' = Q*Xt -> i*k
+   *    sim(D',Q')
+   */
   
-//  context.stop();
+  RowMatrix rD = sCommonFunc.loadRowM(sc, D);
+  RowMatrix rQ = sCommonFunc.loadRowM(sc, Q);
+  
+  Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose();
+  
+  List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
+  
+      Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
+  
+  List<List<Tuple2<Integer, Double>>> abc=    rQ.multiply(mX).rows().toJavaRDD().map((Vector v1) -> {
+      List<Tuple2<Integer, Double>> ret = new ArrayList<>();
+      List<Vector> D2L = _D2.value(); 
+      for(Vector v: D2L)
+      {
+          double value = LocalVector1D.cosSim(v.toArray(), v1.toArray());
+          ret.add(new Tuple2<>(D2L.indexOf(v), value));
+      }
+      return ret;
+  }).collect();
+  
+  return abc;
   }
 }

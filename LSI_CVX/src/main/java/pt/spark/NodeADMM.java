@@ -45,6 +45,9 @@ public class NodeADMM {
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
     
     public NodeADMM(int id, double [][] _Ddata, double [][] _Bdata, 
+            int _n,
+            int _m,
+            int _k,
             double[][] Bt,
             double[][] BtB,
 //            double[][] Am,
@@ -53,15 +56,15 @@ public class NodeADMM {
             double _rho,double _lambda, 
             double e1, double e2) {
 
-        n = _Ddata.length;// n row in D
-        m = _Ddata[0].length;// m column in A
-        k = _Bdata[0].length;// k row in A
+        n = _n;// n row in D
+        m = _m;// m column in A
+        k = _k;// k row in A
         lambda = _lambda;
         
         D = _Ddata;
         B = _Bdata;
         X = new double[k][m];
-        B = LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
+        B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
 //        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
 //        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]

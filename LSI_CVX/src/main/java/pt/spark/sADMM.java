@@ -34,23 +34,22 @@ public class sADMM {
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(sADMM.class);
 
-  /**
-   * The task body
-   */
+/**
+ * 
+ * @param sc
+ * @param D
+ * @param B
+ * @param inputFilePath
+ * @param outFilePath
+ * @return 
+ */
   public static List<Tuple2<Integer, Vector>> run(JavaSparkContext sc, 
           double[][] D, 
-          double[][]  B,//rowsListDocTermB, 
+          double[][] B,//rowsListDocTermB, 
           String inputFilePath, 
           String outFilePath) {
-    /*
-     * This is the address of the Spark cluster. We will call the task from WordCountTest and we
-     * use a local standalone cluster. [*] means use all the cores available.
-     * See {@see http://spark.apache.org/docs/latest/submitting-applications.html#master-urls}.
-     */
-//    String master = "local[*]";
     /**
      * TODO
-     * Initialises a Spark context.
      */
         int n = D.length;
         int m = D[0].length;
@@ -65,12 +64,12 @@ public class sADMM {
             rowsListDocTermD.add(new Tuple2<>(i,row));
         }
         
-        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB = new LinkedList<>();
-        for (int i = 0; i < B.length; i++) {
-            Vector row = Vectors.dense(B[i]);
-            rowsListDocTermB.add(new Tuple2<>(i,row));
-        }
-        
+//        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB = new LinkedList<>();
+//        for (int i = 0; i < B.length; i++) {
+//            Vector row = Vectors.dense(B[i]);
+//            rowsListDocTermB.add(new Tuple2<>(i,row));
+//        }
+        B= LocalVector2D.orthonormal(B);
         double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = LocalVector2D.Transpose(BtB);
@@ -86,14 +85,6 @@ public class sADMM {
      * Performs a work count sequence of tasks and prints the output with a logger.
      */
     //read B matrix from scc
-//    sc.textFile(inputFilePath)
-//        .flatMap(text -> Arrays.asList(text.split(" ")).iterator())
-//        .mapToPair(word -> new Tuple2<>(word, 1))
-//        .reduceByKey((a, b) -> a + b)
-//        .foreach(result -> LOGGER.info(
-//            String.format("Word [%s] count [%d].", result._1(), result._2)));
-    
-//        double[][] array = {{1.12, 2.05, 3.12}, {5.56, 6.28, 8.94}, {10.2, 8.0, 20.5}};
 
 //  LinkedList<Vector> rowsList = new LinkedList<>();
 //  for (int i = 0; i < array.length; i++) {
@@ -103,7 +94,7 @@ public class sADMM {
 //  JavaRDD<Tuple2<Integer,Vector>> rows0 = sc.parallelize(rowsListDocTerm0);
 //  JavaRDD<Tuple2<Integer,Vector>> rows1 = sc.parallelize(rowsListDocTerm1);
 
-  // Create a RowMatrix from JavaRDD<Vector>.
+// Create a RowMatrix from JavaRDD<Vector>.
 //  RowMatrix mat0 = new RowMatrix(rows0.rdd());
 //  RowMatrix mat1 = new RowMatrix(rows1.rdd());
   
@@ -138,6 +129,9 @@ public class sADMM {
                 solveADMM(t._1, 
                         _D.value(),
                         _B.value(),
+                        _n.value(),
+                        _m.value(),
+                        _k.value(),
                         _Bt.value(),
                         _BtB.value(),
                         _AtB.value(),
@@ -149,35 +143,32 @@ public class sADMM {
             }
     );
   
-      List<Tuple2<Integer, Vector>> retList =  retMat.collect();
-//      double[][] retArray = new double[k][n];
-//      for(Tuple2<Integer, Vector> r: retList)
-//      {
-//          System.out.println("pt.spark.sADMM.run() "+ r._1+" \n" +r._2.toString());
-//      }
-//  sc.stop();
-  return retList;
+  return retMat.collect();
   }
 
   
   private static Vector solveADMM(int id,
           double[][] _Ddata, 
-          double[][]_Bdata, 
-          double[][]Bt, 
-          double[][]BtB, 
-          double[][]AtB, 
-          double _lamda,double _rho,double e1 ,double e2)
+          double[][] _Bdata,
+            int _n,
+            int _m,
+            int _k,
+          double[][] Bt, 
+          double[][] BtB, 
+          double[][] AtB, 
+          double _lamda,double _rho,
+          double e1 ,double e2)
   {
 
-              NodeADMM xNode = new NodeADMM(id, _Ddata, _Bdata, Bt, BtB, AtB, _lamda, _rho, e1, e2);
-//                      curruntI._1, 
-//                _A, 
-//                _X[curruntI._1],
-//                _edges,
-//                ni, 
-//                xAvr,
-//                lamda,lamda2, rho0, 
-//                eps_abs, eps_rel);
+        NodeADMM xNode = new NodeADMM(id, 
+                _Ddata,
+                _Bdata,
+                _n, _m,_k,
+                Bt,
+                BtB,
+                AtB, 
+                _lamda, _rho,
+                e1, e2);
         return Vectors.dense(xNode.X[0]);
   }
 
