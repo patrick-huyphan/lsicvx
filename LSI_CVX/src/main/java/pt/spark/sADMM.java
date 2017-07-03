@@ -15,7 +15,6 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import static com.google.common.base.Preconditions.checkArgument;
-import com.sun.xml.internal.ws.api.pipe.Tube;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
