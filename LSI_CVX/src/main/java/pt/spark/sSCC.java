@@ -44,7 +44,7 @@ public class sSCC {
 /**
  * 
  * @param context
- * @param termDocData
+ * @param A: matrix term doc
  * @param inputFilePath
  * @param outFilePath
  * @return 
@@ -122,12 +122,12 @@ public class sSCC {
 
         Broadcast<Double> rho0 = context.broadcast(0.8);
         Broadcast<Double> lamda = context.broadcast(0.6);
-        Broadcast<Double> lamda2 = context.broadcast(0.01);
+//        Broadcast<Double> lamda2 = context.broadcast(0.01);
         Broadcast<Double> eps_abs = context.broadcast(1e-6);
         Broadcast<Double> eps_rel = context.broadcast(1e-6);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
 
-        Broadcast<double[]> _u = context.broadcast(u);
+//        Broadcast<double[]> _u = context.broadcast(u);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
         Broadcast<int[]> _ni = context.broadcast(ni);
         Broadcast<double[][]> _X = context.broadcast(X);
@@ -140,11 +140,6 @@ public class sSCC {
 //        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
 //        matI.cache();
 
-//        matI.map((Tuple2<Integer, Vector> t1) ->
-//        {
-//            return 
-//        }
-//        );
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1) ->
         {
@@ -155,32 +150,23 @@ public class sSCC {
                         _numberOfVertices.value(),
                         _numOfFeature.value(),
                         E.value(), 
-                        _X.value(),
+                        _X.value()[t1._1],
                         _ni.value(),
                         _xAvr.value(),
-                        _u.value(),
+//                        _u.value(),
                         rho0.value(), 
                         lamda.value(), 
-                        lamda2.value(), 
+//                        lamda2.value(), 
                         eps_abs.value(), 
                         eps_rel.value()));
                     }
         );
 
-//        Cm.toRowMatrix().rows().map(new Function1<Vector, U>, ct);
-
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
         
         List<Tuple2<Integer, Vector>> retList= ret.collect();
                 
-//        for(Tuple2<Integer, Vector> t: retList) 
-//        {
-//            System.out.println("pt.spark.sSCC.return: "+ t._1+ "\n" + t._2.toString());
-//            System.arraycopy(t._2, 0, retArray[t._1], 0, t._2.size());
-//        }
-        
 //        ret.saveAsObjectFile(outFilePath +"\\scc");
-//        context.stop();
         System.out.println("pt.spark.sSCC.run() end");
         return retList;
     }
@@ -190,13 +176,13 @@ public class sSCC {
             int numberOfVertices,
             int numOfFeature,
             List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
-            double[][] _X,
+            double[] _X,
             int[]   ni,
             double [] xAvr,
-            double [] ui,
+//            double [] ui,
             Double rho0,
             Double lamda,
-            Double lamda2,
+//            Double lamda2,
             Double eps_abs,
             Double eps_rel) throws IOException {
         /*
@@ -226,11 +212,13 @@ TODO:
        
         NodeSCC xNode = new NodeSCC(curruntI._1, 
                 _A, 
-                _X[curruntI._1],
+                _X,
                 _edges,
                 ni, 
                 xAvr,
-                lamda,lamda2, rho0, 
+                lamda,
+//                lamda2, 
+                rho0, 
                 eps_abs, eps_rel);
         return Vectors.dense(xNode.X);
     }
@@ -257,5 +245,121 @@ TODO:
             ret[e._1._2] = ret[e._1._2]+1;
         }
         return ret;
+    }
+    
+    public static double[][] getPresentMat(List<Tuple2<Integer,Vector>>  scc, double [][] A)
+    {
+        List<List<Integer>> cluster = getCluster(scc);
+        double[][] presentMat = new double[A[0].length][cluster.size()];//[numberOfVertices];
+//        double[][] ret = new double[data[0].length][index.size()];
+//        System.out.println("paper.MSTClustering.getPresentMath()");
+        for(int j = 0; j< cluster.size(); j++)
+        {
+            List<Integer> edgesL = cluster.get(j);
+            if(edgesL.isEmpty())
+            {
+//                System.out.println("paper.Clustering.getPresentMat() empty "+j);
+                continue;
+            }
+            int shotestCol= edgesL.get(0);
+            double min = 100;
+            for(Integer node: edgesL)
+            {
+                double norm = LocalVector1D.norm(A[node-1]);
+                if(norm<min)
+                {
+                    min = norm;
+                    shotestCol = node-1;
+                }
+                
+            }
+//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+            
+            for(int i = 0; i<A.length  ; i++)
+            {
+                presentMat[i][j] = A[i][shotestCol]; //new Random().nextDouble(); // 
+            }
+        }
+        return  presentMat;
+    }
+//    public static double[][] getPresentMat( List<Tuple2<Integer,Vector>> scc, double[][] rowsListDocTerm )
+//    {
+////        List<Tuple2<Integer,Vector>> sccL = scc.collect();
+//        // reduce same term
+//        List<Integer> listID = getPresentID(scc);
+//        //add term to new list
+//        double[][] ret = new double[rowsListDocTerm.length][listID.size()];
+//        for(int i = 0; i <rowsListDocTerm.length; i++)
+//            for(int j = 0; j< listID.size(); j++)
+//            {
+//                ret[i][j] = rowsListDocTerm[i][listID.get(j)];
+//            }
+//        return ret;
+//    }
+//    public static List<Integer> getPresentID(List<Tuple2<Integer,Vector>> scc)
+//    {
+//        List<Integer> ret = null;
+//        for(int i = 0; i< scc.size(); i++)
+//        {
+//            for(int j = i+1; j< scc.size(); j++)
+//            {
+//                
+//            }
+//        }
+//        return ret;
+//    }
+    private static List<List<Integer>> getCluster(List<Tuple2<Integer,Vector>> scc)
+    {
+//        int  ret[] = new int[scc.size()];
+        HashMap<Integer, Integer> xxx = new HashMap<>();
+        List<List<Integer>> cluster = new ArrayList<>();
+//        List<Integer>  intdex = new ArrayList<Integer>();
+    	for(int i = 0; i<scc.size(); i++)
+    	{
+            if(!xxx.containsKey(i))
+            {
+                xxx.put(i, i);
+                for(int j = i+1; j<scc.size(); j++)
+                {
+                    if(!xxx.containsKey(j))
+                        if((LocalVector1D.isSameVec(scc.get(i)._2.toArray(),scc.get(j)._2.toArray())))
+//                        if((Vector.isDepen(Matrix.getRow(X, i),Matrix.getRow(X, j))))    
+                        {
+//                                System.out.println("same: "+i+"-"+j);
+                                xxx.put(j, i);
+                        }
+                }
+            }
+    	}
+//    	count--;
+//    	System.out.println("Num of sub mat: "+intdex.size());
+    	
+    	for(int i = 0; i<scc.size(); i++)
+    	{
+            List<Integer> sub = new ArrayList<>();
+            for(int j = i; j<scc.size(); j++)
+            {
+                if(xxx.get(j)==i)
+                { 
+                    sub.add(j+1);
+                }
+            }
+            if(!sub.isEmpty())
+                cluster.add(sub);
+    	}
+//    	cluster.add(intdex);
+//Test    
+        System.out.println("paper.SCC.getCluster() "+cluster.size());
+    	for(int i = 0; i<cluster.size(); i++)
+    	{
+    		List<Integer> sub = cluster.get(i);
+    		System.out.print("Cluster "+ i+":\t");
+    		for(int j = 0; j<sub.size(); j++)
+    		{
+    			System.out.print(sub.get(j) +"\t");
+    		}
+                System.out.println("");
+    	}
+        return cluster;
     }
 }

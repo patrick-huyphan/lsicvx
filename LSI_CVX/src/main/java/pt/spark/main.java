@@ -13,6 +13,9 @@ import java.util.LinkedList;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -49,7 +52,7 @@ public class main {
         
         List<Tuple2<Integer,Vector>> scc = new sSCC().run(context, termDocData, args[0], args[1]);
 
-        double[][] rowsListDocTermRd = getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
+        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
         List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(context, docTermData, rowsListDocTermRd, args[0], args[1]);
 
@@ -59,14 +62,5 @@ public class main {
         context.close();
     }
     
-    private static double[][] getPresentMat( List<Tuple2<Integer,Vector>> scc, double[][] rowsListDocTerm )
-    {
-//        List<Tuple2<Integer,Vector>> sccL = scc.collect();
-        // reduce same term
-        
-        //add term to new list
-        double[][] ret = null;
-        
-        return ret;
-    }
+    
 }

@@ -24,7 +24,7 @@ public class NodeSCC{  //extends Clustering{
     double rho;
     double rho2;
     double lambda;
-    double lambda2;
+//    double lambda2;
     double ea, er;
     public double []X; //operate
     double [][] A; //original mat
@@ -37,10 +37,17 @@ public class NodeSCC{  //extends Clustering{
     List<LocalEdge> edges;
     
     
-    public NodeSCC(int id, double[][] _A, double [] _X, List<LocalEdge> _edges, int [] ni, double[] xAvr, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException
+    public NodeSCC(int id, 
+            double[][] _A, double [] _X, 
+            List<LocalEdge> _edges, 
+            int [] ni, double[] xAvr, 
+            double _lambda, 
+//            double _lambda2, 
+            double _rho, 
+            double _e1, double _e2) throws IOException
     {
         lambda =_lambda;
-        lambda2 = _lambda2;
+//        lambda2 = _lambda2;
         rho = rho2 = _rho;
         ea = _e1;
         er = _e2;
