@@ -27,63 +27,57 @@ import scala.Function1;
 import scala.Function2;
 //import scala.concurrent.Channel.LinkedList;
 
-
 /**
- * sQuery class, we will call this class to calculate the cosine similarity of source and query in latent space.
- * - just mul 2 matrix source and projection to get latent space
- * - and calculate cosine in latent space
+ * sQuery class, we will call this class to calculate the cosine similarity of
+ * source and query in latent space. - just mul 2 matrix source and projection
+ * to get latent space - and calculate cosine in latent space
  */
 public class sQuery {
-  /**
-   * We use a logger to print the output. Sl4j is a common library which works with log4j, the
-   * logging system used by Apache Spark.
-   */
-  private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
-  /**
-   * The task body
-   */
-  public List<List<Tuple2<Integer, Double>>> run(JavaSparkContext sc, 
-          double[][] D,
-          double[][] B,
-          double[][] Q,
-          String inputFilePath, 
-          String outFilePath) {
+    /**
+     * We use a logger to print the output. Sl4j is a common library which works
+     * with log4j, the logging system used by Apache Spark.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
-  
+    /**
+     * The task body
+     */
+    public List<List<Tuple2<Tuple2<Integer, Integer>, Double>>> run(JavaSparkContext sc,
+            double[][] D,
+            List<Tuple2<Integer, Vector>> B,
+            double[][] Q,
+            String inputFilePath,
+            String outFilePath) {
 
-  
-  /**
-   * Input:
-   *    D n*m
-   *    X k*m
-   *    Q i*m
-   * TODO:
-   *    D' = D*Xt -> (n*m x m*k)n*k
-   *    Q' = Q*Xt -> i*k
-   *    sim(D',Q')
-   */
-  
-  RowMatrix rD = sCommonFunc.loadRowM(sc, D);
-  RowMatrix rQ = sCommonFunc.loadRowM(sc, Q);
-  
-  Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose();
-  
-  List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
-  
-      Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
-  
-  List<List<Tuple2<Integer, Double>>> abc=    rQ.multiply(mX).rows().toJavaRDD().map((Vector v1) -> {
-      List<Tuple2<Integer, Double>> ret = new ArrayList<>();
-      List<Vector> D2L = _D2.value(); 
-      for(Vector v: D2L)
-      {
-          double value = LocalVector1D.cosSim(v.toArray(), v1.toArray());
-          ret.add(new Tuple2<>(D2L.indexOf(v), value));
-      }
-      return ret;
-  }).collect();
-  
-  return abc;
-  }
+        /**
+         * Input: D n*m X k*m Q i*m TODO: D' = D*Xt -> (n*m x m*k)n*k Q' = Q*Xt
+         * -> i*k sim(D',Q')
+         */
+        RowMatrix rD = sCommonFunc.loadRowM(sc, D);
+        RowMatrix rQ = sCommonFunc.loadRowM(sc, Q);
+
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose();
+
+        List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
+
+        Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
+        List<Integer> id = new ArrayList();
+        for (int i = 0; i < Q.length; i++) {
+            id.add(i);
+        }
+        JavaRDD<Integer> indexs = sc.parallelize(id);
+        JavaRDD<List<Tuple2<Tuple2<Integer, Integer>, Double>>> abc = indexs.zip(rQ.multiply(mX).rows().toJavaRDD()).map((Tuple2<Integer, Vector> v1) -> {
+            List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
+            List<Vector> D2L = _D2.value();
+            for (Vector v : D2L) {
+                double value = LocalVector1D.cosSim(v.toArray(), v1._2.toArray());
+                ret.add(new Tuple2<>(new Tuple2<>(v1._1, D2L.indexOf(v)), value));
+            }
+            return ret;
+        });
+
+        abc.saveAsTextFile(outFilePath + "\\queryRes");
+        return abc.collect();
+    }
 }

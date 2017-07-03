@@ -96,7 +96,19 @@ public class sCommonFunc {
             }
         return new DenseMatrix(array.length, length, array1D, true) ;
     }
-    
+    public static DenseMatrix loadDenseMatrix(List<Tuple2<Integer,Vector>> listV)
+    {
+        int length = listV.size();
+        double[] array1D = new double[listV.get(0)._2.size() * length];
+        // load to 1d array of column matrix
+        for(int i = 0; i< length; i++)
+            for(int j = 0; j< listV.get(0)._2.size(); j++)
+            {
+                //TODO: check
+                array1D[i+ j*listV.get(0)._2.size()] = listV.get(i)._2.apply(j);// array[j][i];
+            }
+        return new DenseMatrix(listV.get(0)._2.size(), length, array1D, true) ;
+    }
     public static DenseMatrix loadDenseMatrix(String inputFile)
     {
         double[][] array = null;

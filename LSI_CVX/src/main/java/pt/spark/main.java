@@ -34,6 +34,7 @@ public class main {
         checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
 
         String master = "local[*]";
+        String ouputdir = args[1]+"\\"+System.currentTimeMillis();
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
@@ -43,6 +44,7 @@ public class main {
         
         double[][] termDocData = LocalVector2D.Transpose(echelon);
       
+        double[][] query = new double[10][docTermData[0].length];
         
         // read output from echelon:         
         SparkConf conf = new SparkConf()
@@ -50,18 +52,18 @@ public class main {
                 .setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData, args[0], args[1]);
+        List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData, args[0], ouputdir);
 
         double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, args[0], args[1]);
+        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, args[0], ouputdir);
 
         // read output from parse+ sADMM 
         new sQuery().run(sc, 
-                echelon, 
-                echelon, 
-                echelon, 
-                args[0], args[1]);
+                docTermData, 
+                pMatrix, 
+                query, 
+                args[0], ouputdir);
         
         sc.close();
     }

@@ -166,7 +166,7 @@ public class sSCC {
         
         List<Tuple2<Integer, Vector>> retList= ret.collect();
                 
-//        ret.saveAsObjectFile(outFilePath +"\\scc");
+        ret.saveAsObjectFile(outFilePath +"\\scc");
         System.out.println("pt.spark.sSCC.run() end");
         return retList;
     }

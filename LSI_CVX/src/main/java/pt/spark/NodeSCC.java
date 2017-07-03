@@ -88,7 +88,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
 */
                 V= updateV(V, U, id);
                 U= updateU(U, V);
-                System.out.print(".");    
+                System.out.print("."+id);    
                 if((loop>1)&&(checkStop(X0, U0, V0, V)))// || (stop == true)))
                 {
                     System.out.println(id+" NodeSCC STOP at "+loop);
@@ -96,6 +96,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
                 }
                 loop++;
             }
+            System.out.println();
 //            Matrix.printMat(X, "NodeSCC x "+i);
         }
 //        LocalVector1D.printV(X, "SCC x", true);
