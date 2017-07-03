@@ -60,9 +60,10 @@ public class sADMM {
 
 //    double D[][] = new double[n][m];
 //        double B[][] = new double[n][k];
+        double D2[][] = LocalVector2D.Transpose(D);
         LinkedList<Tuple2<Integer, Vector>> rowsListDocTermD = new LinkedList<>();
-        for (int i = 0; i < D.length; i++) {
-            Vector row = Vectors.dense(D[i]);
+        for (int i = 0; i < D2.length; i++) {
+            Vector row = Vectors.dense(D2[i]);
             rowsListDocTermD.add(new Tuple2<>(i, row));
         }
 
@@ -117,26 +118,25 @@ public class sADMM {
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
-        Broadcast<double[][]> _D = sc.broadcast(D);
-        Broadcast<double[][]> _B = sc.broadcast(B);
+//        Broadcast<double[][]> _D = sc.broadcast(D);
+//        Broadcast<double[][]> _B = sc.broadcast(B);
         
         Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
-//        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
+        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
         
         List<Integer> id = new ArrayList();
         for (int i = 0; i < m; i++) {
             id.add(i);
         }
-        JavaRDD<Integer> indexs = sc.parallelize(id);
-        
-        JavaPairRDD<Integer, Vector> retMat = indexs.mapToPair((Integer t) -> {
+//        JavaRDD<Integer> indexs = sc.parallelize(id);
+//        indexs.zip(matI)
+        JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
 //            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
-            return new Tuple2<>(t,
+            return new Tuple2<>(t._1,
                     solveADMM(t,
-                            _D.value(),
-                            _B.value(),
+//                            _B.value(),
                             _n.value(),
                             _m.value(),
                             _k.value(),
@@ -173,9 +173,9 @@ public class sADMM {
         return retMat.collect();
     }
     
-    private static Vector solveADMM(int id,
-            double[][] _Ddata,
-            double[][] _Bdata,
+    private static Vector solveADMM(
+            Tuple2<Integer, Vector> _Ddata,
+//            double[][] _Bdata,
             int _n,
             int _m,
             int _k,
@@ -185,9 +185,9 @@ public class sADMM {
             double _lamda, double _rho,
             double e1, double e2) {
         
-        NodeADMM xNode = new NodeADMM(id,
+        NodeADMM xNode = new NodeADMM(
                 _Ddata,
-                _Bdata,
+//                _Bdata,
                 _n, _m, _k,
                 Bt,
                 BtB,

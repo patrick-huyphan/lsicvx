@@ -7,8 +7,10 @@ package pt.spark;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import org.apache.spark.mllib.linalg.Vector;
 import pt.spark.LocalVector1D;
 import pt.spark.LocalVector2D;
+import scala.Tuple2;
 /**
  *
  * @author patrick_huy
@@ -22,8 +24,8 @@ public class NodeADMM {
 //    double [][] B;
 //    double [][] X;
     
-        double [][] D;
-    double [][] B;
+//        double [][] D;
+//    double [][] B;
     double []X;
     double lambda;
     static final int MAX_LOOP = 100;
@@ -44,7 +46,8 @@ public class NodeADMM {
     double rho;
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
     
-    public NodeADMM(int id, double [][] _Ddata, double [][] _Bdata, 
+    public NodeADMM(Tuple2<Integer, Vector> _Ddata, 
+//            double [][] _Bdata, 
             int _n,
             int _m,
             int _k,
@@ -61,10 +64,10 @@ public class NodeADMM {
         k = _k;// k row in A
         lambda = _lambda;
         
-        D = _Ddata;
-        B = _Bdata;
+//        D = _Ddata;
+//        B = _Bdata;
         X = new double[k];//[m];
-        B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
+//        B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
 //        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
 //        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
@@ -95,7 +98,7 @@ public class NodeADMM {
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= LocalVector1D.rVector(k, 0.4);
             double[] u = LocalVector1D.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
-            double[] d=  LocalVector2D.getCol(D, id); //[n]*m
+            double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
             double[] Btd= LocalVector2D.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
@@ -133,13 +136,13 @@ public class NodeADMM {
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
                 if(stop)// && loop>1)
                 {
-                    System.err.println(id+" Stop at "+loop);
+                    System.err.println(_Ddata._1+" Stop at "+loop);
                     break;
                 }
                 loop++;
             }
             System.out.println(".");
-            LocalVector1D.printV(x, "x_"+ id, true);
+            LocalVector1D.printV(x, "x_"+ _Ddata._1, true);
 //            X = LocalVector2D.updateCol(X, x,id);
         }
 //        Matrix.printMat(X, "return");

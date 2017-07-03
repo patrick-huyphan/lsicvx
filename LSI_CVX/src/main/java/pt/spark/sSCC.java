@@ -122,14 +122,11 @@ public class sSCC {
         Broadcast<double[][]> _X = context.broadcast(X);
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
-        // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
-
         Broadcast<double[][]> mat = context.broadcast(A);
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
-//        Broadcast<JavaRDD<Tuple2<Integer, Vector>>> mat = context.broadcast(matI);
-//        matI.cache();
 
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
+        // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
                 -> {
 //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
@@ -179,18 +176,6 @@ TODO:
       (<r,c>,v[])
          */
         System.out.println("pt.spark.sSCC.solveADMM() " + curruntI._1 + " " + numberOfVertices + "-" + numOfFeature);
-//        double[][] _A = new double[numberOfVertices][numOfFeature];// rebuild from mat
-//        
-////        List<Tuple2<Integer, Vector>> matT = mat.collect();
-//        for(int i = 0; i< mat.size(); i++)
-//        {
-////            System.out.println("pt.spark.sSCC.run() driver "+mat.get(i)._1+"\t "+ mat.get(i)._2.toString());
-////            System.arraycopy(mat.get(i)._2.toArray(), 0, _A[mat.get(i)._1], mat.get(i)._1*mat.get(i)._2.size(), mat.get(i)._2.size());
-//            for(int j = 0; j< mat.get(i)._2.size(); j++)
-//            {
-//                _A[i][j] = mat.get(i)._2.apply(j);
-//            }
-//        }
 
         List<LocalEdge> _edges = new ArrayList(); //rebuild from e
         for (int i = 0; i < e.size(); i++) {
@@ -260,32 +245,6 @@ TODO:
         }
         return presentMat;
     }
-//    public static double[][] getPresentMat( List<Tuple2<Integer,Vector>> scc, double[][] rowsListDocTerm )
-//    {
-////        List<Tuple2<Integer,Vector>> sccL = scc.collect();
-//        // reduce same term
-//        List<Integer> listID = getPresentID(scc);
-//        //add term to new list
-//        double[][] ret = new double[rowsListDocTerm.length][listID.size()];
-//        for(int i = 0; i <rowsListDocTerm.length; i++)
-//            for(int j = 0; j< listID.size(); j++)
-//            {
-//                ret[i][j] = rowsListDocTerm[i][listID.get(j)];
-//            }
-//        return ret;
-//    }
-//    public static List<Integer> getPresentID(List<Tuple2<Integer,Vector>> scc)
-//    {
-//        List<Integer> ret = null;
-//        for(int i = 0; i< scc.size(); i++)
-//        {
-//            for(int j = i+1; j< scc.size(); j++)
-//            {
-//                
-//            }
-//        }
-//        return ret;
-//    }
 
     private static List<List<Integer>> getCluster(List<Tuple2<Integer, Vector>> scc) {
 //        int  ret[] = new int[scc.size()];
