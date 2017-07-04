@@ -171,7 +171,7 @@ public class sADMM {
 //            );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //        }
 //        );
-        retMat.saveAsTextFile(outFilePath + "\\ADMM");
+        retMat.saveAsTextFile(outFilePath + "/ADMM");
         return retMat.collect();
     }
     

@@ -37,6 +37,8 @@ public class main {
         String ouputdir = args[1]+"\\"+System.currentTimeMillis();
         // currently, not support: matrix data should be prepared before
         // read output from parse data
+        
+// testing data
         double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         
         double[][] docTermData = LocalVector2D.subMat(DQ, 0, 26, 0, DQ[0].length);

@@ -151,7 +151,7 @@ public class sSCC {
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
         List<Tuple2<Integer, Vector>> retList = ret.collect();
 
-        ret.saveAsObjectFile(outFilePath + "\\scc");
+        ret.saveAsObjectFile(outFilePath + "/scc");
         System.out.println("pt.spark.sSCC.run() end");
         return retList;
     }
