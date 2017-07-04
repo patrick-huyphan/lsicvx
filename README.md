@@ -67,7 +67,14 @@ Spark config:
 Spark submit on ubuntu (standalone mode):
 - start-master
 - add worker to master
-- submit job to master
+- submit job to master:
+ 
+spark-submit <jar file> 
+            --class <main class> 
+            --master <spark-master> 
+            <args1: input file> 
+            <args2: outpur dir> 
+            <args3: num of query in data file>
 
 
 
