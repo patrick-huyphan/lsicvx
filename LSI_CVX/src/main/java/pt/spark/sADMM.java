@@ -20,6 +20,8 @@ import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.DenseMatrix;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 //import org.apache.spark.mllib.optimization.tfocs.SolverL1RLS
 
 /**
@@ -57,9 +59,8 @@ public class sADMM {
         int m = D[0].length;
         int k = B[0].length;
 
-//    double D[][] = new double[n][m];
-//        double B[][] = new double[n][k];
-        double D2[][] = LocalVector2D.Transpose(D);
+        // convert to colum data
+        double D2[][] = LocalMatrix.Transpose(D);
         LinkedList<Tuple2<Integer, Vector>> rowsListDocTermD = new LinkedList<>();
         for (int i = 0; i < D2.length; i++) {
             Vector row = Vectors.dense(D2[i]);
@@ -69,12 +70,12 @@ public class sADMM {
 /**
  * TODO: use spark suport matrix to process those array
  */
-        B = LocalVector2D.orthonormal(B);
-        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
-        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
-        double[][] Am = LocalVector2D.Transpose(BtB);
-        double[][] Bm = LocalVector2D.scale(Am, -1);
-        double[][] AtB = LocalVector2D.mul(Am, Bm);
+        B = LocalMatrix.orthonormal(B);
+        double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
+        double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
+        double[][] Am = LocalMatrix.Transpose(BtB);
+        double[][] Bm = LocalMatrix.scale(Am, -1);
+        double[][] AtB = LocalMatrix.mul(Am, Bm);
 
 
         Broadcast<Double> rho0 = sc.broadcast(0.8);

@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author patrick_huy
  */
-public class LocalVector1D implements Cloneable, java.io.Serializable {
+public class LocalVector implements Cloneable, java.io.Serializable {
 
     private int n;
     DecimalFormat twoDForm = new DecimalFormat(" 0.0000000");
@@ -22,12 +22,12 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
         return  st;
     }
     
-    public LocalVector1D(int n) {
+    public LocalVector(int n) {
         this.n  = n;
         this.st = new LocalNode<Integer, Double>();
     }
 
-    public LocalVector1D(double row[]) {
+    public LocalVector(double row[]) {
 //    	System.out.println("1");
 //    	int count = 0;
         this.st = new LocalNode<Integer, Double>();
@@ -44,7 +44,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
 //        this.weigh = 0;
     }
     
-    public LocalVector1D(List<Double> row) {
+    public LocalVector(List<Double> row) {
 //    	System.out.println("1");
 //    	int count = 0;
         this.st = new LocalNode<Integer, Double>();
@@ -60,7 +60,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
         this.n  = row.size();//count;
 //        this.weigh = 0;
     }
-    public LocalVector1D(double row[], Boolean rmz) {
+    public LocalVector(double row[], Boolean rmz) {
 //    	System.out.println("1");
 //    	int count = 0;
         this.st = new LocalNode<Integer, Double>();
@@ -84,9 +84,9 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
     public boolean equals(Object object)
     {
         boolean sameVect = false;
-        if (object != null && object instanceof LocalVector1D)
+        if (object != null && object instanceof LocalVector)
         {
-//        	sameVect = isDepen(a, b)LocalVector1D((LocalVector1D) object);
+//        	sameVect = isDepen(a, b)LocalVector((LocalVector) object);
 //            if(sameSame)
 //            	System.err.println("equals "+ ((SparseVector) object).toString());
         }
@@ -148,7 +148,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
         maga = Math.sqrt(maga);
         magb = Math.sqrt(magb);
         double d = dotp / (maga * magb);
-//        System.out.println("paper.LocalVector1D.cosSim() "+d +" " + Double.NaN);
+//        System.out.println("paper.LocalVector.cosSim() "+d +" " + Double.NaN);
         return (Double.isNaN(d)) ? 0 : d;
     }
 
@@ -203,7 +203,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
 //            }
 //            if(sum ==0)
 //            {
-//                System.out.println("paper.LocalVector1D.isDepen() "+i);
+//                System.out.println("paper.LocalVector.isDepen() "+i);
 //                return true;
 //            }
 //        }
@@ -259,7 +259,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
      */
     public static double[] proxN1(double[] a, double sic) {
         double[] ret = new double[a.length];
-//        LocalVector1D.printV(a, "proxN1 sic=" + sic, true);
+//        LocalVector.printV(a, "proxN1 sic=" + sic, true);
         for (int i = 0; i < a.length; i++) {
                 double value = a[i];
                 
@@ -283,9 +283,9 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
     public static double[] proxN2(double[] a, double sic) {
         double[] ret = copy(a);
 
-        double norm = LocalVector1D.norm(a);
+        double norm = LocalVector.norm(a);
         double rate = 1. - 1. / (sic * norm);
-        ret = (norm >= 1. / sic) ? LocalVector1D.scale(ret, rate): ret;// .scale(0);//
+        ret = (norm >= 1. / sic) ? LocalVector.scale(ret, rate): ret;// .scale(0);//
 
         return ret;
     }
@@ -495,7 +495,7 @@ public class LocalVector1D implements Cloneable, java.io.Serializable {
         
         public static void printV(double[] a, String mess, boolean full)
         {
-            if(!full && LocalVector1D.isZeroVector(a))
+            if(!full && LocalVector.isZeroVector(a))
             {
                 System.out.print(mess+" Vec 0");
                 return;

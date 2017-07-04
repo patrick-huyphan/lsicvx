@@ -39,7 +39,7 @@ public class NodeCD extends LSI{
                 X[i][j] = new Random().nextDouble();
             }
         }
-        LocalVector2D.printMat(X, "init X");
+        LocalMatrix.printMat(X, "init X");
         //run m column of A
         for (int i = 0; i < m; i++) {
             boolean stop;// = false;
@@ -102,7 +102,7 @@ public class NodeCD extends LSI{
             }
 //            Vector.printV(Matrix.getCol(X, i), "X"+i, true);
         }
-        LocalVector2D.printMat(X, "ret");
+        LocalMatrix.printMat(X, "ret");
 //        return A;
     }
 

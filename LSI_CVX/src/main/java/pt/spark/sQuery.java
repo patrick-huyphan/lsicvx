@@ -25,6 +25,8 @@ import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.rdd.RDD;
 import scala.Function1;
 import scala.Function2;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 //import scala.concurrent.Channel.LinkedList;
 
 /**
@@ -64,12 +66,11 @@ public class sQuery {
 
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
 
-        JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map(
-                (Tuple2<Vector, Long> v1) -> {
+        JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map((Tuple2<Vector, Long> v1) -> {
             List<Tuple2<Integer,Tuple2<Integer, Double>>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
             for (Vector v : D2L) {
-                double value = LocalVector1D.cosSim(v.toArray(), v1._1.toArray());
+                double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
                 ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
             }
             return ret;

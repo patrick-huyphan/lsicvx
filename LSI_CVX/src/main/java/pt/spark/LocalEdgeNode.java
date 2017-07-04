@@ -12,11 +12,11 @@ import java.util.Comparator;
  * @author patrick_huy
  * Should create new class to optimize get value from edge
  */
-public class EdgeNode  implements Comparator<EdgeNode>{
+public class LocalEdgeNode  implements Comparator<LocalEdgeNode>{
     int source;
     int dest;
     double[] relatedValue;
-    public EdgeNode(int _s, int _d, double [] data)
+    public LocalEdgeNode(int _s, int _d, double [] data)
     {
         source = _s;
         dest = _d;
@@ -24,7 +24,7 @@ public class EdgeNode  implements Comparator<EdgeNode>{
     }   
 
     @Override
-    public int compare(EdgeNode o1, EdgeNode o2) {
+    public int compare(LocalEdgeNode o1, LocalEdgeNode o2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

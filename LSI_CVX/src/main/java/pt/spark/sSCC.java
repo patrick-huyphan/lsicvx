@@ -27,6 +27,9 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -75,7 +78,7 @@ public class sSCC {
 //        //Init
         double[][] X = new double[numberOfVertices][numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
-            double x = 1 - ((_lamda2) / LocalVector1D.norm(LocalVector2D.getCol(A, i)));
+            double x = 1 - ((_lamda2) / LocalVector.norm(LocalMatrix.getCol(A, i)));
             x = (x > 0) ? x : 0;
             //update by column i
             for (int j = 0; j < numberOfVertices; j++) {
@@ -85,17 +88,17 @@ public class sSCC {
 //        
         double[] u = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
-            u[i] = LocalVector1D.norm(LocalVector2D.getCol(X, i));
+            u[i] = LocalVector.norm(LocalMatrix.getCol(X, i));
         }
-        u = LocalVector1D.scale(u, _lamda2);
+        u = LocalVector.scale(u, _lamda2);
         double[] xAvr = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
-            double x = 1 - (u[i] / LocalVector1D.norm(LocalVector2D.getCol(A, i)));
+            double x = 1 - (u[i] / LocalVector.norm(LocalMatrix.getCol(A, i)));
             x = (x > 0) ? x : 0;
             for (int j = 0; j < numberOfVertices; j++) {
                 X[j][i] = x * A[j][i];
             }
-            xAvr[i] = LocalVector1D.avr(LocalVector2D.getCol(A, i));
+            xAvr[i] = LocalVector.avr(LocalMatrix.getCol(A, i));
         }
 
 //        for(Tuple2<Integer, Vector> mi: rowsList)
@@ -125,8 +128,8 @@ public class sSCC {
         Broadcast<double[][]> mat = context.broadcast(A);
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
 
-//        LocalVector2D.printMat(X, "x init");
-//        LocalVector1D.printV(xAvr, "xAvr", true);
+//        LocalMatrix.printMat(X, "x init");
+//        LocalVector.printV(xAvr, "xAvr", true);
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
@@ -201,7 +204,7 @@ TODO:
         List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
         for (int i = 0; i < rowsList.size(); i++) {
             for (int j = i + 1; j < rowsList.size(); j++) {
-                double value = LocalVector1D.cosSim(rowsList.get(i)._2.toArray(), rowsList.get(j)._2.toArray());
+                double value = LocalVector.cosSim(rowsList.get(i)._2.toArray(), rowsList.get(j)._2.toArray());
                 if(value>0)
                 {
                     ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1, rowsList.get(j)._1), value));
@@ -237,7 +240,7 @@ TODO:
             int shotestCol = edgesL.get(0);
             double min = 100;
             for (Integer node : edgesL) {
-                double norm = LocalVector1D.norm(A[node - 1]);
+                double norm = LocalVector.norm(A[node - 1]);
                 if (norm < min) {
                     min = norm;
                     shotestCol = node - 1;
@@ -263,7 +266,7 @@ TODO:
                 xxx.put(i, i);
                 for (int j = i + 1; j < scc.size(); j++) {
                     if (!xxx.containsKey(j)) {
-                        if ((LocalVector1D.isSameVec(scc.get(i)._2.toArray(), scc.get(j)._2.toArray()))) //                        if((Vector.isDepen(Matrix.getRow(X, i),Matrix.getRow(X, j))))    
+                        if ((LocalVector.isSameVec(scc.get(i)._2.toArray(), scc.get(j)._2.toArray()))) //                        if((Vector.isDepen(Matrix.getRow(X, i),Matrix.getRow(X, j))))    
                         {
 //                                System.out.println("same: "+i+"-"+j);
                             xxx.put(j, i);

@@ -8,8 +8,8 @@ package pt.spark;
 import java.text.DecimalFormat;
 import java.util.List;
 import org.apache.spark.mllib.linalg.Vector;
-import pt.spark.LocalVector1D;
-import pt.spark.LocalVector2D;
+import pt.spark.LocalVector;
+import pt.spark.LocalMatrix;
 import scala.Tuple2;
 /**
  *
@@ -68,11 +68,11 @@ public class NodeADMM {
         X = new double[k];//[m];
 //        B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
-//        double[][] Bt = LocalVector2D.Transpose(B); //[nk]->[kn]
-//        double[][] BtB = LocalVector2D.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
-//        double[][] Am = LocalVector2D.Transpose(BtB);
-//        double[][] Bm = LocalVector2D.scale(Am, -1);
-//        double[][] AtB = LocalVector2D.mul(Am, Bm);
+//        double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
+//        double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
+//        double[][] Am = LocalMatrix.Transpose(BtB);
+//        double[][] Bm = LocalMatrix.scale(Am, -1);
+//        double[][] AtB = LocalMatrix.mul(Am, Bm);
         
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(AtB, "AtB");    
@@ -95,10 +95,10 @@ public class NodeADMM {
             
             //init x, u ,v
 //            double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
-            double[] z= LocalVector1D.rVector(k, 0.4);
-            double[] u = LocalVector1D.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
+            double[] z= LocalVector.rVector(k, 0.4);
+            double[] u = LocalVector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
             double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
-            double[] Btd= LocalVector2D.mul(Bt, d); //[nk]*[n] = k
+            double[] Btd= LocalMatrix.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
 //            Vector.printV(u, "init u "+i, true);
@@ -114,8 +114,8 @@ public class NodeADMM {
             int loop = 0;
             while(loop<675)//1489) 143 // long = short+1
             {
-                double[][] IMtxRho = LocalVector2D.scale(BtB, rho);
-                double[][] iBtB_rho_Im = LocalVector2D.invert(LocalVector2D.plus(BtB, IMtxRho)); //[kk]
+                double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
+                double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]
         
                 X= updateX(u, z,iBtB_rho_Im,Btd);
 //                double lamPRho = ;
@@ -128,9 +128,9 @@ public class NodeADMM {
 
                 if(loop>1)
                     stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
-                x0=LocalVector1D.copy(X);
-                u0=LocalVector1D.copy(u);
-                z0=LocalVector1D.copy(z);
+                x0=LocalVector.copy(X);
+                u0=LocalVector.copy(u);
+                z0=LocalVector.copy(z);
 //                if(loop>1450)
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
                 if(stop)// && loop>1)
@@ -141,8 +141,8 @@ public class NodeADMM {
                 loop++;
             }
 //            System.out.println(".");
-//            LocalVector1D.printV(x, "ADMM x_"+ _Ddata._1, true);
-//            X = LocalVector2D.updateCol(X, x,id);
+//            LocalVector.printV(x, "ADMM x_"+ _Ddata._1, true);
+//            X = LocalMatrix.updateCol(X, x,id);
 //            System.arraycopy(x, 0, X, 0, x.length);
         }
 //        Matrix.printMat(X, "return");
@@ -152,15 +152,15 @@ public class NodeADMM {
     private double[] updateX(double[] u, double[] z,double[][] BtB_rho_Im, double[] Btd)
     {
         //- rho (z^k - u^k)[k]-[k]
-        double[] rho_zk_uk=  LocalVector1D.scale((LocalVector1D.plus(z, LocalVector1D.scale(u, -1))),rho*(-1.0));
-        double[] ret = LocalVector2D.mul(BtB_rho_Im, LocalVector1D.plus(Btd, rho_zk_uk));
+        double[] rho_zk_uk=  LocalVector.scale((LocalVector.plus(z, LocalVector.scale(u, -1))),rho*(-1.0));
+        double[] ret = LocalMatrix.mul(BtB_rho_Im, LocalVector.plus(Btd, rho_zk_uk));
         
 //        for(int d= 0; d< ret.length; d++)
 //        {
 //            if((1e-8>=(-1*ret[d])) && (ret[d]<1e-8))
 //                ret[d] = 0;
 //        }
-        return LocalVector1D.scale(ret,2);
+        return LocalVector.scale(ret,2);
     }
     
     /*
@@ -168,7 +168,7 @@ public class NodeADMM {
      */    
     private double[] updateU(double[] x, double[] u, double[] z)
     {
-        return LocalVector1D.plus(u, LocalVector1D.plus(x, LocalVector1D.scale(z, -1)));
+        return LocalVector.plus(u, LocalVector.plus(x, LocalVector.scale(z, -1)));
     }
 
     /*
@@ -180,7 +180,7 @@ public class NodeADMM {
     private double[] updateZ(double[] x, double[] u, double lamPRho)
     {
 //        double lamPRho = lambda/rho;
-        return LocalVector1D.proxN1(LocalVector1D.plus(x, u), lamPRho);        
+        return LocalVector.proxN1(LocalVector.plus(x, u), lamPRho);        
     }
     
     private double updateRho(double r, double s)
@@ -197,12 +197,12 @@ public class NodeADMM {
     
     private double dualResidual(double[] Zp, double[] Z)
     {
-        return LocalVector1D.norm(LocalVector1D.scale(LocalVector1D.plus(Zp, LocalVector1D.scale(Z, -1)),rho));
+        return LocalVector.norm(LocalVector.scale(LocalVector.plus(Zp, LocalVector.scale(Z, -1)),rho));
     }
     
     private double primalResidual(double[] X0, double[] Z0)
     {
-        return LocalVector1D.norm(LocalVector1D.plus(X0, LocalVector1D.scale(Z0,-1)));
+        return LocalVector.norm(LocalVector.plus(X0, LocalVector.scale(Z0,-1)));
     }
     
     
@@ -213,8 +213,8 @@ public class NodeADMM {
         double r = primalResidual(x0, z0);
         double s = dualResidual(z0, z);
 
-        double eP = epsilonA * Math.sqrt(n) + epsilonR*((LocalVector1D.norm(x0)>LocalVector1D.norm(z0))?LocalVector1D.norm(x0): LocalVector1D.norm(z0));
-        double eD = epsilonA * Math.sqrt(m) + epsilonR*(LocalVector1D.norm(LocalVector2D.mul(A,LocalVector1D.scale(u0,rho))));
+        double eP = epsilonA * Math.sqrt(n) + epsilonR*((LocalVector.norm(x0)>LocalVector.norm(z0))?LocalVector.norm(x0): LocalVector.norm(z0));
+        double eD = epsilonA * Math.sqrt(m) + epsilonR*(LocalVector.norm(LocalMatrix.mul(A,LocalVector.scale(u0,rho))));
 
 //        System.err.println("new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
         if((r<= eP) && (s<=eD))

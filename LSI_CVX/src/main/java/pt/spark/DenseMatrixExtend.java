@@ -11,9 +11,9 @@ import org.apache.spark.mllib.linalg.DenseMatrix;
  *
  * @author patrick_huy
  */
-public class eDenseMatrix extends DenseMatrix{
+public class DenseMatrixExtend extends DenseMatrix{
     
-    public eDenseMatrix(int i, int i1, double[] doubles, boolean bln) {
+    public DenseMatrixExtend(int i, int i1, double[] doubles, boolean bln) {
         super(i, i1, doubles, bln);
     }
     

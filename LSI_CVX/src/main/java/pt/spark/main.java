@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import static com.google.common.base.Preconditions.checkArgument;
 
 
 public class main {
@@ -41,8 +42,8 @@ public class main {
 // testing data
 //        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         
-//        double[][] docTermData = LocalVector2D.subMat(DQ, 0, 26, 0, DQ[0].length);
-//        double[][] query = LocalVector2D.subMat(DQ, 26, 3, 0, DQ[0].length);
+//        double[][] docTermData = LocalMatrix.subMat(DQ, 0, 26, 0, DQ[0].length);
+//        double[][] query = LocalMatrix.subMat(DQ, 26, 3, 0, DQ[0].length);
         
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
 //        double[][] query = new double[10][docTermData[0].length];
@@ -50,14 +51,14 @@ public class main {
         double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         int numofQ = Integer.parseInt(args[2]);
         
-        double[][] docTermData = LocalVector2D.subMat(DQ, 0, DQ.length-numofQ, 0, DQ[0].length);
-        double[][] query = LocalVector2D.subMat(DQ, DQ.length-numofQ, numofQ, 0, DQ[0].length);
+        double[][] docTermData = LocalMatrix.subMat(DQ, 0, DQ.length-numofQ, 0, DQ[0].length);
+        double[][] query = LocalMatrix.subMat(DQ, DQ.length-numofQ, numofQ, 0, DQ[0].length);
 
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData("../data/data.csv");
         //TODO: parallel echelon 
-        double[][] echelon = LocalVector2D.echelon(docTermData);//
+        double[][] echelon = LocalMatrix.echelon(docTermData);//
         
-        double[][] termDocData = LocalVector2D.Transpose(echelon); 
+        double[][] termDocData = LocalMatrix.Transpose(echelon); 
       
         
         
