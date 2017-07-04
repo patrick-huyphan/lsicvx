@@ -112,8 +112,9 @@ public class sADMM {
         }
         );
         
-        retMat.saveAsTextFile(outFilePath + "/ADMM");
+        
         List<Tuple2<Integer, Vector>> retList= retMat.collect();
+        retMat.saveAsTextFile(outFilePath + "/ADMM");
         System.out.println("pt.spark.sADMM.run() end");
         
         rho0.destroy();
