@@ -48,9 +48,10 @@ public class main {
 //        double[][] query = new double[10][docTermData[0].length];
 
         double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
+        int numofQ = Integer.parseInt(args[2]);
         
-        double[][] docTermData = LocalVector2D.subMat(DQ, 0, DQ.length-10, 0, DQ[0].length);
-        double[][] query = LocalVector2D.subMat(DQ, DQ.length-10, 10, 0, DQ[0].length);
+        double[][] docTermData = LocalVector2D.subMat(DQ, 0, DQ.length-numofQ, 0, DQ[0].length);
+        double[][] query = LocalVector2D.subMat(DQ, DQ.length-numofQ, numofQ, 0, DQ[0].length);
 
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData("../data/data.csv");
         //TODO: parallel echelon 
