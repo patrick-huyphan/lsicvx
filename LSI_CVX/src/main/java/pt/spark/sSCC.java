@@ -125,8 +125,8 @@ public class sSCC {
         Broadcast<double[][]> mat = context.broadcast(A);
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
 
-        LocalVector2D.printMat(X, "x init");
-        LocalVector1D.printV(xAvr, "xAvr", true);
+//        LocalVector2D.printMat(X, "x init");
+//        LocalVector1D.printV(xAvr, "xAvr", true);
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
@@ -153,7 +153,7 @@ public class sSCC {
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
         List<Tuple2<Integer, Vector>> retList = ret.collect();
 
-        ret.saveAsObjectFile(outFilePath + "/scc");
+        ret.saveAsTextFile(outFilePath + "/scc");
         System.out.println("pt.spark.sSCC.run() end");
         return retList;
     }
@@ -205,7 +205,7 @@ TODO:
                 if(value>0)
                 {
                     ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1, rowsList.get(j)._1), value));
-                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
+//                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
                 }
             }
         }
