@@ -20,32 +20,30 @@ import scala.Tuple2;
  * D(n-m) term doc matrix
  */
 public class NodeADMM {
-//    double [][] D;
-//    double [][] B;
-//    double [][] X;
-    
-//        double [][] D;
-//    double [][] B;
     double []X;
     double lambda;
     static final int MAX_LOOP = 100;
     int k;// k row in A
     int m;// m column in A
     int n;// n row in D
-
-    /**
-     *
-     * @param _Ddata
-     * @param _Bdata
-     * @param rho
-     * @param lambda
-     * @param e1
-     * @param e2
-     */
-    
     double rho;
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
     
+    /**
+     * 
+     * @param _Ddata
+     * @param _n
+     * @param _m
+     * @param _k
+     * @param Bt
+     * @param BtB
+     * @param AtB
+     * @param _rho
+     * @param _lambda
+     * @param e1
+     * @param e2 
+     */
+
     public NodeADMM(Tuple2<Integer, Vector> _Ddata, 
             int _n,
             int _m,
@@ -110,7 +108,7 @@ public class NodeADMM {
             {
                 double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]
-        
+                System.out.print(".");
                 X= updateX(u, z,iBtB_rho_Im,Btd);
 //                double lamPRho = ;
                 z= updateZ(X, u, lambda/rho);                
@@ -134,7 +132,7 @@ public class NodeADMM {
                 }
                 loop++;
             }
-            System.out.println(_Ddata._1);
+            System.out.println(_Ddata._1 + "\t"+loop);
         }
     }
     
@@ -198,8 +196,8 @@ public class NodeADMM {
     
     private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A,int time)
     {
-//        if(this.rho ==0)
-//            return true;
+        if(this.rho ==0)
+            return true;
         double r = primalResidual(x0, z0);
         double s = dualResidual(z0, z);
 

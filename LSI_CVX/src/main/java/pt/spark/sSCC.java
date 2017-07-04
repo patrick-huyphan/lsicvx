@@ -105,33 +105,26 @@ public class sSCC {
 //        {
 //            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
 //        }
-//    String master = "local[*]";
-//    /*
-//     * Initialises a Spark context.
-//     */
         System.out.println("pt.spark.sSCC.run()");
-//        CoordinateMatrix Cm = null;
 
-        Broadcast<Double> rho0 = context.broadcast(0.8);
-        Broadcast<Double> lamda = context.broadcast(0.6);
-//        Broadcast<Double> lamda2 = context.broadcast(0.01);
-        Broadcast<Double> eps_abs = context.broadcast(1e-6);
-        Broadcast<Double> eps_rel = context.broadcast(1e-6);
+        Broadcast<Double> rho0 = context.broadcast(_rho0);
+        Broadcast<Double> lamda = context.broadcast(_lamda);
+        Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
+        Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-
-//        Broadcast<double[]> _u = context.broadcast(u);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
         Broadcast<int[]> _ni = context.broadcast(ni);
         Broadcast<double[][]> _X = context.broadcast(X);
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
         Broadcast<double[][]> mat = context.broadcast(A);
-        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
+
 
 //        LocalMatrix.printMat(X, "x init");
 //        LocalVector.printV(xAvr, "xAvr", true);
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
+        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
                 -> {
 //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
@@ -144,10 +137,8 @@ public class sSCC {
                             _X.value()[t1._1],
                             _ni.value(),
                             _xAvr.value(),
-                            //                        _u.value(),
                             rho0.value(),
                             lamda.value(),
-                            //                        lamda2.value(), 
                             eps_abs.value(),
                             eps_rel.value()));
         }
