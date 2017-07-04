@@ -127,15 +127,9 @@ public class sADMM {
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
-        
-        List<Integer> id = new ArrayList();
-        for (int i = 0; i < m; i++) {
-            id.add(i);
-        }
-//        JavaRDD<Integer> indexs = sc.parallelize(id);
-//        indexs.zip(matI)
+        System.out.println("pt.spark.sADMM.run()");
         JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
-//            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
+            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
             return new Tuple2<>(t._1,
                     solveADMM(t,
 //                            _B.value(),
@@ -152,25 +146,6 @@ public class sADMM {
             );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         );
-//        JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
-//            System.out.println("pt.spark.sSCC.run() driver " + t._1 + "\t " + t._2.toString());
-//            return new Tuple2<>(t._1,
-//                    solveADMM(t._1,
-//                            _D.value(),
-//                            _B.value(),
-//                            _n.value(),
-//                            _m.value(),
-//                            _k.value(),
-//                            _Bt.value(),
-//                            _BtB.value(),
-//                            _AtB.value(),
-//                            rho0.value(),
-//                            lamda.value(),
-//                            eps_abs.value(),
-//                            eps_rel.value())
-//            );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        }
-//        );
         retMat.saveAsTextFile(outFilePath + "/ADMM");
         return retMat.collect();
     }
