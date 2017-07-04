@@ -141,7 +141,7 @@ public class NodeADMM {
                 loop++;
             }
             System.out.println(".");
-            LocalVector1D.printV(x, "x_"+ _Ddata._1, true);
+            LocalVector1D.printV(x, "ADMM x_"+ _Ddata._1, true);
 //            X = LocalVector2D.updateCol(X, x,id);
         }
 //        Matrix.printMat(X, "return");

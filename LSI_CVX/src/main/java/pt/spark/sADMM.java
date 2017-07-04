@@ -66,15 +66,6 @@ public class sADMM {
             rowsListDocTermD.add(new Tuple2<>(i, row));
         }
 
-//        sCommonFunc.loadDenseMatrix(rowsListDocTermD).transpose(). //map(new Function1);
-        
-        
-        
-//        LinkedList<Tuple2<Integer,Vector>> rowsListDocTermB = new LinkedList<>();
-//        for (int i = 0; i < B.length; i++) {
-//            Vector row = Vectors.dense(B[i]);
-//            rowsListDocTermB.add(new Tuple2<>(i,row));
-//        }
 /**
  * TODO: use spark suport matrix to process those array
  */
@@ -85,34 +76,7 @@ public class sADMM {
         double[][] Bm = LocalVector2D.scale(Am, -1);
         double[][] AtB = LocalVector2D.mul(Am, Bm);
 
-//    SparkConf conf = new SparkConf()
-//        .setAppName(sADMM.class.getName())
-//        .setMaster(master);
-//    JavaSparkContext sc = new JavaSparkContext(conf);
 
-        /*
-     * Performs a work count sequence of tasks and prints the output with a logger.
-         */
-        //read B matrix from scc
-//  LinkedList<Vector> rowsList = new LinkedList<>();
-//  for (int i = 0; i < array.length; i++) {
-//    Vector currentRow = Vectors.dense(array[i]);
-//    rowsList.add(currentRow);
-//  }
-//  JavaRDD<Tuple2<Integer,Vector>> rows0 = sc.parallelize(rowsListDocTerm0);
-//  JavaRDD<Tuple2<Integer,Vector>> rows1 = sc.parallelize(rowsListDocTerm1);
-// Create a RowMatrix from JavaRDD<Vector>.
-//  RowMatrix mat0 = new RowMatrix(rows0.rdd());
-//  RowMatrix mat1 = new RowMatrix(rows1.rdd());
-//  
-//  double rho = 0.8;
-//  double lamda = 0.6;
-//  double eps_abs= 1e-6;
-//  double eps_rel= 1e-6;
-        // each solveADMM process for 1 column of input matrix
-//  Broadcast<Double> rhob= sc.broadcast(rho);
-//    Broadcast<RowMatrix> t0 = sc.broadcast(mat0);
-//    Broadcast<RowMatrix> t1 = sc.broadcast(mat1);
         Broadcast<Double> rho0 = sc.broadcast(0.8);
         Broadcast<Double> lamda = sc.broadcast(0.6);
         Broadcast<Double> eps_abs = sc.broadcast(1e-6);

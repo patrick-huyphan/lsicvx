@@ -60,7 +60,8 @@ public class NodeSCC{  //extends Clustering{
 ////        Matrix.printMat(A, "centered");
 //        //Init
         X = _X;//new double[numOfFeature];
-        
+        System.out.println("pt.spark.NodeSCC.<init>() rho:  "+rho);
+        LocalVector1D.printV(X, "X start "+id, true);
 //        for(int i = 0; i< numberOfVertices; i++)
         {
             rho = rho2;
