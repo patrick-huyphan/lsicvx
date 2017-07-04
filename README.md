@@ -2,52 +2,56 @@
 Using spark to process:
 - clustering data with SCC
 - find projection matrix with ADMM
+- query cosine similarity
 
 # SW requirement:
 - JDK 1.8
+- Java and scala
 - spark 2.1
 - maven
 
+# Main prj
+- Paper: full flow in single processing
+- LSI_CVX: full flow in parallel processing
+
 # TODO:
-
-Paper: Full flow, normal processing with SCC and ADMM
-
 Parallel processing:
 - Data structure: 
-    - sparse matrix with row and column
-        - key-value: <(rowID-colID):value>
-    - spark matrix struct? matrix, rowmatrix, sparse matrix...  
-    - broadcast data: ???    
+    - spark matrix struct: parallel on rowmatrix
+    - broadcast data: local matrix to process on driver, variable of local function    
 
 https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/SparseMatrix.html
 
 
-- Read matrix data: 
-    + where is data stored? 
-    + What data will be mapped and reduced?
+- Read matrix data: currently, read data from .csv matrix file
+    + Should add process to read from raw text file, build VSM.
+- Should process echelon in parallel
 
 - SCC: what data should be read, flow processing
-    + map matrix
+    + Calculate local node data and broadcast local data
+    + map row matrix
     + lambda, rho
     + row calculate
     + reduce row
 - ADMM: what data should be read, flow processing
-    + map matrix D.
-    + map matrix B.
+    + Calculate local node data and broadcast local data
+    + map row matrix D( D should transposed).
     + column calculate
     + reduce column
 
 - Full flow for parallel: 
     + submit job to read data
-    + submit SCC job
-    + submit ADMM job
-    + submit job to transform D matrix to D' 
-    + submit cosine job
+    + echelon
+    + SCC job
+    + ADMM job
+    + transform D matrix to D' 
+    + cosine similarity job
     + reduce result
 
 Need more package for full app processing 
 - Data preparation: parsing text data to matrix, remove stop work, build VSM
-- transform matrix to new space and query
+- echelon
+- calculate local node data in parallel
 
 
 # Spark
@@ -79,15 +83,9 @@ http://snap.stanford.edu/snapvx/developer_doc.pdf
 http://di.eteri.ch/projects/admm_paper.pdf
 http://www.programcreek.com/java-api-examples/index.php?api=org.apache.spark.broadcast.Broadcast
 
-# Main content prj
-- Paper: full flow in single processing
-- LSI_CVX: full flow in parallel processing
-
 
 # Un-use project
-- Scc
-- ADMM
 - Parse data
-- Query
+
 # Author:
 Patrick HuyPhan(huyphan.aj@gmail.com)
