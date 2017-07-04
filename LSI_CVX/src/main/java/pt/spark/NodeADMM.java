@@ -196,8 +196,8 @@ public class NodeADMM {
     
     private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A,int time)
     {
-        if(this.rho ==0)
-            return true;
+//        if(this.rho ==0)
+//            return true;
         double r = primalResidual(x0, z0);
         double s = dualResidual(z0, z);
 
