@@ -34,7 +34,7 @@ public class main {
         checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
 
         String master = "local[*]";
-        String ouputdir = args[1]+"\\"+System.currentTimeMillis();
+        String ouputdir = args[1]+"/"+System.currentTimeMillis();
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         

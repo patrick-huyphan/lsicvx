@@ -54,16 +54,16 @@ public class sQuery {
          * Input: D n*m X k*m Q i*m TODO: D' = D*Xt -> (n*m x m*k)n*k Q' = Q*Xt
          * -> i*k sim(D',Q')
          */
-        RowMatrix rD = sCommonFunc.loadRowM(sc, D);
-        RowMatrix rQ = sCommonFunc.loadRowM(sc, Q);
+        RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
+        RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose();
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
 
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
         List<Integer> id = new ArrayList();
-        for (int i = 0; i < Q.length; i++) {
+        for (int i = 0; i < D2.size(); i++) { //Q.length
             id.add(i);
         }
         JavaRDD<Integer> indexs = sc.parallelize(id);
