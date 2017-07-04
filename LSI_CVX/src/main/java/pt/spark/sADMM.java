@@ -111,19 +111,20 @@ public class sADMM {
             );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         );
-        retMat.saveAsTextFile(outFilePath + "/ADMM");
+        
+//        retMat.saveAsTextFile(outFilePath + "/ADMM");
         
         
-        rho0.unpersist();
-        lamda.unpersist();
-        eps_abs.unpersist();
-        eps_rel.unpersist();
-        _n.unpersist();
-        _m.unpersist();
-        _k.unpersist();
-        _Bt.unpersist();
-        _BtB.unpersist();
-        _AtB.unpersist();
+        rho0.destroy();
+        lamda.destroy();
+        eps_abs.destroy();
+        eps_rel.destroy();
+        _n.destroy();
+        _m.destroy();
+        _k.destroy();
+        _Bt.destroy();
+        _BtB.destroy();
+        _AtB.destroy();
         
         return retMat.collect();
     }
