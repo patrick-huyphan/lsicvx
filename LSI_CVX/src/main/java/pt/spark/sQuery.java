@@ -60,7 +60,7 @@ public class sQuery {
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B);//.transpose(); //m,k
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
 
