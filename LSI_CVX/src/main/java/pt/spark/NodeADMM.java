@@ -94,7 +94,7 @@ public class NodeADMM {
             boolean stop = false;
             
             //init x, u ,v
-            double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
+//            double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= LocalVector1D.rVector(k, 0.4);
             double[] u = LocalVector1D.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
             double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
@@ -117,10 +117,10 @@ public class NodeADMM {
                 double[][] IMtxRho = LocalVector2D.scale(BtB, rho);
                 double[][] iBtB_rho_Im = LocalVector2D.invert(LocalVector2D.plus(BtB, IMtxRho)); //[kk]
         
-                x= updateX(u, z,iBtB_rho_Im,Btd);
+                X= updateX(u, z,iBtB_rho_Im,Btd);
 //                double lamPRho = ;
-                z= updateZ(x, u, lambda/rho);                
-                u= updateU(x, u, z);
+                z= updateZ(X, u, lambda/rho);                
+                u= updateU(X, u, z);
                 
 //            Vector.printV(z, "z:"+ i+"-"+loop, true);
 //            Vector.printV(u, "u:"+ i+"-"+loop, true);
@@ -128,7 +128,7 @@ public class NodeADMM {
 
                 if(loop>1)
                     stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
-                x0=LocalVector1D.copy(x);
+                x0=LocalVector1D.copy(X);
                 u0=LocalVector1D.copy(u);
                 z0=LocalVector1D.copy(z);
 //                if(loop>1450)
@@ -143,6 +143,7 @@ public class NodeADMM {
 //            System.out.println(".");
 //            LocalVector1D.printV(x, "ADMM x_"+ _Ddata._1, true);
 //            X = LocalVector2D.updateCol(X, x,id);
+//            System.arraycopy(x, 0, X, 0, x.length);
         }
 //        Matrix.printMat(X, "return");
     }
