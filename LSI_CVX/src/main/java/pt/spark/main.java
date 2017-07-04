@@ -69,13 +69,11 @@ public class main {
         JavaSparkContext sc = new JavaSparkContext(conf);
         
         List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData,
-//                args[0], 
                 ouputdir);
 
         double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
         List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, 
-//                args[0], 
                 ouputdir);
 
         // read output from parse+ sADMM 
@@ -83,7 +81,6 @@ public class main {
                 docTermData, 
                 pMatrix, //k*n
                 query, 
-//                args[0], 
                 ouputdir);
         
         sc.close();

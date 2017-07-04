@@ -112,21 +112,22 @@ public class sADMM {
         }
         );
         
-//        retMat.saveAsTextFile(outFilePath + "/ADMM");
+        retMat.saveAsTextFile(outFilePath + "/ADMM");
+        List<Tuple2<Integer, Vector>> retList= retMat.collect();
+        System.out.println("pt.spark.sADMM.run() end");
         
-        
-        rho0.unpersist(); 
-        lamda.unpersist();
-        eps_abs.unpersist();
-        eps_rel.unpersist();
-        _n.unpersist();
-        _m.unpersist();
-        _k.unpersist();
-        _Bt.unpersist();
-        _BtB.unpersist();
-        _AtB.unpersist();
-        
-        return retMat.collect();
+        rho0.destroy();
+        lamda.destroy();
+        eps_abs.destroy();
+        eps_rel.destroy();
+        _n.destroy();
+        _m.destroy();
+        _k.destroy();
+        _Bt.destroy();
+        _BtB.destroy();
+        _AtB.destroy();
+         
+        return retList;
     }
     
     private static Vector solveADMM(
