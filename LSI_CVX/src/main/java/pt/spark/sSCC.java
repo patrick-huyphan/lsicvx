@@ -202,8 +202,11 @@ TODO:
         for (int i = 0; i < rowsList.size(); i++) {
             for (int j = i + 1; j < rowsList.size(); j++) {
                 double value = LocalVector1D.cosSim(rowsList.get(i)._2.toArray(), rowsList.get(j)._2.toArray());
-                ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1, rowsList.get(j)._1), value));
-                ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
+                if(value>0)
+                {
+                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1, rowsList.get(j)._1), value));
+                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
+                }
             }
         }
         return ret;
