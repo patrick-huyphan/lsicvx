@@ -125,6 +125,7 @@ public class sSCC {
         Broadcast<double[][]> mat = context.broadcast(A);
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
 
+        LocalVector2D.printMat(X, "x init");
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
