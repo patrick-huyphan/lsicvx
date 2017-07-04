@@ -46,8 +46,8 @@ public class sQuery {
      * The task body
      */
     public List<List<Tuple2<Integer,Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
-            double[][] D,
-            List<Tuple2<Integer, Vector>> B,
+            double[][] D,   
+            List<Tuple2<Integer, Vector>> B,//m*k
             double[][] Q,
 //            String inputFilePath,
             String outFilePath) {
@@ -60,7 +60,7 @@ public class sQuery {
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+        Matrix mX = sCommonFunc.loadDenseMatrix(B);//.transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
 

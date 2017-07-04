@@ -81,7 +81,7 @@ public class main {
         // read output from parse+ sADMM 
         new sQuery().run(sc, 
                 docTermData, 
-                pMatrix, 
+                pMatrix, //k*n
                 query, 
 //                args[0], 
                 ouputdir);
