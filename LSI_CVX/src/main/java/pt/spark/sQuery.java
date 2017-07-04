@@ -43,7 +43,7 @@ public class sQuery {
     /**
      * The task body
      */
-    public List<List<Tuple2<Integer, Double>>> run(JavaSparkContext sc,
+    public List<List<Tuple2<Tuple2<Integer, Integer>, Double>>> run(JavaSparkContext sc,
             double[][] D,
             List<Tuple2<Integer, Vector>> B,
             double[][] Q,
@@ -62,12 +62,13 @@ public class sQuery {
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
 
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
-//        List<Integer> id = new ArrayList();
-//        for (int i = 0; i < D2.size(); i++) { //Q.length
-//            id.add(i);
-//        }
+        List<Integer> id = new ArrayList();
+        for (int i = 0; i < D2.size(); i++) { //Q.length
+            id.add(i);
+        }
         
-//        JavaRDD<Integer> indexs = sc.parallelize(id);
+        JavaRDD<Integer> indexs = sc.parallelize(id);
+//        indexs.
 //        JavaRDD<List<Tuple2<Tuple2<Integer, Integer>, Double>>> abc = indexs.zip(rQ.multiply(mX).rows().toJavaRDD()).map((Tuple2<Integer, Vector> v1) -> {
 //            List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
 //            List<Vector> D2L = _D2.value();
@@ -78,15 +79,26 @@ public class sQuery {
 //            return ret;
 //        });
 
-        JavaRDD<List<Tuple2<Integer, Double>>> abc = rQ.multiply(mX).rows().toJavaRDD().map((Vector v1) -> {
-            List<Tuple2<Integer,Double>> ret = new ArrayList<>();
+        JavaRDD<List<Tuple2<Tuple2<Integer, Integer>, Double>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map(
+                (Tuple2<Vector, Long> v1) -> {
+            List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
             for (Vector v : D2L) {
-                double value = LocalVector1D.cosSim(v.toArray(), v1.toArray());
-                ret.add(new Tuple2<>(D2L.indexOf(v), value));
+                double value = LocalVector1D.cosSim(v.toArray(), v1._1.toArray());
+                ret.add(new Tuple2<>(new Tuple2<>(Integer.valueOf(v1._2.intValue()), D2L.indexOf(v)), value));
             }
             return ret;
         });
+        
+//        JavaRDD<List<Tuple2<Integer, Double>>> abc = rQ.multiply(mX).rows().toJavaRDD().map((Vector v1) -> {
+//            List<Tuple2<Integer,Double>> ret = new ArrayList<>();
+//            List<Vector> D2L = _D2.value();
+//            for (Vector v : D2L) {
+//                double value = LocalVector1D.cosSim(v.toArray(), v1.toArray());
+//                ret.add(new Tuple2<>(D2L.indexOf(v), value));
+//            }
+//            return ret;
+//        });
         abc.saveAsTextFile(outFilePath + "/queryRes");
         return abc.collect();
     }
