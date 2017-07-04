@@ -52,8 +52,6 @@ public class NodeADMM {
             int _k,
             double[][] Bt,
             double[][] BtB,
-//            double[][] Am,
-//            double[][] Bm,
             double[][] AtB,
             double _rho,double _lambda, 
             double e1, double e2) {
@@ -63,10 +61,7 @@ public class NodeADMM {
         k = _k;// k row in A
         lambda = _lambda;
         
-//        D = _Ddata;
-//        B = _Bdata;
         X = new double[k];//[m];
-//        B = _Bdata;//LocalVector2D.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
 
 //        double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
 //        double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
@@ -88,7 +83,6 @@ public class NodeADMM {
 //        Matrix.printMat(IMtxRho, "IMtxRho");
 //        System.out.println("paper.NodeADMM.<init>() rho "+ _rho);
         
-//        for(int i = 0;i<m; i++)
         {
             rho = _rho;
             boolean stop = false;
@@ -140,12 +134,8 @@ public class NodeADMM {
                 }
                 loop++;
             }
-//            System.out.println(".");
-//            LocalVector.printV(x, "ADMM x_"+ _Ddata._1, true);
-//            X = LocalMatrix.updateCol(X, x,id);
-//            System.arraycopy(x, 0, X, 0, x.length);
+            System.out.println(_Ddata._1);
         }
-//        Matrix.printMat(X, "return");
     }
     
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]

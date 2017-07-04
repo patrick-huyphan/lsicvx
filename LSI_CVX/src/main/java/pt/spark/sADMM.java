@@ -85,19 +85,16 @@ public class sADMM {
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
-//        Broadcast<double[][]> _D = sc.broadcast(D);
-//        Broadcast<double[][]> _B = sc.broadcast(B);
-        
         Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
-        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
+        
         System.out.println("pt.spark.sADMM.run()");
-        JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
+        JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
+        JavaPairRDD<Integer, Vector> retPair = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
 //            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
             return new Tuple2<Integer, Vector>(t._1,
                     solveADMM(t,
-//                            _B.value(),
                             _n.value(),
                             _m.value(),
                             _k.value(),
@@ -108,14 +105,14 @@ public class sADMM {
                             lamda.value(),
                             eps_abs.value(),
                             eps_rel.value())
-            );//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            );
         }
         );
         
-        
-        List<Tuple2<Integer, Vector>> retList= retMat.collect();
-        retMat.saveAsTextFile(outFilePath + "/ADMM");
-        System.out.println("pt.spark.sADMM.run() end");
+        System.out.println("pt.spark.sADMM.run() end "+ retPair.count());
+        List<Tuple2<Integer, Vector>> retList= retPair.collect();
+        retPair.saveAsTextFile(outFilePath + "/ADMM");
+        System.out.println("pt.spark.sADMM.run() detroy and return");
         
         rho0.destroy();
         lamda.destroy();
@@ -133,10 +130,7 @@ public class sADMM {
     
     private static Vector solveADMM(
             Tuple2<Integer, Vector> _Ddata,
-//            double[][] _Bdata,
-            int _n,
-            int _m,
-            int _k,
+            int _n, int _m, int _k,
             double[][] Bt,
             double[][] BtB,
             double[][] AtB,
@@ -145,7 +139,6 @@ public class sADMM {
         
         NodeADMM xNode = new NodeADMM(
                 _Ddata,
-//                _Bdata,
                 _n, _m, _k,
                 Bt,
                 BtB,
