@@ -93,8 +93,8 @@ public class sADMM {
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
         System.out.println("pt.spark.sADMM.run()");
         JavaPairRDD<Integer, Vector> retMat = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
-            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
-            return new Tuple2<>(t._1,
+//            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
+            return new Tuple2<Integer, Vector>(t._1,
                     solveADMM(t,
 //                            _B.value(),
                             _n.value(),
@@ -135,7 +135,7 @@ public class sADMM {
                 AtB,
                 _lamda, _rho,
                 e1, e2);
-        return Vectors.dense(xNode.X[0]);
+        return Vectors.dense(xNode.X);
     }
     
 }
