@@ -37,14 +37,22 @@ public class main {
         String ouputdir = args[1]+"\\"+System.currentTimeMillis();
         // currently, not support: matrix data should be prepared before
         // read output from parse data
-        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
+        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
+        
+        double[][] docTermData = LocalVector2D.subMat(DQ, 0, 26, 0, DQ[0].length);
+        double[][] query = LocalVector2D.subMat(DQ, 26, 3, 0, DQ[0].length);
+        
+//        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
+//        double[][] query = new double[10][docTermData[0].length];
+
+
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData("../data/data.csv");
         //TODO: parallel echelon 
         double[][] echelon = LocalVector2D.echelon(docTermData);//
         
         double[][] termDocData = LocalVector2D.Transpose(echelon); 
       
-        double[][] query = new double[10][docTermData[0].length];
+        
         
         // read output from echelon:         
         SparkConf conf = new SparkConf()
