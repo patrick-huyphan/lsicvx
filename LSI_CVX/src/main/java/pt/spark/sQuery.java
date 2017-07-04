@@ -77,6 +77,7 @@ public class sQuery {
         });
         
         abc.saveAsTextFile(outFilePath + "/queryRes");
+        _D2.destroy();
         return abc.collect();
     }
 }

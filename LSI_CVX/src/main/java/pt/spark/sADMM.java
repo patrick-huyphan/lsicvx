@@ -112,6 +112,19 @@ public class sADMM {
         }
         );
         retMat.saveAsTextFile(outFilePath + "/ADMM");
+        
+        
+        rho0.unpersist();
+        lamda.unpersist();
+        eps_abs.unpersist();
+        eps_rel.unpersist();
+        _n.unpersist();
+        _m.unpersist();
+        _k.unpersist();
+        _Bt.unpersist();
+        _BtB.unpersist();
+        _AtB.unpersist();
+        
         return retMat.collect();
     }
     

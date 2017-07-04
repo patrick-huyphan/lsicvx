@@ -158,6 +158,19 @@ public class sSCC {
 
         ret.saveAsTextFile(outFilePath + "/scc");
         System.out.println("pt.spark.sSCC.run() end");
+        
+        rho0.destroy();
+        lamda.destroy();
+        eps_abs.destroy();
+        eps_rel.destroy();
+        E.destroy();
+        _xAvr.destroy();
+        _ni.destroy();
+        _X.destroy();
+        _numOfFeature.destroy();
+        _numberOfVertices.destroy();
+        mat.destroy();
+        
         return retList;
     }
 
