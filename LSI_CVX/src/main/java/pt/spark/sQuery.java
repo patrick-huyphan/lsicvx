@@ -43,7 +43,7 @@ public class sQuery {
     /**
      * The task body
      */
-    public List<List<Tuple2<Tuple2<Integer, Integer>, Double>>> run(JavaSparkContext sc,
+    public List<List<Tuple2<Integer,Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
             double[][] D,
             List<Tuple2<Integer, Vector>> B,
             double[][] Q,
@@ -64,13 +64,13 @@ public class sQuery {
 
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
 
-        JavaRDD<List<Tuple2<Tuple2<Integer, Integer>, Double>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map(
+        JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map(
                 (Tuple2<Vector, Long> v1) -> {
-            List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
+            List<Tuple2<Integer,Tuple2<Integer, Double>>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
             for (Vector v : D2L) {
                 double value = LocalVector1D.cosSim(v.toArray(), v1._1.toArray());
-                ret.add(new Tuple2<>(new Tuple2<>(v1._2.intValue(), D2L.indexOf(v)), value));
+                ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
             }
             return ret;
         });
