@@ -215,6 +215,8 @@ TODO:
             ret[e._1._1] = ret[e._1._1] + 1;
             ret[e._1._2] = ret[e._1._2] + 1;
         }
+        for(int i = 0; i< numberOfVertices; i++)
+            System.out.println("pt.spark.sSCC.retSize() "+i+": "+ ret[i]);
         return ret;
     }
 
