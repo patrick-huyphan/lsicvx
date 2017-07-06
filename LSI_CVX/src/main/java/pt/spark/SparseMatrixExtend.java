@@ -7,6 +7,7 @@ package pt.spark;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.spark.ml.linalg.Vectors;
+import org.apache.spark.mllib.linalg.DenseMatrix;
 import org.apache.spark.mllib.linalg.SparseMatrix;
 import org.apache.spark.mllib.linalg.SparseVector;
 import static pt.spark.LocalMatrix.Copy;
@@ -17,7 +18,8 @@ import static pt.spark.LocalMatrix.getCol;
 import static pt.spark.LocalMatrix.getRow;
 import static pt.spark.LocalMatrix.updateRow;
 import scala.collection.immutable.Vector;
-import org.apache.spark.ml.linalg.*;
+//import org.apache.spark.ml.linalg.*;
+import scala.reflect.internal.Trees;
 /**
  *
  * @author patrick_huy
@@ -28,6 +30,9 @@ class SparseMatrixExtend extends SparseMatrix{
     public SparseMatrixExtend(int numRows, int numCols, int[] colPtrs, int[] rowIndices, double[] values, boolean isTransposed) {
         super(numRows, numCols, colPtrs, rowIndices, values, isTransposed);
     }
+//    public SparseMatrixExtend(SparseMatrix x);
+//        This = x.;
+//    }
     public double get(int i, int j) {
         return apply(i, j);
     }
@@ -59,64 +64,40 @@ class SparseMatrixExtend extends SparseMatrix{
         }
     }
 
-    public SparseMatrixExtend copy() {
-        return this;
-    }
-    public SparseMatrixExtend changeRow(int row1, int row2) {
-        SparseMatrixExtend X = this.copy();
+    public void changeRow(int row1, int row2) {
         for (int i = 0; i < this.numCols(); i++) {
-            double value = X.get(row1, i);
-            X.update(row1, i, X.get(row2, i));
-            X.update(row2, i, value);
+            double value = get(row1, i);
+            update(row1, i, get(row2, i));
+            update(row2, i, value);
         }
-        return X;
     }
 
-    public SparseMatrixExtend changeColumn(int col1, int col2) {
-        SparseMatrixExtend X = this.copy();
+    public void changeColumn(int col1, int col2) {
         for (int i = 0; i < this.numRows(); i++) {
-            double value = X.get(i, col1);
-            X.set(i, col1, X.get(i, col2));
-            X.set(i, col2, value);
+            double value = get(i, col1);
+            set(i, col1, get(i, col2));
+            set(i, col2, value);
         }
-        return X;
+    }
+//    
+//    public double[][] Copy(double[][] A) {
+//        double[][] B = new double[A.length][A[0].length];
+//        for (int i = 0; i < A.length; i++) {
+//            System.arraycopy(A[i], 0, B[i], 0, A[0].length);
+//        }
+//        return B;
+//    }
+
+    public void updateRow(double[] a, int row) {
+        for (int j = 0; j < this.numCols(); j++) {
+            set(row, j, (a[j]<1e-6 && a[j]>-1e-6)? 0: a[j]);
+        }
     }
 
-    
-    
-    public static double[][] Transpose(double[][] A) {
-        double[][] B = new double[A[0].length][A.length];
-//        System.out.println("paper.Paper.matTranspose() from " + A.length + " " + A[0].length + " to " + A[0].length + " " + A.length);
-        for (int i = 0; i < A[0].length; i++) {
-            for (int j = 0; j < A.length; j++) {
-                B[i][j] = A[j][i];
-            }
+    public void updateCol(double[] a, int col) {
+        for (int j = 0; j < this.numRows(); j++) {
+            set(j,col,(a[j]<1e-6 && a[j]>-1e-6)? 0: a[j]);
         }
-        return B;
-    }
-
-    public double[][] Copy(double[][] A) {
-        double[][] B = new double[A.length][A[0].length];
-        for (int i = 0; i < A.length; i++) {
-            System.arraycopy(A[i], 0, B[i], 0, A[0].length);
-        }
-        return B;
-    }
-
-    public double[][] updateRow(double[][] A, double[] a, int row) {
-//        System.arraycopy(a, 0, A[row], 0, A[0].length);
-
-        for (int j = 0; j < A[0].length; j++) {
-            A[row][j] = (a[j]<1e-6 && a[j]>-1e-6)? 0: a[j];
-        }
-        return A;
-    }
-
-    public double[][] updateCol(double[][] A, double[] a, int col) {
-        for (int j = 0; j < A.length; j++) {
-            A[j][col] = (a[j]<1e-6 && a[j]>-1e-6)? 0: a[j];
-        }
-        return A;
     }
 
     public double[][] RemoveColumn(double[][] A, int col) {
@@ -148,13 +129,12 @@ class SparseMatrixExtend extends SparseMatrix{
         return B;
     }
 
-    public double[][] SwapColumn(double[][] A, int col1, int col2) {
-        for (double[] A1 : A) {
-            double tmp = A1[col1];
-            A1[col1] = A1[col2];
-            A1[col2] = tmp;
+    public void SwapColumn(int col1, int col2) {
+        for (int i = 0; i< numRows(); i++) {
+            double tmp = get(i, col1);
+            set(i, col1, get(i, col2));
+            set(i, col2, tmp);
         }
-        return A;
     }
 
     public double[][] SwapRow(double[][] A, int row1, int row2) {
@@ -166,23 +146,6 @@ class SparseMatrixExtend extends SparseMatrix{
         }
         return A;
     }
-
-    public double[] getRow(double A[][], int row) {
-        double[] ret = new double[A[0].length];
-        System.arraycopy(A[row], 0, ret, 0, A[0].length);
-        return ret;
-    }
-
-    public double[] getCol(double A[][], int col) {
-        double[] ret = new double[A.length];
-//        LocalMatrix.printMat(A, "");
-        for (int i = 0; i < A.length; i++) {
-//            System.out.println(i+"-"+col+": "+A[i][col]);
-            ret[i] = A[i][col];
-        }
-        return ret;
-    }
-
 
     public static void printMat(double[][] a, String mess) {
         System.out.println("\n" + mess);
@@ -503,64 +466,15 @@ class SparseMatrixExtend extends SparseMatrix{
         return x;
     }
 
-    public double[][] scale(double[][] A, double rate) {
-        double[][] ret = new double[A.length][A.length];
-        for(int i = 0; i< A.length; i++)
-//            LocalVector.scale(A[i], rate);
-            for(int j = 0 ; j<A[0].length;j++)
-                ret[i][j]= A[i][j]*rate;
-        return ret;
+    public void scale(double rate) {
+        for(int i = 0; i< numCols(); i++)
+            for(int j = 0 ; j<numRows();j++)
+                set(i, j, get(i, j)*rate);
     }
 
-    public double[][] mul(double[][] A, double[][] B) {
-        if (A[0].length != B.length) {
-            throw new UnsupportedOperationException("Not support Am=! b.m");
-        }
-        double[][] ret = new double[A.length][B[0].length];
-
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < B[0].length; j++) {
-                double value = 0;
-                for (int k = 0; k < A[0].length; k++) {
-                    value += A[i][k] * B[k][j];
-                }
-                
-                value = Double.isNaN(value)? 0:value;
-                ret[i][j] = (value<1e-6 && value> -1e-6)?0:value;
-            }
-        }
-        return ret;
-    }
-
-    public double[] mul(double[][] A, double[] B) {
-        if (A[0].length != B.length) {
-            throw new UnsupportedOperationException("Not support Am=! b.m");
-        }
-//        System.out.println("paper.LocalMatrix.mul()" +A.length+" "+A[0].length+" "+B.length);
-        double[] ret = new double[A.length];
-        for (int i = 0; i < A.length; i++) {
-            double value = 0;
-            for (int j = 0; j < B.length; j++) {
-                    value += A[i][j] * B[j];
-            }
-            if(Double.isNaN(value))
-                value = 0;
-            ret[i] = (value<1e-6 && value> -1e-6)?0:value;
-        }
-        return ret;
-    }
-    public double[][] plus(double[][] A, double[][] B) {
-        if ((A.length != B.length) || (A[0].length != B[0].length)) {
-            throw new UnsupportedOperationException("Not support Am=! b.m");
-        }
-        double[][] ret = new double[A.length][A[0].length];
-
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < A[0].length; j++) {
-                ret[i][j] = A[i][j] + B[i][j];
-            }
-        }
-        return ret;
+    public void plus(DenseMatrix B) {
+        SparseMatrix sB = B.toSparse();
+        
     }
 
     public void gaussian(double a[][], int index[]) {

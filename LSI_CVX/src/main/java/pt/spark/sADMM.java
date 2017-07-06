@@ -108,11 +108,11 @@ public class sADMM {
             );
         }
         );
-        
-        System.out.println("pt.spark.sADMM.run() end "+ retPair.count());
+        retPair.cache();
+//        System.out.println("pt.spark.sADMM.run() end "+ retPair.count());
         List<Tuple2<Integer, Vector>> retList= retPair.collect();
         retPair.saveAsTextFile(outFilePath + "/ADMM");
-        System.out.println("pt.spark.sADMM.run() detroy and return");
+        System.out.println("pt.spark.sADMM.run() detroy and return "+retList.size());
         
         rho0.destroy();
         lamda.destroy();

@@ -63,7 +63,7 @@ public class sQuery {
         Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
-
+        
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
 
         JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map((Tuple2<Vector, Long> v1) -> {
@@ -75,7 +75,7 @@ public class sQuery {
             }
             return ret;
         });
-        
+        abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
         _D2.unpersist();
         return abc.collect();

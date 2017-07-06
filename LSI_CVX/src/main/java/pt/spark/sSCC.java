@@ -143,7 +143,7 @@ public class sSCC {
                             eps_rel.value()));
         }
         );
-
+        ret.cache();
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
         List<Tuple2<Integer, Vector>> retList = ret.collect();
 

@@ -7,12 +7,14 @@ package pt.spark;
 
 import java.text.DecimalFormat;
 import java.util.List;
-
+import org.apache.spark.ml.linalg.Vectors;
+import org.apache.spark.mllib.linalg.DenseVector;
 /**
  *
  * @author patrick_huy
  */
-public class LocalVector implements Cloneable, java.io.Serializable {
+//extends DenseVector 
+public class LocalVector  implements Cloneable, java.io.Serializable {
 
     private int n;
     DecimalFormat twoDForm = new DecimalFormat(" 0.0000000");

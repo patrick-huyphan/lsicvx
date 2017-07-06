@@ -5,17 +5,16 @@
  */
 package pt.spark;
 
-import org.apache.spark.mllib.linalg.DenseMatrix;
+import org.apache.spark.mllib.linalg.DenseVector;
 
 /**
  *
  * @author patrick_huy
  */
-public class DenseMatrixExtend extends DenseMatrix{
+public class DenseVectorExtend extends DenseVector{
     
-    public DenseMatrixExtend(int i, int i1, double[] doubles, boolean bln) {
-        super(i, i1, doubles, bln);
+    public DenseVectorExtend(double[] values) {
+        super(values);
     }
-    
     
 }
