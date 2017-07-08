@@ -42,6 +42,9 @@ import com.restfb.types.Page;
 import com.restfb.types.Post;
 import com.restfb.types.Url;
 import com.restfb.types.User;
+import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.date;
+import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year;
+import java.text.DateFormat;
 
 import java.util.*;
 
@@ -77,9 +80,7 @@ public class GraphReaderExample extends Example {
 		// throw new IllegalArgumentException(
 		// "You must provide an OAuth access token parameter. " + "See README
 		// for more information.");
-		String tocken = "EAACEdEose0cBACPQ7N6P56QlkB9Bj7duzdQTCk6SDaQpQMttUyvjkQpLvnzQrZBMD3P1i5iOl7Kui94gaZBjfy0gHDYdKtOyZAN5RF1cRa7XyMO6KMd54EZA2ZCT0Fn7GdyzBe0cXxdkglQQH7S4D59BnJByi0NWs4KytxST4sMADqds9czRyHcw66xKSqHgZD";
-//		String tocken = "EAACEdEose0cBABYUzMmIR1BEILAXDnYQ1T16sh8dUqRLluwAtZCGDV4GYsx5ZBoYVPmZAo43B3KGhjcrNWxKJmU2FdjgQ2i0yQ8X3cSzlUOpnnFxVXTr25ZC946Nw1q8xhq3vSZBNF2I9ZCHzKfc34Ll4MF1npZA1pISXxWoyTnHAZDZD";
-		// "CAAC2PiFYZANMBAAoQpaj1qA3XTYZAZA4jwQbYZB3tsQV1R5qRzgyU7KnqdjOM3lXVgWJFJMKFnvNR0Xq9eTNp1z7r4AeGXORGrNboC8NTG6VrvrzjrxpaOjxbiZAD4LGZAYz5bHRJc5KMclLzVhnzTde3E4Ral1FLQxgcXhF0ZB9xkz9QjkoYQR";
+		String tocken = "EAAO86EW23X0BAE8Rx27Ie0x8K44rVXesd8IXiY6sfWPaHZC1LRb5ggbskmkCDJgSmIeDPdPpPONsut2uaGtSXGaoslNTa1x8b6UfZABvd2GrIz2WndZAWVOZBV1bZCsZBkWaSuhAwHA3iHzjBLdJ02bZAFk4njdaKYSmWc9mh3VNcCK077lAWFCm83eHlFwTUgZD";
 		new GraphReaderExample(tocken).runEverything();
 	}
 
@@ -93,9 +94,10 @@ public class GraphReaderExample extends Example {
 //		 getFriendList("me", 0);
 //		fetchPage("groups/VietnamWorksRecruitersCommunity/");
 //		fetchPage("groups/jobseeker.vn");
-		fetchPage("vieclam24");
-		fetchPage("vieclam24h.vn");
-		fetchPage("thanhnien");
+
+//		fetchPage("vieclam24");
+//		fetchPage("vieclam24h.vn");
+//		fetchPage("thanhnien");
 		fetchPage("ITviec");
 		
 		
@@ -213,18 +215,26 @@ public class GraphReaderExample extends Example {
 		Connection<Post> pageFeed = facebookClient23.fetchConnection(page.getId() + "/feed", Post.class);
 		try {
 			// fw.write("sc");
-			filename = "output/" + Long.toString(System.currentTimeMillis()) +"/"; // 
+			filename = "vn.hus.nlp.tokenizer-4.1.1-bin/outputF/" + Long.toString(System.currentTimeMillis()) +"/"; // 
 			new File(filename).mkdir();
 			for (List<Post> feed : pageFeed) {
 				// fw.write("\n\n\n\n\n" + feed.toString() + "\n\n\n\n");
 				for (Post post : feed) {
 					// PRINTING THE POST
-					String nfilename = filename+ post.getId()+"PostMess.txt"; //Long.toString(System.currentTimeMillis()),  + post.getCreatedTime().toString().trim() 
+                                        GregorianCalendar c = new GregorianCalendar(2017, 1, 1);
+                                        String mess = post.getMessage();
+                                        if(post.getCreatedTime().before(c.getTime()))
+                                                break;
+                                        
+                                        if(mess.length()>40)
+                                        {
+                                            System.out.println("com.restfb.fetchPage() "+  c.getTime().toString() + " "+post.getCreatedTime());
+					String nfilename = filename+ post.getId()+"_"+post.getCreatedTime().getTime()+"PostMess.txt"; //Long.toString(System.currentTimeMillis()),  + post.getCreatedTime().toString().trim() 
 					fileut = new File(nfilename);
 					fw = new FileWriter(fileut);
 					
 					//fw.write("====================================================================================");
-					fw.write("\n" + post.getMessage() + "\n");
+					fw.write("\n" + mess + "\n");
 					fw.close();
 //					fw.write("Post Name: "+post.getName() + "\n");
 //					fw.write("Story : "+post.getStory() + "\n");
@@ -245,7 +255,7 @@ public class GraphReaderExample extends Example {
 //					getAllPostComments(post.getId(), facebookClient23, nfilename);
 					
 //					fw.write("\n\n\n\n\n");
-					
+                                        }
 				}
 			}
 			
