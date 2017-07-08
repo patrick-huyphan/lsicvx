@@ -19,7 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import java.io.IOException;
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import java.io.File;
 
 
 public class main {
@@ -31,14 +35,17 @@ public class main {
      * @see http://spark.apache.org/docs/latest/submitting-applications.html}
      * args[0]: input doc args[1]: output args[2]: input query
      */
-    public static void main(String[] args) {
-        checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
+    public static void main(String[] args) throws IOException {
+//        checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
 
+        
+        
         String master = "local[*]";
         String ouputdir = args[1]+"/"+System.currentTimeMillis();
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
+        readRawData("","");
 // testing data
 //        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         
@@ -86,5 +93,15 @@ public class main {
         sc.close();
     }
     
-    
+    private static void readRawData(String input, String output) throws IOException
+    {
+        String fileOUname = "Output/" + Long.toString(System.currentTimeMillis()) + "/"; //
+        new File(fileOUname).mkdir();
+        
+        pt.DocTermBuilder.DocTermReadRawFile readRawFile = new pt.DocTermBuilder.DocTermReadRawFile("..\\restfb_getdata\\vn.hus.nlp.tokenizer-4.1.1-bin\\outputT2017_07_08_10_43_4798");
+        int [][]data2 = readRawFile.calcCountMat(fileOUname,5);
+        pt.DocTermBuilder.DocTermMatrixTF xx2 = pt.DocTermBuilder.DocTermMatrixTF.buildMat(3, data2);
+
+        pt.paper.CSVFile.saveMatrixData("data", xx2.tdidf, "data");
+    }
 }
