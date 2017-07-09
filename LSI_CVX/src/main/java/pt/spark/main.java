@@ -45,7 +45,6 @@ public class main {
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
-        readRawData("","");
 // testing data
 //        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         
@@ -91,17 +90,5 @@ public class main {
                 ouputdir);
         
         sc.close();
-    }
-    
-    private static void readRawData(String input, String output) throws IOException
-    {
-        String fileOUname = "Output/" + Long.toString(System.currentTimeMillis()) + "/"; //
-        new File(fileOUname).mkdir();
-        
-        pt.DocTermBuilder.DocTermReadRawFile readRawFile = new pt.DocTermBuilder.DocTermReadRawFile("..\\restfb_getdata\\vn.hus.nlp.tokenizer-4.1.1-bin\\outputT2017_07_08_10_43_4798");
-        int [][]data2 = readRawFile.calcCountMat(fileOUname,5);
-        pt.DocTermBuilder.DocTermMatrixTF xx2 = pt.DocTermBuilder.DocTermMatrixTF.buildMat(3, data2);
-
-        pt.paper.CSVFile.saveMatrixData("data", xx2.tdidf, "data");
     }
 }
