@@ -8,12 +8,15 @@ package pt.ParseData;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -247,8 +250,8 @@ public class DocTermReadRawFile {
 //        List<Integer> keywordListCount = new ArrayList();
 
         StopWordList swl = new StopWordList();
-
-        BufferedWriter bwAll = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "doc_Data.txt"),"UTF-8"));//(new FileWriter(output + "doc_Data.txt"));
+        FileOutputStream fos = new FileOutputStream(output + "doc_Data.txt");
+        BufferedWriter bwAll = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));//(new FileWriter(output + "doc_Data.txt"));
 //        int a = listOfFiles.length;
 //        int docID[] = new int[listOfFiles.length];
 // Create list of word, should save create matrix of work, to reduce read file 
@@ -257,7 +260,7 @@ public class DocTermReadRawFile {
                 if (nFile.isFile()) {
 //                    String p1 = listOfFile.getName();
 //                      System.out.println("["+i+"] " + p1);
-                    BufferedReader br = new BufferedReader(new FileReader(nFile.getPath()));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(nFile.getPath()), "UTF8"));//new FileReader(nFile.getPath()));
                     String doc = "";
                     int termPdoc = 0;
                     while ((s = br.readLine()) != null) {
@@ -324,6 +327,7 @@ public class DocTermReadRawFile {
             return null;
         }
         bwAll.close();
+        fos.close();
         
         Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
 
@@ -333,14 +337,15 @@ public class DocTermReadRawFile {
         System.out.println("No of Documents – " + numOfDoc);
         System.out.println("");
 
-        BufferedWriter bw0 = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "keywordsList0.txt"),"UTF-8"));//(new FileWriter(output + "/keywordsList0.txt"));
+        fos = new FileOutputStream(output + "keywordsList0.txt");
+        BufferedWriter bw0 = new BufferedWriter( new OutputStreamWriter(fos,"UTF-8"));//(new FileWriter(output + "/keywordsList0.txt"));
         int k = 0;
         for (int i = 0; i < keywordList.size(); i++) {
                 k++;
                 bw0.write(keywordList.get(i) + "\t" + keywordList.get(i) + "\n");
             }
         bw0.close();
-        
+        fos.close();
         int[][] countMatrixTmp = new int[numOfDoc][keywordList.size()];
 
 //         Arrays.fill(countMatrix, 0);
@@ -355,7 +360,7 @@ public class DocTermReadRawFile {
         // Create matrix doc - term.
         int t = 0;
         //System.out.println("["+i+"] " + p1); 
-        BufferedReader br = new BufferedReader(new FileReader(output + "doc_Data.txt"));//listOfFiles[i].getPath())); //output+"doc_Data.txt"
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(output + "doc_Data.txt"), "UTF8"));//(new FileReader(output + "doc_Data.txt"));//listOfFiles[i].getPath())); //output+"doc_Data.txt"
         while ((s = br.readLine()) != null) {
             st = new StringTokenizer(s, " | ", false);
             while (st.hasMoreTokens()) {
@@ -396,7 +401,8 @@ public class DocTermReadRawFile {
 //	            }
 //	            System.out.println();
 //	      }
-        BufferedWriter bw = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "keywordsList.txt"),"UTF-8"));//(new FileWriter(output + "/keywordsList.txt"));
+        fos = new FileOutputStream(output + "keywordsList.txt");
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos,"UTF-8"));//(new FileWriter(output + "/keywordsList.txt"));
 //        k = 0;
         List<Integer> keyID = new ArrayList<>();
 //	      for (int i=keywordList.size()-1; i>=0 ; i--) {
@@ -411,6 +417,7 @@ public class DocTermReadRawFile {
             }
         }
         bw.close();
+        fos.close();
 
 //	      System.err.println("\n");
         for (int j = 0; j < keyID.size(); j++) {
