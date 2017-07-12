@@ -29,7 +29,9 @@ public class sParseData {
         new File(fileOUname).mkdir();
         
         DocTermReadRawFile readRawFile = new DocTermReadRawFile(input2);
-        int [][]data2 = readRawFile.calCountMat1st(fileOUname,5);
+//        int [][]data2 = readRawFile.calCountMat1st(fileOUname,5);
+        
+        int [][]data2 = readRawFile.calCountMat("Output\\1499614027518\\", fileOUname, 5);
         DocTermMatrixTF xx2 = DocTermMatrixTF.buildMat(3, data2);
 
         CSVFile.saveMatrixData("data", xx2.tdidf, "data");
