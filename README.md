@@ -14,8 +14,7 @@ Using spark to process:
 - Paper: full flow in single processing
 - LSI_CVX: full flow in parallel processing
 
-# TODO:
-Parallel processing:
+# Processing
 - Data structure: parallel on rowmatrix, also all matrix is sparse matrix.
 
 https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/SparseMatrix.html
