@@ -1,6 +1,6 @@
-# lsiCVX, in development processing...
+# lsiCVX, in development ...
 Using spark to process:
-- clustering data with SCC
+- clustering data with sparse convex clustering-SCC
 - find projection matrix with ADMM
 - query cosine similarity
 
@@ -14,29 +14,26 @@ Using spark to process:
 - Paper: full flow in single processing
 - LSI_CVX: full flow in parallel processing
 
-# TODO:
-Parallel processing:
-- Data structure: 
-    - spark matrix struct: parallel on rowmatrix
-    - broadcast data: local matrix to process on driver, variable of local function    
+# Processing
+- Data structure: parallel on rowmatrix, also all matrix is sparse matrix.
 
 https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/SparseMatrix.html
 
+- Broadcast data: local matrix to process on driver, variable of local function    
 
 - Read matrix data: currently, read data from .csv matrix file
-    + Should add process to read from raw text file, build VSM.
-- Should process echelon in parallel
+    + TODO: Should add process to read from raw text file, build VSM.
+- TODO: Should process echelon in parallel
 
-- SCC: what data should be read, flow processing
-    + Calculate local node data and broadcast local data
+- SCC:
+    + broadcast lambda, rho, and read only local data
     + map row matrix
-    + lambda, rho
-    + row calculate
+    + row calculate: calculate local node data 
     + reduce row
-- ADMM: what data should be read, flow processing
-    + Calculate local node data and broadcast local data
+- ADMM:
+    + broadcast lambda, rho, and read only local data
     + map row matrix D( D should transposed).
-    + column calculate
+    + column calculate: calculate local node data
     + reduce column
 
 - Full flow for parallel: 
@@ -48,11 +45,11 @@ https://spark.apache.org/docs/2.0.2/api/java/org/apache/spark/mllib/linalg/Spars
     + cosine similarity job
     + reduce result
 
+# TODO
 Need more package for full app processing 
 - Data preparation: parsing text data to matrix, remove stop work, build VSM
 - echelon
-- calculate local node data in parallel
-
+- calculate local node data in parallel: mul matrix, inverse, compare, get cluster...
 
 # Spark
 Need run with configuration from file.
@@ -77,19 +74,15 @@ spark-submit <jar file>
             <args3: num of query in data file>
 
 
-
 https://spark.apache.org/docs/latest/spark-standalone.html
 - ./sbin/start-master.sh -h localhost -p 7077
 - ./sbin/start-slave.sh spark://localhost:7077
 - ./bin/spark-shell --master spark://localhost:7077
 
-
 # Ref
 http://snap.stanford.edu/snapvx/
 http://snap.stanford.edu/snapvx/developer_doc.pdf
 http://di.eteri.ch/projects/admm_paper.pdf
-http://www.programcreek.com/java-api-examples/index.php?api=org.apache.spark.broadcast.Broadcast
-
 
 # Un-use project
 - Parse data
