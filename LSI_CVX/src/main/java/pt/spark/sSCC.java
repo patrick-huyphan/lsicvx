@@ -190,7 +190,6 @@ TODO:
         for (int i = 0; i < e.size(); i++) {
             _edges.add(new LocalEdge(e.get(i)._1._1, e.get(i)._1._2, e.get(i)._2));
         }
-
         NodeSCC xNode = new NodeSCC(curruntI._1,
                 _A,
                 _X,

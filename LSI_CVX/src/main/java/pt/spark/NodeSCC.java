@@ -75,6 +75,7 @@ public class NodeSCC{  //extends Clustering{
             
             int loop = 0;
             stop = false;
+            if(V.size()>0)
             while(loop<MAX_LOOP)
             {
                 X0 = X;
@@ -98,6 +99,8 @@ TODO: review to update related V and U, increase related node, expand cluster of
                 loop++;
             }
             System.out.println();
+            
+            X = LocalVector.formV(X, "0.00000000");
 //            LocalVector.printV(X, "NodeSCC x "+id, true);
         }
 //        LocalVector.printV(X, "SCC x", true);
