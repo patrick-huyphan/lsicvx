@@ -19,7 +19,7 @@ import java.util.Random;
  */
 public class Paper {
     double[][] Q= {{}}; 
-    public Paper(double[][] D,double[][] Q) throws IOException {
+    public static void PaperRuner(double[][] D,double[][] Q) throws IOException {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -83,7 +83,7 @@ public class Paper {
 //          Matrix.printMat(clt.presentMat, "AMA");
     }
 
-    public Paper(double[][] D, String echelonFile) throws IOException {
+    public static void PaperRuner(double[][] D, String echelonFile) throws IOException {
 //        double[][] echelon = Matrix.echelon(D);//
 //        CSVFile.saveMatrixData("echelon", echelon, "echelon");
 
@@ -156,7 +156,7 @@ public class Paper {
 //    }
     
 
-    public Paper(double[][] D) throws IOException {
+    public static void PaperRuner(double[][] D) throws IOException {
         double[][] echelon = Matrix.echelon(D);//
         CSVFile.saveMatrixData("echelon", echelon, "echelon");
 
@@ -196,44 +196,24 @@ public class Paper {
         double[][] A2 = Matrix.mul(D, X2); //kn = km x mn
         Matrix.printMat(A2, "LSI2");
     }
-    private static double[][] readDocData() throws IOException
-    {
-        File fileut;
-        FileWriter fw;
 
-        String fileOUname = "Output/" + Long.toString(System.currentTimeMillis()) + "/"; //
-        String fileInname = "data/text/"; //
-        new File(fileOUname).mkdir();
-        String nfilename = fileOUname+ "/log.txt";
-
-        fileut = new File(nfilename);
-        fw = new FileWriter(fileut);
-
-//        int [][]data2 = ReadingMultipleFile.calcCoundMat1st(fileOUname,5);
-        int [][]data2 = ReadingMultipleFile.calcCoundMat2ndd(fileInname,fileOUname,5);
-        ReadingMultipleFile xx2 = ReadingMultipleFile.buildMat(3, data2);//.new ReadingMultipleFile(inputdirName);
-        CSVFile.saveMatrixData(fileOUname+"/data.csv", xx2.tdidf, "data2");
-        fw.close();
-//        Matrix.printMat(xx2.tdidf, "xx2.tdidf");
-        return xx2.tdidf;
-    }
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         double[][] DQ = Matrix.int2double(ReadData.readDataTestN());
+        CSVFile.saveMatrixData("DQ", DQ, "DQ");
 //        Matrix.printMat(DQ, "DQ init");
-        double[][] D = Matrix.subMat(DQ, 0, 26, 0, DQ[0].length);
-        double[][] Q = Matrix.subMat(DQ, 26, 3, 0, DQ[0].length);
+//        double[][] D = Matrix.subMat(DQ, 0, 26, 0, DQ[0].length);
+//        double[][] Q = Matrix.subMat(DQ, 26, 3, 0, DQ[0].length);
+//        PaperRuner(D,Q);
         
-//        double[][] docTerm = readDocData();//
         double[][] docTerm = CSVFile.readMatrixData("data.csv");
-        double[][] testQ = new double[5][docTerm[0].length];
-        //printMat(docTerm, false,"docTerm");
+        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -11, 0, docTerm[0].length);
+        double[][] testQ = Matrix.subMat(docTerm, docTerm.length-10, 10, 0, docTerm[0].length);
+        PaperRuner(testD,testQ);
 
-
-        Paper run = new Paper(docTerm,testQ);
-      
-//    Paper run = new Paper(D,Q);
-
+//        //printMat(docTerm, false,"docTerm");
+//
+//
 //      Paper run = new Paper(docTerm,"echelon.csv");
     }
 

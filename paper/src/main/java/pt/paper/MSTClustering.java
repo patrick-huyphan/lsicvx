@@ -33,22 +33,22 @@ public class MSTClustering extends Clustering{
 //        for (Iterator<Edge> iter = edges.listIterator(); iter.hasNext();) {
 //            Edge tmp = iter.next();
 //            if (tmp.weight < lambda) {
-////                System.out.println("MSTClustering remove edge "+tmp.sourcevertex+ " "+tmp.destinationvertex);
+////                System.out.println("MSTClustering remove edge "+tmp.scr+ " "+tmp.dst);
 //                iter.remove();
 //            }
 //        }
 
 //        for (Edge edge : edges)
 //    	{
-//        	System.out.println("----"+edge.sourcevertex+"-"+edge.destinationvertex + ": "+edge.weight);
+//        	System.out.println("----"+edge.scr+"-"+edge.dst + ": "+edge.weight);
 //    	}
         
 //        int egdeS = edges.size();
 //        for(int i = 0; i<egdeS; i++)
 //        {
-////            System.out.println("----"+edge.sourcevertex+":"+e.destinationvertex);
+////            System.out.println("----"+edge.scr+":"+e.dst);
 //            Edge e = edges.get(i);
-//            edges.add(new Edge(e.destinationvertex, e.sourcevertex, e.weight));
+//            edges.add(new Edge(e.dst, e.scr, e.weight));
 //        }
         visited = new int[this.numberOfVertices];
         spanning_tree = new double[numberOfVertices][numberOfVertices];
@@ -103,19 +103,19 @@ public class MSTClustering extends Clustering{
         CheckCycle checkCycle = new CheckCycle();
         for (Edge edge : edges) {
 
-            spanning_tree[edge.sourcevertex][edge.destinationvertex] = edge.weight;
-            spanning_tree[edge.destinationvertex][edge.sourcevertex] = edge.weight;
-            if (checkCycle.checkCycle(spanning_tree, edge.sourcevertex)) {
-                System.out.println(edge.sourcevertex + " - " + edge.destinationvertex);
-                spanning_tree[edge.sourcevertex][edge.destinationvertex] = 0;
-                spanning_tree[edge.destinationvertex][edge.sourcevertex] = 0;
+            spanning_tree[edge.scr][edge.dst] = edge.weight;
+            spanning_tree[edge.dst][edge.scr] = edge.weight;
+            if (checkCycle.checkCycle(spanning_tree, edge.scr)) {
+                System.out.println(edge.scr + " - " + edge.dst);
+                spanning_tree[edge.scr][edge.dst] = 0;
+                spanning_tree[edge.dst][edge.scr] = 0;
                 edge.weight = -1;
-                System.out.println("kruskalAlgorithm()- remove " +edge.sourcevertex+ " "+edge.destinationvertex);
+                System.out.println("kruskalAlgorithm()- remove " +edge.scr+ " "+edge.dst);
                 continue;
             }
 
-            visited[edge.sourcevertex] = 1;
-            visited[edge.destinationvertex] = 1;
+            visited[edge.scr] = 1;
+            visited[edge.dst] = 1;
             for (int i = 0; i < visited.length; i++) {
                 if (visited[i] == 0) {
                     finished = false;
@@ -175,9 +175,9 @@ public class MSTClustering extends Clustering{
             subClus.add(source);
 
             for (Edge edge : edges) {
-                if (edge.sourcevertex == source) {
-//        			System.out.println("checking..."+source + ":"+edge.destinationvertex);
-                    st.add(edge.destinationvertex);
+                if (edge.scr == source) {
+//        			System.out.println("checking..."+source + ":"+edge.dst);
+                    st.add(edge.dst);
                     if (!subPath.contains(edge)) {
                         subPath.add(edge);
                     }
@@ -193,9 +193,9 @@ public class MSTClustering extends Clustering{
 
                     for (Edge edgex : edges) {
 //    		        	System.out.println("checking..."+source);
-                        if (edgex.sourcevertex == ele && !st.contains(edgex.destinationvertex) && !subClus.contains(edgex.destinationvertex)) {
-//    		        		System.out.println(source+"-"+ ele+"-"+edgex.destinationvertex);
-                            st.add(edgex.destinationvertex);
+                        if (edgex.scr == ele && !st.contains(edgex.dst) && !subClus.contains(edgex.dst)) {
+//    		        		System.out.println(source+"-"+ ele+"-"+edgex.dst);
+                            st.add(edgex.dst);
                             if (!subPath.contains(edgex)) {
                                 subPath.add(edgex);
                             }
@@ -229,7 +229,7 @@ public class MSTClustering extends Clustering{
             if (subpath.size() > 1) {
                 System.out.print("Path: " + (source+1) + ":\t");
                 for (int i = 0; i < subpath.size(); i++) {
-                    System.out.print((subpath.get(i).sourcevertex+1) + "-" + (subpath.get(i).destinationvertex+1) + "\t");
+                    System.out.print((subpath.get(i).scr+1) + "-" + (subpath.get(i).dst+1) + "\t");
                 }
                 System.out.println();
             }
@@ -268,17 +268,17 @@ public class MSTClustering extends Clustering{
             element = st.peek();
             for(Edge e: path)
             {
-                if(e.sourcevertex == element && vis[e.destinationvertex] == true)
+                if(e.scr == element && vis[e.dst] == true)
                 {
-                    if(st.contains(e.destinationvertex))
+                    if(st.contains(e.dst))
                         return true;
                 }
-                if(e.sourcevertex == element && vis[e.destinationvertex] == false)
+                if(e.scr == element && vis[e.dst] == false)
                 {
-                    if(!st.contains(e.destinationvertex))
-                        st.push(e.destinationvertex);
-                    vis[e.destinationvertex] = true;
-                    element = e.destinationvertex;
+                    if(!st.contains(e.dst))
+                        st.push(e.dst);
+                    vis[e.dst] = true;
+                    element = e.dst;
                     continue;
                 }
             }
@@ -309,10 +309,10 @@ public class MSTClustering extends Clustering{
         double[] ew = new double[numberOfVertices];
         for(Edge e: edges)
         {
-            edgeTimeM[e.sourcevertex] = edgeTimeM[e.sourcevertex]+1;
-            ew[e.sourcevertex] = ew[e.sourcevertex]>e.weight? ew[e.sourcevertex]:e.weight;
-            edgeTimeM[e.destinationvertex] = edgeTimeM[e.destinationvertex]+1;
-            ew[e.destinationvertex] = ew[e.destinationvertex]>e.weight? edgeTimeM[e.destinationvertex]:e.weight;
+            edgeTimeM[e.scr] = edgeTimeM[e.scr]+1;
+            ew[e.scr] = ew[e.scr]>e.weight? ew[e.scr]:e.weight;
+            edgeTimeM[e.dst] = edgeTimeM[e.dst]+1;
+            ew[e.dst] = ew[e.dst]>e.weight? edgeTimeM[e.dst]:e.weight;
         }
         
         for(int i = 0; i< numberOfVertices;i++)
@@ -338,15 +338,15 @@ public class MSTClustering extends Clustering{
                 
                 for(Edge e: edges)
                 {
-                    if((e.sourcevertex == top) && (visN[e.destinationvertex]!= 1 && !st.contains(e.destinationvertex))&& e.weight>=minE)  
+                    if((e.scr == top) && (visN[e.dst]!= 1 && !st.contains(e.dst))&& e.weight>=minE)  
                     {
-                        st.add(e.destinationvertex);
+                        st.add(e.dst);
                         subPath.add(e);
                     }
-                    if((e.destinationvertex == top) && (visN[e.sourcevertex]!= 1 && !st.contains(e.sourcevertex)) && e.weight>=minE) 
+                    if((e.dst == top) && (visN[e.scr]!= 1 && !st.contains(e.scr)) && e.weight>=minE) 
                     {
-                        st.add(e.sourcevertex);
-                        subPath.add(new Edge(e.destinationvertex, e.sourcevertex,e.weight));
+                        st.add(e.scr);
+                        subPath.add(new Edge(e.dst, e.scr,e.weight));
                     }
                 }
             }
@@ -355,8 +355,8 @@ public class MSTClustering extends Clustering{
 //        int[] edgeTime = new int[numberOfVertices];
 //        for(Edge e: subPath)
 //        {
-//            edgeTime[e.sourcevertex] = edgeTime[e.sourcevertex]+1;
-//            edgeTime[e.destinationvertex] = edgeTime[e.destinationvertex]+1;
+//            edgeTime[e.scr] = edgeTime[e.scr]+1;
+//            edgeTime[e.dst] = edgeTime[e.dst]+1;
 //        }
 //        
 //        for(int i = 0; i< numberOfVertices; i++)
@@ -371,7 +371,7 @@ public class MSTClustering extends Clustering{
                 
         for(Edge e: subPath)
         {
-            System.out.println("path .MST2() "+(e.sourcevertex + 1)+"-"+ (e.destinationvertex + 1)+"\t"+e.weight );
+            System.out.println("path .MST2() "+(e.scr + 1)+"-"+ (e.dst + 1)+"\t"+e.weight );
         }
         return subPath;
     }
@@ -394,8 +394,8 @@ public class MSTClustering extends Clustering{
 //        int[] edgeTime = new int[numberOfVertices];
 //        for(Edge e: edges)
 //        {
-//            edgeTime[e.sourcevertex] = edgeTime[e.sourcevertex]+1;
-//            edgeTime[e.destinationvertex] = edgeTime[e.destinationvertex]+1;
+//            edgeTime[e.scr] = edgeTime[e.scr]+1;
+//            edgeTime[e.dst] = edgeTime[e.dst]+1;
 //        }
 //        for(int i = 0; i< numberOfVertices; i++)
 //            System.out.println("paper.MSTClustering.MST() count " +(i+1)+" :" + edgeTime[i]);
@@ -420,8 +420,8 @@ public class MSTClustering extends Clustering{
             for (Edge edge : edges) {
                 if(vis[edges.indexOf(edge)]>0)
                     continue;
-                if (edge.sourcevertex == source) {
-                    st.add(edge.destinationvertex);
+                if (edge.scr == source) {
+                    st.add(edge.dst);
                     if (!subPath.contains(edge)) {
                         subPath.add(edge);
                         vis[edges.indexOf(edge)] = 1;
@@ -440,9 +440,9 @@ public class MSTClustering extends Clustering{
                         if(vis[edges.indexOf(edgex)]>0)
                             continue;
 //    		        	System.out.println("checking..."+source);
-                        if (edgex.sourcevertex == ele && !st.contains(edgex.destinationvertex) && !subClus.contains(edgex.destinationvertex+1)) {
-//    		        		System.out.println(source+"-"+ ele+"-"+edgex.destinationvertex);
-                            st.add(edgex.destinationvertex);
+                        if (edgex.scr == ele && !st.contains(edgex.dst) && !subClus.contains(edgex.dst+1)) {
+//    		        		System.out.println(source+"-"+ ele+"-"+edgex.dst);
+                            st.add(edgex.dst);
                             if (!subPath.contains(edgex)) {
                                 subPath.add(edgex);
                                 vis[edges.indexOf(edgex)] = 1;
@@ -472,7 +472,7 @@ public class MSTClustering extends Clustering{
                 Collections.sort(subpath, new Comparator<Edge>() {
                     @Override
                     public int compare(Edge o1, Edge o2) {
-                    return (o1.sourcevertex < o2.sourcevertex)? -1:(o1.sourcevertex > o2.sourcevertex)? 1:0;
+                    return (o1.scr < o2.scr)? -1:(o1.scr > o2.scr)? 1:0;
                     }
                 });
             }
@@ -493,11 +493,11 @@ public class MSTClustering extends Clustering{
             {
                 System.out.print("Path: " + (source+1) + ":\t");
                 for (Edge e: subpath) {
-                    System.out.print((e.sourcevertex+1) + "-" + (e.destinationvertex+1) +"\t"); //":"+e.weight+ 
-                    if(!subG.contains(e.sourcevertex+1))
-                        subG.add(e.sourcevertex+1);
-                    if(!subG.contains(e.destinationvertex+1))
-                        subG.add(e.destinationvertex+1);
+                    System.out.print((e.scr+1) + "-" + (e.dst+1) +"\t"); //":"+e.weight+ 
+                    if(!subG.contains(e.scr+1))
+                        subG.add(e.scr+1);
+                    if(!subG.contains(e.dst+1))
+                        subG.add(e.dst+1);
                 }
                 System.out.println();
             }
@@ -569,7 +569,7 @@ public class MSTClustering extends Clustering{
 
                     if(!newListE.contains(e) && e.weight>0.21)
                         newListE.add(e);
-                    System.out.print((e.sourcevertex+1) + "-" + (e.destinationvertex+1) + "\t"); //":"+e.weight+ 
+                    System.out.print((e.scr+1) + "-" + (e.dst+1) + "\t"); //":"+e.weight+ 
                 }
                 System.out.println();
             }
@@ -582,8 +582,8 @@ public class MSTClustering extends Clustering{
         () {
             @Override
             public int compare(Edge o1, Edge o2) {
-                    if (o1.sourcevertex < o2.sourcevertex) return -1;
-                    if (o1.sourcevertex > o2.sourcevertex) return 1;
+                    if (o1.scr < o2.scr) return -1;
+                    if (o1.scr > o2.scr) return 1;
                     return 0;
             }
         });
@@ -591,7 +591,7 @@ public class MSTClustering extends Clustering{
 //        for (int i = 0; i < newListE.size(); i++) {
 //                    Edge e = newListE.get(i);
 //                    if(subpath.get(i).weight>0.2)
-//                    System.out.println((e.sourcevertex+1) + "-" + (e.destinationvertex+1) + ":"+e.weight+ "\t"); //
+//                    System.out.println((e.scr+1) + "-" + (e.dst+1) + ":"+e.weight+ "\t"); //
 //        }
         
 //        MSG(newListE);
@@ -615,10 +615,10 @@ merge to other cluster has high sim
             list.add(i);
             for(Edge node : _path)
             {
-                if((node.sourcevertex == i)  && !list.contains(node.destinationvertex))
-                    list.add(node.destinationvertex);
-                if((node.destinationvertex == i) && !list.contains(node.sourcevertex))
-                    list.add(node.sourcevertex);
+                if((node.scr == i)  && !list.contains(node.dst))
+                    list.add(node.dst);
+                if((node.dst == i) && !list.contains(node.scr))
+                    list.add(node.scr);
             }
 //            Collections.sort(list, new Comparator<Integer>() {
 //                @Override
@@ -703,7 +703,7 @@ merge to other cluster has high sim
         
 //        for (Edge edge : edges)
 //    	{
-//        	System.out.println("----"+edge.sourcevertex+"- "+edge.destinationvertex +": "+edge.weight);
+//        	System.out.println("----"+edge.scr+"- "+edge.dst +": "+edge.weight);
 //    	}
 
 //        System.out.println(edges.size());
@@ -711,19 +711,19 @@ merge to other cluster has high sim
 //        CheckCycle checkCycle = new CheckCycle();
 //        for (Edge edge : edges) {
 //
-//            spanning_tree[edge.sourcevertex][edge.destinationvertex] = edge.weight;
-//            spanning_tree[edge.destinationvertex][edge.sourcevertex] = edge.weight;
-//            if (checkCycle.checkCycle(spanning_tree, edge.sourcevertex)) {
-//                System.out.println("remove "+edge.sourcevertex + " - " + edge.destinationvertex);
-//                spanning_tree[edge.sourcevertex][edge.destinationvertex] = 0;
-//                spanning_tree[edge.destinationvertex][edge.sourcevertex] = 0;
+//            spanning_tree[edge.scr][edge.dst] = edge.weight;
+//            spanning_tree[edge.dst][edge.scr] = edge.weight;
+//            if (checkCycle.checkCycle(spanning_tree, edge.scr)) {
+//                System.out.println("remove "+edge.scr + " - " + edge.dst);
+//                spanning_tree[edge.scr][edge.dst] = 0;
+//                spanning_tree[edge.dst][edge.scr] = 0;
 //                edge.weight = -1;
-////                System.out.println("kruskalAlgorithm()- remove " +edge.sourcevertex+ " "+edge.destinationvertex);
+////                System.out.println("kruskalAlgorithm()- remove " +edge.scr+ " "+edge.dst);
 //                continue;
 //            }
 //
-//            visited[edge.sourcevertex] = 1;
-//            visited[edge.destinationvertex] = 1;
+//            visited[edge.scr] = 1;
+//            visited[edge.dst] = 1;
 //            for (int i = 0; i < visited.length; i++) {
 //                if (visited[i] == 0) {
 //                    finished = false;
@@ -740,14 +740,14 @@ merge to other cluster has high sim
         for (Iterator<Edge> iter = edges.listIterator(); iter.hasNext();) {
             Edge tmp = iter.next();
             if (tmp.weight < lambda) {
-                System.out.println("kruskalAlgorithm_getCluster() remove edge 2: "+tmp.sourcevertex+ " "+tmp.destinationvertex);
+                System.out.println("kruskalAlgorithm_getCluster() remove edge 2: "+tmp.scr+ " "+tmp.dst);
                 iter.remove();
             }
         }
 
 //        for (Edge edge : edges)
 //    	{
-//        	System.out.println("----"+edge.sourcevertex+"- "+edge.destinationvertex +": "+edge.weight);
+//        	System.out.println("----"+edge.scr+"- "+edge.dst +": "+edge.weight);
 //    	}
         
        
@@ -762,15 +762,15 @@ merge to other cluster has high sim
                 visited[source] = 1;
             
             for (Edge edge : edges) {
-                if (edge.sourcevertex == source) {
-//        			System.out.println("checking..."+source + ":"+edge.destinationvertex);
-                    st.add(edge.destinationvertex);
-                    visited[edge.destinationvertex] = 1;
+                if (edge.scr == source) {
+//        			System.out.println("checking..."+source + ":"+edge.dst);
+                    st.add(edge.dst);
+                    visited[edge.dst] = 1;
                 }
-                if (edge.destinationvertex == source) {
-//        			System.out.println("checking..."+source + ":"+edge.destinationvertex);
-                    st.add(edge.sourcevertex);
-                    visited[edge.sourcevertex] = 1;
+                if (edge.dst == source) {
+//        			System.out.println("checking..."+source + ":"+edge.dst);
+                    st.add(edge.scr);
+                    visited[edge.scr] = 1;
                 }
 
                 while (!st.isEmpty()) {
@@ -782,9 +782,9 @@ merge to other cluster has high sim
                     }
                     for (Edge edgex : edges) {
 //    		        	System.out.println("checking..."+source);
-                        if (edgex.sourcevertex == ele && !st.contains(edgex.destinationvertex) && !subClus.contains(edgex.destinationvertex)) {
-//    		        		System.out.println(source+"-"+ ele+"-"+edgex.destinationvertex);
-                            st.add(edgex.destinationvertex);
+                        if (edgex.scr == ele && !st.contains(edgex.dst) && !subClus.contains(edgex.dst)) {
+//    		        		System.out.println(source+"-"+ ele+"-"+edgex.dst);
+                            st.add(edgex.dst);
                         }
                     }
                     st.poll();
@@ -833,11 +833,11 @@ merge to other cluster has high sim
         for (List<Edge> sub : path) {
             List<Integer> subClus = new ArrayList<>();
             for (Edge edge : sub) {
-                if (!subClus.contains(edge.sourcevertex)) {
-                    subClus.add(edge.sourcevertex);
+                if (!subClus.contains(edge.scr)) {
+                    subClus.add(edge.scr);
                 }
-                if (!subClus.contains(edge.destinationvertex)) {
-                    subClus.add(edge.destinationvertex);
+                if (!subClus.contains(edge.dst)) {
+                    subClus.add(edge.dst);
                 }
             }
             ret.add(subClus);
@@ -856,17 +856,17 @@ merge to other cluster has high sim
 
                 Map<Integer, Integer> count = new HashMap<Integer, Integer>();
                 for (Edge edge : sub) {
-                    if (!count.containsKey(edge.sourcevertex)) {
-                        count.put(edge.sourcevertex, 1);
+                    if (!count.containsKey(edge.scr)) {
+                        count.put(edge.scr, 1);
                     } else {
-                        int value = count.get(edge.sourcevertex) + 1;
-                        count.put(edge.sourcevertex, value);
+                        int value = count.get(edge.scr) + 1;
+                        count.put(edge.scr, value);
                     }
-                    if (!count.containsKey(edge.destinationvertex)) {
-                        count.put(edge.destinationvertex, 1);
+                    if (!count.containsKey(edge.dst)) {
+                        count.put(edge.dst, 1);
                     } else {
-                        int value = count.get(edge.destinationvertex) + 1;
-                        count.put(edge.destinationvertex, value);
+                        int value = count.get(edge.dst) + 1;
+                        count.put(edge.dst, value);
                     }
                 }
                 int max = count.keySet().iterator().next();

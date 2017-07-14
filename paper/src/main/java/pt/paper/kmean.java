@@ -43,7 +43,7 @@ public class kmean extends Clustering{
         {
             for(Edge e: edges)
             {
-                if(e.sourcevertex == i)
+                if(e.scr == i)
                     maxSim.put(i, maxSim.get(i)+e.weight);
             }
             maxSum += maxSim.get(i);
@@ -61,7 +61,7 @@ public class kmean extends Clustering{
             {
                 for(Edge e: edges)
                 {
-                    if(e.sourcevertex == i)
+                    if(e.scr == i)
                         tmpMaxSim.put(i, tmpMaxSim.get(i)+e.weight);
                 }
                 tmpSum+=tmpMaxSim.get(i);
@@ -83,7 +83,7 @@ public class kmean extends Clustering{
         double[][]ret = new double[numOfCluster][A.length];
         for(Edge e: edges)
         {
-            if(e.sourcevertex == centroidID[0])
+            if(e.scr == centroidID[0])
                 ret[1][1] = e.weight;
         }
 //        distance

@@ -223,14 +223,14 @@ public class Vector implements Cloneable, java.io.Serializable {
         if (a.length != a.length) {
             throw new UnsupportedOperationException("Not support Am=! b.m" + a.length +" "+ a.length);
         }
-        DecimalFormat twoDForm = new DecimalFormat("0.00000000");
+//        DecimalFormat twoDForm = new DecimalFormat("0.00000000");
         
         for (int i = 0; i < a.length; i++) {
-            double ai = Double.valueOf(twoDForm.format(a[i]));
-            double bi = Double.valueOf(twoDForm.format(b[i]));
+//            double ai = Double.valueOf(twoDForm.format(a[i]));
+//            double bi = Double.valueOf(twoDForm.format(b[i]));
 //            if (a[i]- b[i]!= 0)
 //                if ((a[i]- b[i] <1e-5) && (a[i]- b[i] >-1e-5))
-            if( ai != bi)
+            if( a[i] != b[i])
             {
                 return false;
             }
@@ -351,6 +351,9 @@ public class Vector implements Cloneable, java.io.Serializable {
             ret[i] = A[i] + B[i];
         }
         return ret;
+    }
+    public static double[] sub(double[] A, double[] B) {
+        return plus(A, scale(B, -1));
     }
     public static double[] scale(double[] A, double scale) {
         double[] ret = new double[A.length];
@@ -531,5 +534,14 @@ public class Vector implements Cloneable, java.io.Serializable {
             for(int i=0; i<length; i++)
                 ret[i] = value;
             return ret;
+        }
+        public static double[] formV(double[]X, String f)
+        {
+            DecimalFormat twoDForml = new DecimalFormat(f);//"0.00000000");
+            for(int r = 0; r < X.length; r++)
+            {
+                X[r] = (Double.isNaN(X[r]))?0:Double.valueOf(twoDForml.format(X[r]));
+            }
+            return X;
         }
 }

@@ -4,14 +4,14 @@ import java.util.Comparator;
 
 public class Edge implements Comparator<Edge>{
 
-	int sourcevertex;
-    int destinationvertex;
+    int scr;
+    int dst;
     double weight;
 
     public Edge(int sourcevertex, int destinationvertex, double weight) {
 		super();
-		this.sourcevertex = sourcevertex;
-		this.destinationvertex = destinationvertex;
+		this.scr = sourcevertex;
+		this.dst = destinationvertex;
 		this.weight = weight;
 	}
     

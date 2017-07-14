@@ -13,13 +13,13 @@ import java.util.Comparator;
  * Should create new class to optimize get value from edge
  */
 public class EdgeNode  implements Comparator<EdgeNode>{
-    int source;
-    int dest;
+    int scr;
+    int dst;
     double[] relatedValue;
     public EdgeNode(int _s, int _d, double [] data)
     {
-        source = _s;
-        dest = _d;
+        scr = _s;
+        dst = _d;
         relatedValue = data; 
     }   
 

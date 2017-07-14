@@ -144,8 +144,8 @@ public class AMA extends Clustering{
             double uj = e.relatedValue[col];
             if(uj>0)
             {
-                double[] Ei= Vector.eVector(numOfFeature, e.source);
-                double[] Ej= Vector.eVector(numOfFeature, e.dest);
+                double[] Ei= Vector.eVector(numOfFeature, e.scr);
+                double[] Ej= Vector.eVector(numOfFeature, e.dst);
                 double[] edge = Vector.scale(Vector.plus(Ei, Vector.scale(Ej,-1)),uj);
 
                 sum = Vector.plus(sum, edge);
@@ -168,11 +168,11 @@ public class AMA extends Clustering{
 //            System.out.println("paper.AMA.updateU()");
             double[] ve= V.get(U.indexOf(e)).relatedValue;
             //Ve - Aj + Aj'
-            double[] data = Vector.plus(ve,Vector.plus(Vector.scale(Matrix.getRow(_A, e.source),-1),Matrix.getRow(_A, e.dest)));
+            double[] data = Vector.plus(ve,Vector.plus(Vector.scale(Matrix.getRow(_A, e.scr),-1),Matrix.getRow(_A, e.dst)));
             data = Vector.scale(data, rho);
             data = Vector.plus(e.relatedValue, data);
-            EdgeNode updateU = new EdgeNode(e.source, e.dest, data);
-//            Vector.printV(updateU.relatedValue, "updateU:"+e.source+""+e.dest, true);
+            EdgeNode updateU = new EdgeNode(e.scr, e.dst, data);
+//            Vector.printV(updateU.relatedValue, "updateU:"+e.scr+""+e.dst, true);
             ret.add(updateU);
         }
         return ret;        
@@ -186,16 +186,16 @@ public class AMA extends Clustering{
         double sic = lambda/rho;
         for(EdgeNode e: U)
         {
-            double[] ai = Matrix.getRow(_A, e.source);
-            double[] aj = Matrix.getRow(_A, e.dest);
+            double[] ai = Matrix.getRow(_A, e.scr);
+            double[] aj = Matrix.getRow(_A, e.dst);
             double we = edges.get(U.indexOf(e)).weight * Math.exp(Vector.norm(Vector.plus(ai, Vector.scale(aj, -1)))* 0.5);
             
             //Aj-Aj'-Ue
             double[] sum = Vector.plus(Vector.plus(ai,Vector.scale(aj, -1)),Vector.scale(e.relatedValue, -1));
             sic = sic * we;
             double[] data = Vector.proxN1(sum, sic);
-//            Vector.printV(data, "updateV:"+e.source+""+e.dest, true);
-            EdgeNode updateV = new EdgeNode(e.source, e.dest, data);
+//            Vector.printV(data, "updateV:"+e.scr+""+e.dst, true);
+            EdgeNode updateV = new EdgeNode(e.scr, e.dst, data);
             ret.add(updateV);
         }   
         return ret;        
@@ -206,9 +206,9 @@ public class AMA extends Clustering{
         List<EdgeNode> ret = new ArrayList<>();
         for(Edge e:edges)
         {
-//            System.out.println("paper.AMA.buildUV() "+e.sourcevertex+" "+e.destinationvertex);
+//            System.out.println("paper.AMA.buildUV() "+e.scr+" "+e.dst);
             double[] value = new double[dataLength];
-            EdgeNode n = new EdgeNode(e.sourcevertex, e.destinationvertex, value);
+            EdgeNode n = new EdgeNode(e.scr, e.dst, value);
             ret.add(n);
         }
         return ret;        

@@ -231,6 +231,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
 
 
     public static void printMat(double[][] a, String mess) {
+//        DecimalFormat twoDForm = new DecimalFormat("0.00000000");
         System.out.println("\n" + mess);
         int i = 1;
         for (double[] a1 : a) {
@@ -246,10 +247,11 @@ public class Matrix implements Cloneable, java.io.Serializable {
     public static void printMat(double[][] a, boolean full, String mess) {
         System.out.println("\n" + mess);
         for (int i = 0; i < a.length; i++) {
+            System.out.print("row" + i +":\t");
             for (int j = 0; j < a[0].length; j++) {
                 if (!full) {
                     if (a[i][j] != 0) {
-                        System.out.print("(" + i + "-" + j + "):" + a[i][j] + "\t");
+                        System.out.print("("+ j + "):" + a[i][j] + "\t");
                     }
                 } else {
                     System.out.print("(" + j + "):" + a[i][j] + "\t");
