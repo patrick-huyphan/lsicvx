@@ -360,6 +360,7 @@ public class DocTermReadRawFile {
         // Create matrix doc - term.
         int t = 0;
         //System.out.println("["+i+"] " + p1); 
+
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(output + "doc_Data.txt"), "UTF8"));//(new FileReader(output + "doc_Data.txt"));//listOfFiles[i].getPath())); //output+"doc_Data.txt"
         while ((s = br.readLine()) != null) {
             st = new StringTokenizer(s, " | ", false);
@@ -452,11 +453,13 @@ public class DocTermReadRawFile {
 
         String s, temp;
         StringTokenizer st;
-        int countKeyword = 0, row = 0;
+        int countKeyword = 0; 
+//        int         row = 0;
         int numOfDoc = 0;
 //        keywordList = new ArrayList();
         List<String> keywordList0 = new ArrayList<>(); // keyMap has size smaller than keywordList, reduce column of matrix 
         HashMap<String, String> keyMap = new HashMap<>();
+        HashMap<String, Integer> keywordList1 = new HashMap<>();
         
 //        StopWordList swl = new StopWordList();
         BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
@@ -467,29 +470,28 @@ public class DocTermReadRawFile {
         rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "keywordsList.txt"), "UTF8"));//(new FileReader(input + "keywordsList.txt"));
         while ((s = rd.readLine()) != null) {
             String[] tmp = s.split("\t");
-//            System.out.println(tmp[0]+" - "+tmp[0]);
             //check if keymap unavailble, increase count
-            
             if( !keyMap.containsValue(tmp[1]))
             {
 //                System.out.println(tmp[0]+" - "+tmp[0]);
                 //value
                 keywordList.add(tmp[1]);
-                countKeyword++;
+//                countKeyword++;
             }
-            row++;
+//            row++;
             //key
             keywordList0.add(tmp[0]);
             //key-value
             keyMap.put(tmp[0],tmp[1]);
         }
 //        Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
-
+        countKeyword = keywordList.size();
         System.out.println("");
         System.out.println("No of Documents – " + listOfFiles.length);
         System.out.println("No of keywords – " + countKeyword);
         System.out.println("No of Documents – " + numOfDoc);
-        System.out.println("raw "+row);
+        System.out.println("No of map - " + keyMap.size());
+//        System.out.println("raw "+row);
            
 //        numOfDoc = numOfDoc;
 //        countKeyword = countKeyword;
@@ -509,23 +511,36 @@ public class DocTermReadRawFile {
         rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "not_use.txt"),"UTF-8"));
         BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "use.txt"),"UTF-8"));
+        
         while ((s = rd.readLine()) != null) {
-            st = new StringTokenizer(s, " | ", false);
+            st = new StringTokenizer(s, " |", false);
+            
 //            System.out.print(i+":\t");
             int termpd = 0; 
             while (st.hasMoreTokens()) {
                 temp = st.nextToken();
 //                            System.out.println(temp+" "+keywordList.indexOf(temp));
+                temp = temp.replaceAll(" ", "");
                 int key = keywordList.indexOf(keyMap.get(temp));
+                
                 if(keyMap.containsKey(temp) && key<countKeyword && i<numOfDoc)
                 {
+//                    System.out.println(temp+" "+key+ " "+keyMap.get(temp)+" "+coutK2[key]);
                     countMatrixT[i][key] = countMatrixT[i][key] + 1;
-                    coutK2[key] = coutK2[key]+1; 
-//                    System.out.print(key +"-"+countMatrix[i][key]+"\t");
+                    coutK2[key] = coutK2[key]+1;
                     termpd++;
+//                    System.out.print(key +"-"+countMatrix[i][key]+"\t");
                 }
                 else
+                {
+//                    bw3.append(temp+"\n");
+                    if(!keywordList1.containsKey(temp))
+                        keywordList1.put(temp,1);
+                    else
+                        keywordList1.replace(temp, keywordList1.get(temp)+1);
+//                    System.out.println(temp+" "+key+ " "+keyMap.get(temp));
                     break;
+                }
             } // while ends 
 //            System.out.println();
             if(termpd>2)
@@ -539,12 +554,25 @@ public class DocTermReadRawFile {
         } // while ends 
         rd.close();
         bw.close();
+        bw2.close();
+        
+        BufferedWriter bw3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "keyNoU.txt"),"UTF-8"));
+        for(String sk: keywordList1.keySet())    
+        {
+            bw3.append(sk+"\t"+keywordList1.get(sk)+"\n");
+        }
+        bw3.close();
 //        FileWriter fw = new FileWriter(output+"keywordsList_n.txt");
-        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "keywordsList_n.txt"),"UTF-8"));
+        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "keywordsList_U.txt"),"UTF-8"));
+        int[] countk3 = new int[countKeyword];
+        int k = 0;
         for(j = 0; j< countKeyword; j++)
         {
-            if(coutK2[j]>0)
-            bw.append(keywordList0.get(j)+"\t"+keyMap.get(keywordList0.get(j))+"\t"+coutK2[j]+"\n");
+            if(coutK2[j]>0){
+                countk3[k]=j;
+                k++;
+                bw.append(keywordList0.get(j)+"\t"+keyMap.get(keywordList0.get(j))+"\t"+coutK2[j]+"\n");
+            }
         }
         bw.close();
         
@@ -552,6 +580,11 @@ public class DocTermReadRawFile {
         if(i<numOfDoc)
         {
             for( j = 0; j<i; j++)
+//                for(k = 0; k<countKeyword; k++)
+//                {
+//                    if(countk3[k]>0)
+//                    countMatrix[j][k] = countMatrixT[j][countk3[k]];
+//                }
                 System.arraycopy(countMatrixT[j], 0, countMatrix[j], 0, countKeyword); 
         }
         System.out.println(" ************** calc DONE **************"+i+":"+countKeyword);

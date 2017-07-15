@@ -34,6 +34,6 @@ public class sParseData {
         int [][]data2 = readRawFile.calCountMat("Output\\1499614027518\\", fileOUname, 5);
         DocTermMatrixTF xx2 = DocTermMatrixTF.buildMat(3, data2);
 
-        CSVFile.saveMatrixData("data", xx2.tdidf, "data");
+        CSVFile.saveMatrixData("data_"+data2.length+"_"+data2[0].length, xx2.tdidf, "data");
     }
 }

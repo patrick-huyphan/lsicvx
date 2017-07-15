@@ -70,10 +70,10 @@ public class CSVFile {
     }
     
     
-	public static void saveMatrixData(String csvFile, double[][] data, String name) throws IOException
+	public static void saveMatrixData(String csvFileName, double[][] data, String name) throws IOException
 	{
-            csvFile=csvFile+".csv";
-        FileWriter writer = new FileWriter(csvFile);
+            csvFileName=csvFileName+".csv";
+        FileWriter writer = new FileWriter(csvFileName);
         
         writeLine(writer, Arrays.asList(name, Integer.toString(data[0].length) , Integer.toString(data.length)),':');
         
