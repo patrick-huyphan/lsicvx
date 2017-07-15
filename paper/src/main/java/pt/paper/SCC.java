@@ -81,7 +81,7 @@ public class SCC  extends Clustering{
             }            
         }
         
-        Matrix.printMat(X, false,"SCC x0");
+//        Matrix.printMat(X, false,"SCC x0");
         
         for(int i = 0; i< numberOfVertices; i++)
         {
@@ -106,9 +106,9 @@ public class SCC  extends Clustering{
 
             int loop = 0;
             stop = false;
-            if(V.size()==0)
-                Vector.printV(X[i], "X "+i, false);
-            else
+//            if(V.size()==0)
+//                Vector.printV(X[i], "X "+i, false);
+//            else
             while(loop<MAX_LOOP)
             {
 //                if(i==48)
@@ -142,7 +142,7 @@ public class SCC  extends Clustering{
 //                X[i][r] = (Double.isNaN(X[i][r]))?0:Double.valueOf(twoDForml.format(X[i][r]));
 //            }
 //            Vector.printV(X[i], "X "+i, stop);
-            Vector.formV(X[i], "0.0000000");
+            Vector.formV(X[i], "0.00000000");
         }
         
 //        Matrix.printMat(X, "SCC x");

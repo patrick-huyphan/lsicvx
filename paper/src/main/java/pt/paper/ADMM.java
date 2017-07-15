@@ -82,7 +82,7 @@ public class ADMM extends LSI{
             double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
             
             int loop = 0;
-            while(loop<675)//1489) 143 // long = short+1
+            while(loop<146)//1489) 143 // long = short+1
             {
                 double[][] IMtxRho = Matrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = Matrix.invert(Matrix.plus(BtB, IMtxRho)); //[kk]
@@ -114,7 +114,7 @@ public class ADMM extends LSI{
 //            Vector.printV(x, "x_"+ i, true);
             X = Matrix.updateCol(X, x,i);
         }
-//        Matrix.printMat(X, "return");
+        Matrix.printMat(X, "return");
     }
     
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
