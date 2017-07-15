@@ -229,7 +229,7 @@ TODO:
         return ret;
     }
 
-    public static double[][] getPresentMat(List<Tuple2<Integer, Vector>> scc, double[][] A) {
+    public static double[][] getPresentMat(List<Tuple2<Integer, Vector>> scc, double[][] A, boolean HL) {
         List<List<Integer>> cluster = getCluster(scc);
         double[][] presentMat = new double[A.length][cluster.size()];//[numberOfVertices];
 //        double[][] ret = new double[data[0].length][index.size()];
@@ -241,14 +241,29 @@ TODO:
                 continue;
             }
             int shotestCol = edgesL.get(0);
-            double min = 100;
-            for (Integer node : edgesL) {
-                double norm = LocalVector.norm(A[node - 1]);
-                if (norm < min) {
-                    min = norm;
-                    shotestCol = node - 1;
-                }
+            if(HL==true)
+            {
+                double min = 100;
+                for (Integer node : edgesL) {
+                    double norm = LocalVector.norm(A[node - 1]);
+                    if (norm < min) {
+                        min = norm;
+                        shotestCol = node - 1;
+                    }
 
+                }
+            }
+            else
+            {
+                double max = -100;
+                for (Integer node : edgesL) {
+                    double norm = LocalVector.norm(A[node - 1]);
+                    if (norm > max) {
+                        max = norm;
+                        shotestCol = node - 1;
+                    }
+
+                }
             }
 //            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
 

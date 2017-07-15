@@ -43,8 +43,9 @@ public class sADMM {
      * @param sc
      * @param D: n*m
      * @param B: k*n
+     * @param orthonormal
      * @param loop
-     * @param inputFilePath
+     * @param orthonormal
      * @param outFilePath
      * @return X= k*m
      */
@@ -52,6 +53,7 @@ public class sADMM {
             double[][] D,
             double[][] B,//rowsListDocTermB, 
 //            String inputFilePath,
+            boolean orthonormal,
             int loop,
             String outFilePath) {
         /**
@@ -72,7 +74,8 @@ public class sADMM {
 /**
  * TODO: use spark suport matrix to process those array
  */
-        B = LocalMatrix.orthonormal(B);
+        if(orthonormal)
+            B = LocalMatrix.orthonormal(B);
         double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = LocalMatrix.Transpose(BtB);
