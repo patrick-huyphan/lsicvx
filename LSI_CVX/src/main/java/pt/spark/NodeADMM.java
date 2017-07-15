@@ -52,7 +52,7 @@ public class NodeADMM {
             double[][] BtB,
             double[][] AtB,
             double _rho,double _lambda, 
-            double e1, double e2) {
+            double e1, double e2, int loopt) {
 
         n = _n;// n row in D
         m = _m;// m column in A
@@ -104,7 +104,7 @@ public class NodeADMM {
             double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
             
             int loop = 0;
-            while(loop<675)//1489) 143 // long = short+1
+            while(loop<loopt)//1489) 143 // long = short+1
             {
                 double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]

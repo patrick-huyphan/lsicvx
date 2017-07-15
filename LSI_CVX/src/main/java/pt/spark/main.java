@@ -41,7 +41,11 @@ public class main {
         
         
         String master = "local[*]";
+        
+        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         String ouputdir = args[1]+"/"+System.currentTimeMillis();
+        int numofQ = Integer.parseInt(args[2]);
+        int loop = Integer.parseInt(args[3]);
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
@@ -54,8 +58,7 @@ public class main {
 //        double[][] docTermData = pt.paper.CSVFile.readMatrixData(args[0]);
 //        double[][] query = new double[10][docTermData[0].length];
 
-        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
-        int numofQ = Integer.parseInt(args[2]);
+
         
         double[][] docTermData = LocalMatrix.subMat(DQ, 0, DQ.length-numofQ, 0, DQ[0].length);
         double[][] query = LocalMatrix.subMat(DQ, DQ.length-numofQ, numofQ, 0, DQ[0].length);
@@ -79,7 +82,7 @@ public class main {
 
         double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, 
+        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, loop,
                 ouputdir);
 
         // read output from parse+ sADMM 

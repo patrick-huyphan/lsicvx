@@ -98,7 +98,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
                 }
                 loop++;
             }
-            System.out.println();
+//            System.out.println();
             
             X = LocalVector.formV(X, "0.00000000");
 //            LocalVector.printV(X, "NodeSCC x "+id, true);

@@ -43,6 +43,7 @@ public class sADMM {
      * @param sc
      * @param D: n*m
      * @param B: k*n
+     * @param loop
      * @param inputFilePath
      * @param outFilePath
      * @return X= k*m
@@ -51,6 +52,7 @@ public class sADMM {
             double[][] D,
             double[][] B,//rowsListDocTermB, 
 //            String inputFilePath,
+            int loop,
             String outFilePath) {
         /**
          * TODO
@@ -88,7 +90,7 @@ public class sADMM {
         Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
-        
+        Broadcast<Integer> loopb = sc.broadcast(loop);
         System.out.println("pt.spark.sADMM.run()");
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
         JavaPairRDD<Integer, Vector> retPair = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
@@ -104,7 +106,8 @@ public class sADMM {
                             rho0.value(),
                             lamda.value(),
                             eps_abs.value(),
-                            eps_rel.value())
+                            eps_rel.value(), 
+                            loopb.value())
             );
         }
         );
@@ -135,7 +138,7 @@ public class sADMM {
             double[][] BtB,
             double[][] AtB,
             double _lamda, double _rho,
-            double e1, double e2) {
+            double e1, double e2, int loop) {
         
         NodeADMM xNode = new NodeADMM(
                 _Ddata,
@@ -144,7 +147,7 @@ public class sADMM {
                 BtB,
                 AtB,
                 _lamda, _rho,
-                e1, e2);
+                e1, e2, loop);
         return Vectors.dense(xNode.X);
     }
     
