@@ -44,6 +44,8 @@ import com.restfb.types.Url;
 import com.restfb.types.User;
 import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.date;
 import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 
 import java.util.*;
@@ -95,9 +97,9 @@ public class GraphReaderExample extends Example {
 //		fetchPage("groups/VietnamWorksRecruitersCommunity/");
 //		fetchPage("groups/jobseeker.vn");
 
-//		fetchPage("vieclam24");
-//		fetchPage("vieclam24h.vn");
-//		fetchPage("thanhnien");
+		fetchPage("vieclam24");
+		fetchPage("vieclam24h.vn");
+		fetchPage("thanhnien");
 		fetchPage("ITviec");
 		
 		
@@ -229,32 +231,38 @@ public class GraphReaderExample extends Example {
                                         if(mess.length()>40)
                                         {
                                             System.out.println("com.restfb.fetchPage() "+  c.getTime().toString() + " "+post.getCreatedTime());
-					String nfilename = filename+ post.getId()+"_"+post.getCreatedTime().getTime()+"PostMess.txt"; //Long.toString(System.currentTimeMillis()),  + post.getCreatedTime().toString().trim() 
-					fileut = new File(nfilename);
-					fw = new FileWriter(fileut);
+					String nfilename = filename+ post.getId()+"_"+post.getCreatedTime().getTime()+".txt"; //Long.toString(System.currentTimeMillis()),  + post.getCreatedTime().toString().trim() 
 					
-					//fw.write("====================================================================================");
-					fw.write("\n" + mess + "\n");
-					fw.close();
-//					fw.write("Post Name: "+post.getName() + "\n");
-//					fw.write("Story : "+post.getStory() + "\n");
-//					fw.write("Caption : "+post.getCaption() + "\n");
-//					fw.write("Description : "+post.getDescription() + "\n");
-//					fw.write("Source : "+post.getSource() + "\n");
-//					fw.write("Attribution : "+post.getAttribution() + "\n");
-//					fw.write("LikesCount : "+post.getLikesCount() + "\n");
-//					fw.write("SharesCount : "+post.getSharesCount() + "\n");
-//					fw.write("From user : "+post.getFrom().getName() + "\n");
-//					fw.write("Category : "+post.getFrom().getCategory() + "\n");
-//					fw.write("CreatedTime : "+post.getCreatedTime() + "\n");
-//					fw.write("Place : "+post.getPlace() + "\n");
-//					fw.write("Caption : "+post.getWithTags(). + "\n");
-//					fw.write("-----------------------------------------------");
-					
-//					nfilename = filename+ post.getId()+"_commentList.txt"; 
-//					getAllPostComments(post.getId(), facebookClient23, nfilename);
-					
-//					fw.write("\n\n\n\n\n");
+                                        try {
+                                            FileOutputStream fos = new FileOutputStream(nfilename);
+                                            BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(fos,"UTF-8"));
+                                            fw.write(mess);
+                                            fw.close();
+                                            
+
+                                        
+    //					fw.write("Post Name: "+post.getName() + "\n");
+    //					fw.write("Story : "+post.getStory() + "\n");
+    //					fw.write("Caption : "+post.getCaption() + "\n");
+    //					fw.write("Description : "+post.getDescription() + "\n");
+    //					fw.write("Source : "+post.getSource() + "\n");
+    //					fw.write("Attribution : "+post.getAttribution() + "\n");
+    //					fw.write("LikesCount : "+post.getLikesCount() + "\n");
+    //					fw.write("SharesCount : "+post.getSharesCount() + "\n");
+    //					fw.write("From user : "+post.getFrom().getName() + "\n");
+    //					fw.write("Category : "+post.getFrom().getCategory() + "\n");
+    //					fw.write("CreatedTime : "+post.getCreatedTime() + "\n");
+    //					fw.write("Place : "+post.getPlace() + "\n");
+    //					fw.write("Caption : "+post.getWithTags(). + "\n");
+    //					fw.write("-----------------------------------------------");
+
+    //					nfilename = filename+ post.getId()+"_commentList.txt"; 
+    //					getAllPostComments(post.getId(), facebookClient23, nfilename);
+
+    //					fw.write("\n\n\n\n\n");
+                                        } catch (Exception e) {
+                                            System.out.println(e.toString());
+                                        }
                                         }
 				}
 			}
