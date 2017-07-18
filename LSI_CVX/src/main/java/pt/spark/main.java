@@ -94,9 +94,10 @@ public class main {
         
         for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
         {
+            System.out.println("top 30 query() "+ r._1);
             for(Tuple2<Integer, Double> a: r._2())
             {
-                 System.out.println("top qeury() "+ r._1+" "+a._1+": "+a._2);
+                 System.out.println(a._1+": "+a._2);
             }
         }
                 

@@ -105,7 +105,7 @@ public class sQuery {
             });
             
             List<Tuple2<Integer, Double>> rl = new ArrayList<>();
-            for(int i = 0; i<50; i++)
+            for(int i = 0; i<30; i++)
             {
                 rl.add(r._2.get(i));
             }
