@@ -28,6 +28,7 @@ import scala.Function2;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.Comparator;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.VoidFunction;
 //import scala.concurrent.Channel.LinkedList;
 
@@ -44,7 +45,7 @@ public class sQuery {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
-    public List<List<Tuple2<Integer,Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
+    public List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
             double[][] D,   
             List<Tuple2<Integer, Vector>> B,//m*k
             double[][] Q,
@@ -61,45 +62,61 @@ public class sQuery {
 
         Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
-        List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
+        JavaPairRDD<Vector, Long> D2 = rD.multiply(mX).rows().toJavaRDD().zipWithIndex();
+        Broadcast<List<Tuple2<Vector,Long>>> _D2 = sc.broadcast(D2.collect());
         
-        Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
+        JavaPairRDD<Vector, Long> Q2 = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex();
+        Broadcast<List<Tuple2<Vector,Long>>> _Q2 = sc.broadcast(Q2.collect());
+        
 
-        JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex().map((Tuple2<Vector, Long> v1) -> {
-            List<Tuple2<Integer,Tuple2<Integer, Double>>> ret = new ArrayList<>();
-            List<Vector> D2L = _D2.value();
-            for (Vector v : D2L) {
-                double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
-                ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
+        JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> abc = Q2.map((Tuple2<Vector, Long> v1) -> {
+            List<Tuple2<Integer, Double>> ret = new ArrayList<>();
+            List<Tuple2<Vector,Long>> D2L = _D2.value();
+            for (Tuple2<Vector,Long> v : D2L) {
+                double value = LocalVector.cosSim(v._1.toArray(), v1._1.toArray());
+                ret.add(new Tuple2<>(D2L.indexOf(v), value));
             }
-//            ret.sort(new Comparator<Tuple2<Integer, Tuple2<Integer, Double>>> () {
-//                @Override
-//                public int compare(Tuple2<Integer, Tuple2<Integer, Double>> o1, Tuple2<Integer, Tuple2<Integer, Double>> o2) {
-//                    return (o1._2._2>o2._2._2)? 1: (o1._2._2<o2._2._2)? -1:0;
-//                }
-//            });
-            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
-            for(int i = 0; i<20; i++)
-            {
-                retTop20.add(ret.get(i));
-            }
-            return retTop20;
-//            return ret;
+            ret.sort(new Comparator<Tuple2<Integer, Double>> () {
+                @Override
+                public int compare(Tuple2<Integer, Double> o1, Tuple2<Integer, Double> o2) {
+                    return (o1._2>o2._2)? 1: (o1._2<o2._2)? -1:0;
+                }
+            });
+//            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
+//            for(int i = 0; i<20; i++)
+//            {
+//                retTop20.add(ret.get(i));
+//            }
+//            return retTop20;
+            return new Tuple2<>(v1._2.intValue(), ret);
         });
+               
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
         
-        abc.foreach( new VoidFunction<List<Tuple2<Integer, Tuple2<Integer, Double>>>>() {
-            @Override
-            public void call(List<Tuple2<Integer, Tuple2<Integer, Double>>> t) throws Exception {
-                for(Tuple2<Integer, Tuple2<Integer, Double>> s : t)
-                {
-                    System.out.println("top qeury() "+ s._1+" "+ s._2._1+": "+s._2._2);
-                }
-            }
-        });
-        
+//        abc.foreach( new VoidFunction<List<Tuple2<Integer, Tuple2<Integer, Double>>>>() {
+//            @Override
+//            public void call(List<Tuple2<Integer, Tuple2<Integer, Double>>> t) throws Exception {
+//                for(Tuple2<Integer, Tuple2<Integer, Double>> s : t)
+//                {
+//                    System.out.println("top qeury() "+ s._1+" "+ s._2._1+": "+s._2._2);
+//                }
+//            }
+//        });
+
+//        D2.map((Tuple2<Vector, Long> d1) -> {
+//            List<Tuple2<Integer,Tuple2<Integer, Double>>> ret = new ArrayList<>();
+//            List<Tuple2<Vector,Long>> Q2L = _Q2.value();
+//            for (Tuple2<Vector,Long> v : Q2L) {
+//                double value = LocalVector.cosSim(v._1.toArray(), d1._1.toArray());
+//                ret.add(new Tuple2<>(d1._2.intValue(), new Tuple2<>(Q2L.indexOf(v), value)));
+//            }
+//            return ret;
+//        }); 
+
         _D2.unpersist();
+        _Q2.unpersist();
+//        List<List<Tuple2<Integer, Tuple2<Integer, Double>>>> t = abc.collect();
         return abc.collect();
     }
 }
