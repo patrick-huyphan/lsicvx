@@ -84,12 +84,19 @@ public class main {
                 ouputdir);
 
         // read output from parse+ sADMM 
-        new sQuery().run(sc, 
+        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = new sQuery().run(sc, 
                 docTermData, 
                 pMatrix, //k*n
                 query,
                 ouputdir);
         //TODO: sort and get top
+        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
+        {
+            for(Tuple2<Integer, Double> a: r._2())
+            {
+                 System.out.println("top qeury() "+ r._1+" "+ a._1+": "+a._2);
+            }
+        }
         sc.close();
     }
 }
