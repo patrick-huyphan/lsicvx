@@ -28,6 +28,7 @@ import scala.Function2;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.Comparator;
+import org.apache.spark.api.java.function.VoidFunction;
 //import scala.concurrent.Channel.LinkedList;
 
 /**
@@ -87,6 +88,15 @@ public class sQuery {
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
         
+        abc.foreach( new VoidFunction<List<Tuple2<Integer, Tuple2<Integer, Double>>>>() {
+            @Override
+            public void call(List<Tuple2<Integer, Tuple2<Integer, Double>>> t) throws Exception {
+                for(Tuple2<Integer, Tuple2<Integer, Double>> s : t)
+                {
+                    System.out.println("top qeury() "+ s._1+" "+ s._2._1+": "+s._2._2);
+                }
+            }
+        });
         
         _D2.unpersist();
         return abc.collect();
