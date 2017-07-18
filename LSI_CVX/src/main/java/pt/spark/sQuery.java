@@ -48,7 +48,6 @@ public class sQuery {
             double[][] Q,
 //            String inputFilePath,
             String outFilePath) {
-
         /**
          * Input: D n*m X k*m Q i*m TODO: D' = D*Xt -> (n*m x m*k)n*k Q' = Q*Xt
          * -> i*k sim(D',Q')
@@ -65,12 +64,10 @@ public class sQuery {
         JavaPairRDD<Vector, Long> Q2 = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex();
 //        Broadcast<List<Tuple2<Vector,Long>>> _Q2 = sc.broadcast(Q2.collect());
         
-
         JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> abc = Q2.map(new Function<Tuple2<Vector, Long>, Tuple2<Integer, List<Tuple2<Integer, Double>>>>() {
             @Override
             public Tuple2<Integer, List<Tuple2<Integer, Double>>> call(Tuple2<Vector, Long> v1) throws Exception {
                 List<Tuple2<Integer, Double>> ret = new ArrayList<>();
-//                List<Tuple2<Vector,Long>> D2L = ;
                 for (Tuple2<Vector,Long> d : _D2.value()) {
                     double sim = LocalVector.cosSim(d._1.toArray(), v1._1.toArray());
                     ret.add(new Tuple2<>(d._2.intValue(), sim));
