@@ -21,6 +21,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import java.io.IOException;
 import java.io.File;
+import java.util.Comparator;
 
 
 public class main {
@@ -92,6 +93,15 @@ public class main {
         //TODO: sort and get top
         for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
         {
+            r._2.sort(new Comparator<Tuple2<Integer, Double>>() {
+                @Override
+                public int compare(Tuple2<Integer, Double> o1, Tuple2<Integer, Double> o2) {
+                    if(o1._2>o2._2) return 1;
+                    else if (o1._2<o2._2) return -1;
+                    else return 0;
+                }
+            });
+            
             for(Tuple2<Integer, Double> a: r._2())
             {
                  System.out.println("top qeury() "+ r._1+" "+a._1+": "+a._2);
