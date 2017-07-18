@@ -71,9 +71,9 @@ public class sQuery {
             public Tuple2<Integer, List<Tuple2<Integer, Double>>> call(Tuple2<Vector, Long> v1) throws Exception {
                 List<Tuple2<Integer, Double>> ret = new ArrayList<>();
                 List<Tuple2<Vector,Long>> D2L = _D2.value();
-                for (Tuple2<Vector,Long> v : D2L) {
-                    double value = LocalVector.cosSim(v._1.toArray(), v1._1.toArray());
-                    ret.add(new Tuple2<>(D2L.indexOf(v), value));
+                for (Tuple2<Vector,Long> d : D2L) {
+                    double sim = LocalVector.cosSim(d._1.toArray(), v1._1.toArray());
+                    ret.add(new Tuple2<>(d._2.intValue(), sim));
                 }
 //                ret.sort(new Comparator<Tuple2<Integer, Double>> () {
 //                    @Override
@@ -104,25 +104,25 @@ public class sQuery {
 //            }
 //        });
 
-        JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> bcd = D2.map((Tuple2<Vector, Long> d1) -> {
-            List<Tuple2<Integer, Double>> ret = new ArrayList<>();
-            List<Tuple2<Vector,Long>> Q2L = _Q2.value();
-            for (Tuple2<Vector,Long> v : Q2L) {
-                double value = LocalVector.cosSim(v._1.toArray(), d1._1.toArray());
-                ret.add(new Tuple2<>(Q2L.indexOf(v), value));//new Tuple2<>(d1._2.intValue(), 
-            }
-            return new Tuple2<>(d1._2.intValue(), ret);
-        }); 
+//        JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> bcd = D2.map((Tuple2<Vector, Long> d1) -> {
+//            List<Tuple2<Integer, Double>> ret = new ArrayList<>();
+//            List<Tuple2<Vector,Long>> Q2L = _Q2.value();
+//            for (Tuple2<Vector,Long> v : Q2L) {
+//                double value = LocalVector.cosSim(v._1.toArray(), d1._1.toArray());
+//                ret.add(new Tuple2<>(Q2L.indexOf(v), value));//new Tuple2<>(d1._2.intValue(), 
+//            }
+//            return new Tuple2<>(d1._2.intValue(), ret);
+//        }); 
 
-        bcd.cache();
-        bcd.saveAsTextFile(outFilePath + "/queryRes2");
+//        bcd.cache();
+//        bcd.saveAsTextFile(outFilePath + "/queryRes2");
         
         List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = abc.collect();
-        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t2 = bcd.collect();
+//        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t2 = bcd.collect();
         _D2.unpersist();
         _Q2.unpersist();
 
-        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t2)
+        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
         {
             for(Tuple2<Integer, Double> a: r._2())
             {
