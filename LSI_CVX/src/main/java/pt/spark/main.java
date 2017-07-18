@@ -20,9 +20,6 @@ import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import java.io.IOException;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 
 
@@ -92,7 +89,7 @@ public class main {
                 pMatrix, //k*n
                 query,
                 ouputdir);
-        
+        //TODO: sort and get top
         sc.close();
     }
 }

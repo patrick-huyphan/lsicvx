@@ -27,6 +27,7 @@ import scala.Function1;
 import scala.Function2;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.Comparator;
 //import scala.concurrent.Channel.LinkedList;
 
 /**
@@ -42,9 +43,6 @@ public class sQuery {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
-    /**
-     * The task body
-     */
     public List<List<Tuple2<Integer,Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
             double[][] D,   
             List<Tuple2<Integer, Vector>> B,//m*k
@@ -73,10 +71,23 @@ public class sQuery {
                 double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
                 ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
             }
-            return ret;
+            ret.sort(new Comparator<Tuple2<Integer, Tuple2<Integer, Double>>> () {
+                @Override
+                public int compare(Tuple2<Integer, Tuple2<Integer, Double>> o1, Tuple2<Integer, Tuple2<Integer, Double>> o2) {
+                    return (o1._2._2>o2._2._2)? 1: (o1._2._2<o2._2._2)? -1:0;
+                }
+            });
+            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
+            for(int i = 0; i<20; i++)
+            {
+                retTop20.add(ret.get(i));
+            }
+            return retTop20;
         });
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
+        
+        
         _D2.unpersist();
         return abc.collect();
     }
