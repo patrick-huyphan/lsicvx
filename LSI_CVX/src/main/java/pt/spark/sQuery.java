@@ -72,19 +72,19 @@ public class sQuery {
                 double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
                 ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
             }
-            ret.sort(new Comparator<Tuple2<Integer, Tuple2<Integer, Double>>> () {
-                @Override
-                public int compare(Tuple2<Integer, Tuple2<Integer, Double>> o1, Tuple2<Integer, Tuple2<Integer, Double>> o2) {
-                    return (o1._2._2>o2._2._2)? 1: (o1._2._2<o2._2._2)? -1:0;
-                }
-            });
-//            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
-//            for(int i = 0; i<20; i++)
-//            {
-//                retTop20.add(ret.get(i));
-//            }
-//            return retTop20;
-            return ret;
+//            ret.sort(new Comparator<Tuple2<Integer, Tuple2<Integer, Double>>> () {
+//                @Override
+//                public int compare(Tuple2<Integer, Tuple2<Integer, Double>> o1, Tuple2<Integer, Tuple2<Integer, Double>> o2) {
+//                    return (o1._2._2>o2._2._2)? 1: (o1._2._2<o2._2._2)? -1:0;
+//                }
+//            });
+            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
+            for(int i = 0; i<20; i++)
+            {
+                retTop20.add(ret.get(i));
+            }
+            return retTop20;
+//            return ret;
         });
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
