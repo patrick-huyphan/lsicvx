@@ -88,6 +88,29 @@ public class sQuery {
         
         
         _D2.unpersist();
-        return abc.collect();
+        
+        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = abc.collect();
+        
+        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> ret = new ArrayList<>();
+        
+        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
+        {
+            r._2.sort(new Comparator<Tuple2<Integer, Double>>() {
+                @Override
+                public int compare(Tuple2<Integer, Double> o1, Tuple2<Integer, Double> o2) {
+                    if(o1._2>o2._2) return -1;
+                    else if (o1._2<o2._2) return 1;
+                    else return 0;
+                }
+            });
+            
+            List<Tuple2<Integer, Double>> rl = new ArrayList<>();
+            for(int i = 0; i<50; i++)
+            {
+                rl.add(r._2.get(i));
+            }
+            ret.add(new Tuple2<>(r._1,rl));
+        }
+        return ret;
     }
 }
