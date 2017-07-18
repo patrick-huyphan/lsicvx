@@ -58,8 +58,8 @@ public class sQuery {
 
         Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
-        JavaPairRDD<Vector, Long> D2 = rD.multiply(mX).rows().toJavaRDD().zipWithIndex();
-        Broadcast<List<Tuple2<Vector,Long>>> _D2 = sc.broadcast(D2.collect());
+        JavaRDD<Vector> D2 = rD.multiply(mX).rows().toJavaRDD();
+        Broadcast<List<Vector>> _D2 = sc.broadcast(D2.collect());
         
         JavaPairRDD<Vector, Long> Q2 = rQ.multiply(mX).rows().toJavaRDD().zipWithIndex();
 //        Broadcast<List<Tuple2<Vector,Long>>> _Q2 = sc.broadcast(Q2.collect());
@@ -68,9 +68,9 @@ public class sQuery {
             @Override
             public Tuple2<Integer, List<Tuple2<Integer, Double>>> call(Tuple2<Vector, Long> v1) throws Exception {
                 List<Tuple2<Integer, Double>> ret = new ArrayList<>();
-                for (Tuple2<Vector,Long> d : _D2.value()) {
-                    double sim = LocalVector.cosSim(d._1.toArray(), v1._1.toArray());
-                    ret.add(new Tuple2<>(d._2.intValue(), sim));
+                for (Vector d : _D2.value()) {
+                    double sim = LocalVector.cosSim(d.toArray(), v1._1.toArray());
+                    ret.add(new Tuple2<>( _D2.value().indexOf(d), sim));
                 }
 //                ret.sort(new Comparator<Tuple2<Integer, Double>> () {
 //                    @Override
