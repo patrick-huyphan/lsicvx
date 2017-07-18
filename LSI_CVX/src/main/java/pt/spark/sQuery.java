@@ -78,12 +78,13 @@ public class sQuery {
                     return (o1._2._2>o2._2._2)? 1: (o1._2._2<o2._2._2)? -1:0;
                 }
             });
-            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
-            for(int i = 0; i<20; i++)
-            {
-                retTop20.add(ret.get(i));
-            }
-            return retTop20;
+//            List<Tuple2<Integer,Tuple2<Integer, Double>>> retTop20 = new ArrayList<>();
+//            for(int i = 0; i<20; i++)
+//            {
+//                retTop20.add(ret.get(i));
+//            }
+//            return retTop20;
+            return ret;
         });
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
