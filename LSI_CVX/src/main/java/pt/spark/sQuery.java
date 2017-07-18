@@ -42,7 +42,7 @@ public class sQuery {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
-    public List<List<Tuple2<Integer,Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
+    public List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
             double[][] D,   
             List<Tuple2<Integer, Vector>> B,//m*k
             double[][] Q,
@@ -63,12 +63,12 @@ public class sQuery {
         
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
         JavaPairRDD<Vector, Long> Q2 =  rQ.multiply(mX).rows().toJavaRDD().zipWithIndex();
-        JavaRDD<List<Tuple2<Integer,Tuple2<Integer, Double>>>> abc = Q2.map((Tuple2<Vector, Long> v1) -> {
-            List<Tuple2<Integer,Tuple2<Integer, Double>>> ret = new ArrayList<>();
+        JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> abc = Q2.map((Tuple2<Vector, Long> v1) -> {
+            List<Tuple2<Integer, Double>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
             for (Vector v : D2L) {
                 double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
-                ret.add(new Tuple2<>(v1._2.intValue(), new Tuple2<>(D2L.indexOf(v), value)));
+                ret.add(new Tuple2<>(D2L.indexOf(v), value));
             }
 //            ret.sort(new Comparator<Tuple2<Integer, Tuple2<Integer, Double>>> () {
 //                @Override
@@ -81,7 +81,7 @@ public class sQuery {
 //            {
 //                retTop20.add(ret.get(i));
 //            }
-            return ret;
+            return new Tuple2<>(v1._2.intValue(), ret);
         });
         abc.cache();
         abc.saveAsTextFile(outFilePath + "/queryRes");
