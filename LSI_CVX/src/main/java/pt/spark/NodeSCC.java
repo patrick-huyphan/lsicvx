@@ -296,7 +296,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
                 double[] AkCk = LocalVector.plus(Ak,Ck); // u get ki
 
                 double n = 1- ((lambda*e.weight)/(LocalVector.norm(LocalVector.plus(LocalVector.plus(Bi, LocalVector.scale(Bk, -1)),LocalVector.plus(Ai, LocalVector.scale(Ak, -1))))/rho));
-                double theta = (0.5>n)? 0.5:n; //max
+                double theta = 0.93;//(0.5>n)? 0.5:n; //max
 
     //            System.out.println("paper.NodeSCC.updateV() "+ theta);
 
