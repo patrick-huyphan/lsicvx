@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.Collections;
 
 /**
  *
@@ -90,11 +91,12 @@ public class Paper {
             {
                 e.add(new Edge(i,j, ret2[j][i]));
             }
+//            Collections.sort(e);
             e.sort(new Comparator<Edge>() {
                 @Override
                 public int compare(Edge o1, Edge o2) {
                        if(o1.weight>o2.weight) return -1;
-                       else if(o1.weight>o2.weight) return 1;
+                       else if(o1.weight<o2.weight) return 1;
                        else return 0;
                 }
             });
@@ -111,7 +113,7 @@ public class Paper {
             System.out.println("pt.paper.Paper.PaperRuner()");
             for(Edge i: e)
             {
-                System.out.println(i.dst+" "+i.scr+":\t"+i.weight);
+                System.out.println(i.scr+" "+i.dst+":\t"+i.weight);
             }
         }
 //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
