@@ -393,7 +393,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
             if (LocalVector.isZeroVector(curentCol)) {
                 eMat = RemoveColumn(eMat, i);
                 ret = RemoveColumn(ret, i);
-                System.out.println("echelon() zero col "+i);
+//                System.out.println("echelon() zero col "+i);
                 for(int e=0; e<m; e++)
                 {
                     if(dltt[e] == i)
