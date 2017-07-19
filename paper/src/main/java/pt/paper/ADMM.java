@@ -121,14 +121,8 @@ public class ADMM extends LSI{
     private double[] updateX(double[] u, double[] z,double[][] BtB_rho_Im, double[] Btd)
     {
         //- rho (z^k - u^k)[k]-[k]
-        double[] rho_zk_uk=  Vector.scale((Vector.plus(z, Vector.scale(u, -1))),rho*(-1.0));
+        double[] rho_zk_uk=  Vector.scale((Vector.sub(z, u)),rho*(-1.0));
         double[] ret = Matrix.mul(BtB_rho_Im, Vector.plus(Btd, rho_zk_uk));
-        
-//        for(int d= 0; d< ret.length; d++)
-//        {
-//            if((1e-8>=(-1*ret[d])) && (ret[d]<1e-8))
-//                ret[d] = 0;
-//        }
         return Vector.scale(ret,2);
     }
     
@@ -137,7 +131,7 @@ public class ADMM extends LSI{
      */    
     private double[] updateU(double[] x, double[] u, double[] z)
     {
-        return Vector.plus(u, Vector.plus(x, Vector.scale(z, -1)));
+        return Vector.plus(u, Vector.sub(x, z));
     }
 
     /*

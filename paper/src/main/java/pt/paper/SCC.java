@@ -142,7 +142,7 @@ public class SCC  extends Clustering{
 //                X[i][r] = (Double.isNaN(X[i][r]))?0:Double.valueOf(twoDForml.format(X[i][r]));
 //            }
 //            Vector.printV(X[i], "X "+i, stop);
-            Vector.formV(X[i], "0.00000000");
+            Vector.formV(X[i], "0.0000000");
         }
         
 //        Matrix.printMat(X, "SCC x");

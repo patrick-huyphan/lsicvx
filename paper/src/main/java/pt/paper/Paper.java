@@ -5,11 +5,13 @@
  */
 package pt.paper;
 
+import com.sun.org.apache.regexp.internal.REUtil;
 import pt.DocTermBuilder.ReadingMultipleFile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +20,7 @@ import java.util.Random;
  * @author patrick_huy
  */
 public class Paper {
-    double[][] Q= {{}}; 
+//    double[][] Q= {{}}; 
     public static void PaperRuner(double[][] D,double[][] Q) throws IOException {
         
 //        Matrix.printMat(D, "D init");
@@ -73,12 +75,45 @@ public class Paper {
 //        Matrix.printMat(X2, "Projection");
         double[][] A2 = Matrix.mul(D, X2); //kn = km x mn
 //        CSVFile.saveMatrixData("LATEN", A2, "A2");
-        Matrix.printMat(A2, "New mat");
+//        Matrix.printMat(A2, "New mat");
         double[][] Q22 = Matrix.mul(Q, X2);
-        Matrix.printMat(Q22, "New mat");
-        double[][] ret2 = Matrix.sim(A2, Q22);
-        Matrix.printMat(Matrix.Transpose(ret2), "query result");
+//        Matrix.printMat(Q22, "New mat");
+        double[][] ret2 = Matrix.Transpose(Matrix.sim(A2, Q22));
+//        Matrix.printMat(ret2, "query result");
 
+        List<List<Edge>> res = new ArrayList<>();
+        
+        for(int i = 0; i< ret2[0].length; i++)
+        {
+            List<Edge> e = new ArrayList<>();
+            for(int j = 0; j< ret2.length; j++)
+            {
+                e.add(new Edge(i,j, ret2[j][i]));
+            }
+            e.sort(new Comparator<Edge>() {
+                @Override
+                public int compare(Edge o1, Edge o2) {
+                       if(o1.weight>o2.weight) return -1;
+                       else if(o1.weight>o2.weight) return 1;
+                       else return 0;
+                }
+            });
+            List<Edge> e2 = new ArrayList<>();
+            for(int k = 0; k<30; k++)
+            {
+                e2.add(e.get(k));
+            }
+            res.add(e2);
+        }
+        
+        for(List<Edge> e : res)
+        {
+            System.out.println("pt.paper.Paper.PaperRuner()");
+            for(Edge i: e)
+            {
+                System.out.println(i.dst+" "+i.scr+":\t"+i.weight);
+            }
+        }
 //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
 //          Matrix.printMat(clt.presentMat, "AMA");
     }
@@ -197,24 +232,6 @@ public class Paper {
         Matrix.printMat(A2, "LSI2");
     }
 
-    public static void main(String[] args) throws IOException {
-        // TODO code application logic here
-        double[][] DQ = Matrix.int2double(ReadData.readDataTestN());
-        CSVFile.saveMatrixData("DQ", DQ, "DQ");
-        Matrix.printMat(DQ, "DQ init");
-        double[][] D = Matrix.subMat(DQ, 0, 26, 0, DQ[0].length);
-        double[][] Q = Matrix.subMat(DQ, 26, 3, 0, DQ[0].length);
-        PaperRuner(D,Q);
-        
-//        double[][] docTerm = CSVFile.readMatrixData("data.csv");
-//        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -11, 0, docTerm[0].length);
-//        double[][] testQ = Matrix.subMat(docTerm, docTerm.length-10, 10, 0, docTerm[0].length);
-//        PaperRuner(testD,testQ);
-
-//        //printMat(docTerm, false,"docTerm");
-//
-//
-//      Paper run = new Paper(docTerm,"echelon.csv");
-    }
+    
 
 }

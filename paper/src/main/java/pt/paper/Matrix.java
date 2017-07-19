@@ -808,8 +808,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
     {
         double ret[][] = new double[Q.length][D.length];
         for(int i =0; i< Q.length; i++)
-        for(int j =0; j< D.length; j++)
-            ret[i][j] = Vector.cosSim(Q[i],D[j]);
+            for(int j =0; j< D.length; j++)
+                ret[i][j] = Vector.cosSim(Q[i],D[j]);
         return ret;
     }
 }
