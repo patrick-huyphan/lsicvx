@@ -43,10 +43,9 @@ public class sQuery {
     private static final Logger LOGGER = LoggerFactory.getLogger(sQuery.class);
 
     public List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> run(JavaSparkContext sc,
-            double[][] D,   
+            double[][] D,   //n*m
+            double[][] Q,   //t*m
             List<Tuple2<Integer, Vector>> B,//m*k
-            double[][] Q,
-//            String inputFilePath,
             String outFilePath) {
 
         /**
@@ -57,7 +56,7 @@ public class sQuery {
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+        Matrix mX = sCommonFunc.loadDenseMatrix(B);//.transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
         

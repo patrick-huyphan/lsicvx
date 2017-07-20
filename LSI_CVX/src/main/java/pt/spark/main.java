@@ -84,14 +84,14 @@ public class main {
         double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData, Boolean.getBoolean(args[4]));//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
             
-        List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, Boolean.getBoolean(args[5]), loop, 
+        List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, Boolean.getBoolean(args[5]), loop, 
                 ouputdir);
 
         // read output from parse+ sADMM 
         List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = new sQuery().run(sc, 
                 docTermData, 
-                pMatrix, //k*n
                 query,
+                reduceData, //k*n
                 ouputdir);
         //TODO: sort and get top
         
