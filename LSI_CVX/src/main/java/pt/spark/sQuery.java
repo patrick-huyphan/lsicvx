@@ -92,8 +92,8 @@ public class sQuery {
                     else return 0;
                 }
             });
-//            for(Tuple2<Integer, Double> i :r._2())
-//                System.out.println("pt.spark.sQuery.run() "+ r._1+" "+ i._1 +": "+i._2);
+            for(Tuple2<Integer, Double> i :r._2())
+                System.out.println("pt.spark.sQuery.run() "+ r._1+" "+ i._1 +": "+i._2);
             
             List<Tuple2<Integer, Double>> rl = new ArrayList<>();
 //            for(int i = 0; i<30; i++)
