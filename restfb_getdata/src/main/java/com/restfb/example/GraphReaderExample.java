@@ -217,7 +217,7 @@ public class GraphReaderExample extends Example {
 		Connection<Post> pageFeed = facebookClient23.fetchConnection(page.getId() + "/feed", Post.class);
 		try {
 			// fw.write("sc");
-			filename = "vn.hus.nlp.tokenizer-4.1.1-bin/outputF/" + Long.toString(System.currentTimeMillis()) +"/"; // 
+			filename = "../data/outputF/" + Long.toString(System.currentTimeMillis()) +"/"; // 
 			new File(filename).mkdir();
 			for (List<Post> feed : pageFeed) {
 				// fw.write("\n\n\n\n\n" + feed.toString() + "\n\n\n\n");
