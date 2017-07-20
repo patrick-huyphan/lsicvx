@@ -97,11 +97,13 @@ public class sQuery {
             
             List<Tuple2<Integer, Double>> rl = new ArrayList<>();
 //            for(int i = 0; i<30; i++)
+            int tmp =0;
             for(Tuple2<Integer, Double> i :r._2())    
             {
-                if(i._1>30)
+                if(tmp>30)
                     break;
                 rl.add(i);
+                tmp++;
             }
             ret.add(new Tuple2<>(r._1,rl));
         }
