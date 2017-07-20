@@ -81,12 +81,12 @@ public class sADMM {
         double[][] Am = LocalMatrix.Transpose(BtB);
         double[][] Bm = LocalMatrix.scale(Am, -1);
         double[][] AtB = LocalMatrix.mul(Am, Bm);
-// lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
 
-        Broadcast<Double> rho0 = sc.broadcast(0.04);
-        Broadcast<Double> lamda = sc.broadcast(0.8);
-        Broadcast<Double> eps_abs = sc.broadcast(0.004);
-        Broadcast<Double> eps_rel = sc.broadcast(0.0001);
+
+//        Broadcast<Double> rho0 = sc.broadcast(0.04);
+//        Broadcast<Double> lamda = sc.broadcast(0.8);
+//        Broadcast<Double> eps_abs = sc.broadcast(0.004);
+//        Broadcast<Double> eps_rel = sc.broadcast(0.0001);
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
@@ -106,10 +106,10 @@ public class sADMM {
                             _Bt.value(),
                             _BtB.value(),
                             _AtB.value(),
-                            lamda.value(),
-                            rho0.value(),
-                            eps_abs.value(),
-                            eps_rel.value(), 
+//                            lamda.value(),
+//                            rho0.value(),
+//                            eps_abs.value(),
+//                            eps_rel.value(), 
                             loopb.value())
             );
         }
@@ -120,10 +120,10 @@ public class sADMM {
         retPair.saveAsTextFile(outFilePath + "/ADMM");
         System.out.println("pt.spark.sADMM.run() detroy and return "+retList.size());
         
-        rho0.destroy();
-        lamda.destroy();
-        eps_abs.destroy();
-        eps_rel.destroy();
+//        rho0.destroy();
+//        lamda.destroy();
+//        eps_abs.destroy();
+//        eps_rel.destroy();
         _n.destroy();
         _m.destroy();
         _k.destroy();
@@ -139,17 +139,21 @@ public class sADMM {
             int _n, int _m, int _k,
             double[][] Bt,
             double[][] BtB,
-            double[][] AtB,
-            double _lamda, double _rho,
-            double e1, double e2, int loop) {
+            double[][] AtB,int loop) {
         
+        // lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
+        double _rho = 0.04;
+        double _lamda = 0.8;
+        double e1 = 0.004; 
+        double e2 = 0.0001; 
+            
         NodeADMM xNode = new NodeADMM(
                 _Ddata,
                 _n, _m, _k,
                 Bt,
                 BtB,
                 AtB,
-                _lamda, _rho,
+                 _rho, _lamda,
                 e1, e2, loop);
         return Vectors.dense(xNode.X);
     }
