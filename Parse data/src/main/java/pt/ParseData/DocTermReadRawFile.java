@@ -495,7 +495,8 @@ public class DocTermReadRawFile {
            
 //        numOfDoc = numOfDoc;
 //        countKeyword = countKeyword;
-        int[] coutK2 = new int[countKeyword];
+//        int[] coutK2 = new int[countKeyword];
+        HashMap<Integer, Integer> coutK2 = new HashMap<>(); 
         int[][] countMatrixT = new int[numOfDoc][countKeyword];
 
 //         Arrays.fill(countMatrix, 0);
@@ -527,7 +528,10 @@ public class DocTermReadRawFile {
                 {
 //                    System.out.println(temp+" "+key+ " "+keyMap.get(temp)+" "+coutK2[key]);
                     countMatrixT[i][key] = countMatrixT[i][key] + 1;
-                    coutK2[key] = coutK2[key]+1;
+                    if(!coutK2.containsKey(key))
+                        coutK2.put(key, 1);
+                    else
+                        coutK2.replace(key, coutK2.get(key)+1);// [key] = coutK2[key]+1;
                     termpd++;
 //                    System.out.print(key +"-"+countMatrix[i][key]+"\t");
                 }
@@ -564,30 +568,37 @@ public class DocTermReadRawFile {
         bw3.close();
 //        FileWriter fw = new FileWriter(output+"keywordsList_n.txt");
         bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "keywordsList_U.txt"),"UTF-8"));
-        int[] countk3 = new int[countKeyword];
-        int k = 0;
+//        int[] countk3 = new int[countKeyword];
+//        int k = 0;
         for(j = 0; j< countKeyword; j++)
         {
-            if(coutK2[j]>0){
-                countk3[k]=j;
-                k++;
-                bw.append(keywordList0.get(j)+"\t"+keyMap.get(keywordList0.get(j))+"\t"+coutK2[j]+"\n");
+            if(coutK2.containsKey(j)){
+//                countk3[k]=j;
+//                k++;
+                bw.append(keywordList0.get(j)+"\t"+keyMap.get(keywordList0.get(j))+"\t"+coutK2.get(j)+"\n");
             }
         }
         bw.close();
         
-        countMatrix = new int[i][countKeyword];
-        if(i<numOfDoc)
+        countMatrix = new int[i][coutK2.size()];
+        if(i<=numOfDoc)
         {
             for( j = 0; j<i; j++)
-//                for(k = 0; k<countKeyword; k++)
-//                {
-//                    if(countk3[k]>0)
-//                    countMatrix[j][k] = countMatrixT[j][countk3[k]];
-//                }
-                System.arraycopy(countMatrixT[j], 0, countMatrix[j], 0, countKeyword); 
+            {
+                int t = 0;
+                for(int k = 0; k<countKeyword; k++)
+                {
+                    if(coutK2.containsKey(k))
+                    {
+                        countMatrix[j][t] = countMatrixT[j][k];
+                        t++;
+//                        System.out.println("pt.ParseData.DocTermReadRawFile.calCountMat() " +j+"-"+k+": "+countMatrix[j][k]);
+                    }
+                }
+//                System.arraycopy(countMatrixT[j], 0, countMatrix[j], 0, countKeyword); 
+            }
         }
-        System.out.println(" ************** calc DONE **************"+i+":"+countKeyword);
+        System.out.println(" ************** calc DONE **************"+i+":"+coutK2.size());
         return countMatrix;
     }// main closing 
 
