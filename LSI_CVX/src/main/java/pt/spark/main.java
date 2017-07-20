@@ -87,6 +87,10 @@ public class main {
         List<Tuple2<Integer,Vector>> pMatrix = new sADMM().run(sc, docTermData, rowsListDocTermRd, Boolean.getBoolean(args[5]), loop, 
                 ouputdir);
 
+        for(Tuple2<Integer,Vector> v :pMatrix)
+        {
+            System.out.println("pt.spark.main.main() "+v._1+" \t"+v._2.toArray().toString());
+        }
         // read output from parse+ sADMM 
         List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = new sQuery().run(sc, 
                 docTermData, 
