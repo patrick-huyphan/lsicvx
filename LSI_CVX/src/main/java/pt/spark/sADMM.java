@@ -106,8 +106,8 @@ public class sADMM {
                             _Bt.value(),
                             _BtB.value(),
                             _AtB.value(),
-                            rho0.value(),
                             lamda.value(),
+                            rho0.value(),
                             eps_abs.value(),
                             eps_rel.value(), 
                             loopb.value())

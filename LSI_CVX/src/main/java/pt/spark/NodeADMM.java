@@ -126,8 +126,8 @@ public class NodeADMM {
                 }
                 loop++;
             }
-//            System.out.println(_Ddata._1 + "\t"+loop);
-            LocalVector.printV(X, " col "+_Ddata._1, stop);
+            System.out.println(_Ddata._1 + "\t"+loop);
+//            LocalVector.printV(X, " col "+_Ddata._1, stop);
         }
     }
     
