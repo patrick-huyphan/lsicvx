@@ -81,12 +81,12 @@ public class sADMM {
         double[][] Am = LocalMatrix.Transpose(BtB);
         double[][] Bm = LocalMatrix.scale(Am, -1);
         double[][] AtB = LocalMatrix.mul(Am, Bm);
+// lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
 
-
-        Broadcast<Double> rho0 = sc.broadcast(0.8);
-        Broadcast<Double> lamda = sc.broadcast(0.6);
-        Broadcast<Double> eps_abs = sc.broadcast(1e-6);
-        Broadcast<Double> eps_rel = sc.broadcast(1e-6);
+        Broadcast<Double> rho0 = sc.broadcast(0.04);
+        Broadcast<Double> lamda = sc.broadcast(0.8);
+        Broadcast<Double> eps_abs = sc.broadcast(0.004);
+        Broadcast<Double> eps_rel = sc.broadcast(0.0001);
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
