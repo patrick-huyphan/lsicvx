@@ -59,8 +59,6 @@ public class NodeADMM {
         k = _k;// k row in A
         lambda = _lambda;
         
-        X = new double[k];//[m];
-     
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(AtB, "AtB");    
 //        Matrix.printMat(Am, "At");
@@ -75,60 +73,59 @@ public class NodeADMM {
 //        Matrix.printMat(IMtxRho, "IMtxRho");
 //        System.out.println("paper.NodeADMM.<init>() rho "+ _rho);
         
-        {
-            rho = _rho;
-            boolean stop = false;
-            
-            //init x, u ,v
+        rho = _rho;
+        boolean stop = false;
+
+        //init x, u ,v
 //            double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
-            double[] z= LocalVector.rVector(k, 0.4);
-            double[] u = LocalVector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
-            double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
-            double[] Btd= LocalMatrix.mul(Bt, d); //[nk]*[n] = k
-            
+        X = new double[k];//[m];
+        double[] z= LocalVector.rVector(k, 0.4);
+        double[] u = LocalVector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
+        double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
+        double[] Btd= LocalMatrix.mul(Bt, d); //[nk]*[n] = k
+
 //            Vector.printV(z, "init z "+i, true);
 //            Vector.printV(u, "init u "+i, true);
 //            Vector.printV(x, "init x "+i, true);
 //            Vector.printV(d, "di", true);
 //            Vector.printV(Btd, "Btd "+i, true);
-            
-            
-            double[] x0 = new double[k];
-            double[] z0 = new double[k];//Matrix.getCol(BtB, i%k);  // [k]; new double[k];
-            double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
-            
-            int loop = 0;
-            while(loop<loopt)//1489) 143 // long = short+1
-            {
-                double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
-                double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]
+
+
+        double[] x0 = new double[k];
+        double[] z0 = new double[k];//Matrix.getCol(BtB, i%k);  // [k]; new double[k];
+        double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
+
+        int loop = 0;
+        while(loop<loopt)//1489) 143 // long = short+1
+        {
+            double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
+            double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]
 //                System.out.print(".");
-                X= updateX(u, z,iBtB_rho_Im,Btd);
+            X= updateX(u, z,iBtB_rho_Im,Btd);
 //                double lamPRho = ;
-                z= updateZ(X, u, lambda/rho);                
-                u= updateU(X, u, z);
-                
+            z= updateZ(X, u, lambda/rho);                
+            u= updateU(X, u, z);
+
 //            Vector.printV(z, "z:"+ i+"-"+loop, true);
 //            Vector.printV(u, "u:"+ i+"-"+loop, true);
 //            Vector.printV(x, "x:"+ i+"-"+loop, true);
 
-                if(loop>1)
-                    stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
-                x0=LocalVector.copy(X);
-                u0=LocalVector.copy(u);
-                z0=LocalVector.copy(z);
+            if(loop>1)
+                stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
+            x0=LocalVector.copy(X);
+            u0=LocalVector.copy(u);
+            z0=LocalVector.copy(z);
 //                if(loop>1450)
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
-                if(stop)// && loop>1)
-                {
-                    System.err.println(_Ddata._1+" Stop at "+loop);
-                    break;
-                }
-                loop++;
+            if(stop)// && loop>1)
+            {
+                System.err.println(_Ddata._1+" Stop at "+loop);
+                break;
             }
-            System.out.println(_Ddata._1 + "\t"+loop);
-//            LocalVector.printV(X, " col "+_Ddata._1, stop);
+            loop++;
         }
+        System.out.println(_Ddata._1 + "\t"+loop);
+//            LocalVector.printV(X, " col "+_Ddata._1, stop);
     }
     
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
