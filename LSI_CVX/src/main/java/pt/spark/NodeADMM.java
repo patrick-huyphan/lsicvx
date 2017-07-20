@@ -174,7 +174,7 @@ public class NodeADMM {
 //            System.err.println("s>r");
             rho =  Double.valueOf(twoDForm.format(rho* 0.75));//(r/s);//rho/2;
         }
-        System.err.println("update rho "+rho);
+//        System.err.println("update rho "+rho);
         return rho;
     }
     
