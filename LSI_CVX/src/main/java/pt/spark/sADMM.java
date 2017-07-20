@@ -82,11 +82,6 @@ public class sADMM {
         double[][] Bm = LocalMatrix.scale(Am, -1);
         double[][] AtB = LocalMatrix.mul(Am, Bm);
 
-
-//        Broadcast<Double> rho0 = sc.broadcast(0.04);
-//        Broadcast<Double> lamda = sc.broadcast(0.8);
-//        Broadcast<Double> eps_abs = sc.broadcast(0.004);
-//        Broadcast<Double> eps_rel = sc.broadcast(0.0001);
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
@@ -106,10 +101,6 @@ public class sADMM {
                             _Bt.value(),
                             _BtB.value(),
                             _AtB.value(),
-//                            lamda.value(),
-//                            rho0.value(),
-//                            eps_abs.value(),
-//                            eps_rel.value(), 
                             loopb.value())
             );
         }
@@ -120,10 +111,6 @@ public class sADMM {
         retPair.saveAsTextFile(outFilePath + "/ADMM");
         System.out.println("pt.spark.sADMM.run() detroy and return "+retList.size());
         
-//        rho0.destroy();
-//        lamda.destroy();
-//        eps_abs.destroy();
-//        eps_rel.destroy();
         _n.destroy();
         _m.destroy();
         _k.destroy();

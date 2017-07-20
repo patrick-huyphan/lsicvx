@@ -84,6 +84,8 @@ public class sQuery {
         
         for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
         {
+            for(Tuple2<Integer, Double> i :r._2())
+                System.out.println("pt.spark.sQuery.run() "+ r._1+" "+ i._1 +": "+i._2);
             r._2.sort(new Comparator<Tuple2<Integer, Double>>() {
                 @Override
                 public int compare(Tuple2<Integer, Double> o1, Tuple2<Integer, Double> o2) {
