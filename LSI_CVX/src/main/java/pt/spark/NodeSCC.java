@@ -40,21 +40,21 @@ public class NodeSCC{  //extends Clustering{
     public NodeSCC(int id, 
             double[][] _A, double [] _X, 
             List<LocalEdge> _edges, 
-            int [] ni, double[] xAvr, 
+            int ni, double[] xAvr, 
             double _lambda, 
 //            double _lambda2, 
             double _rho, 
             double _e1, double _e2) throws IOException
     {
         lambda =_lambda;
-//        lambda2 = _lambda2;
         rho = rho2 = _rho;
         ea = _e1;
         er = _e2;
-        numOfFeature = _A[0].length;
-        numberOfVertices = _A.length;
         A = _A;
         edges = _edges;
+        numberOfVertices = _A.length;
+        numOfFeature = _A[0].length;
+
         
 //        int [] ni = retSize();
 ////        Matrix.printMat(A, "centered");
@@ -62,9 +62,8 @@ public class NodeSCC{  //extends Clustering{
         X = _X;//new double[numOfFeature];
 //        System.out.println("pt.spark.NodeSCC.<init>() rho:  "+rho);
 //        LocalVector.printV(X, "X start "+id, true);
-//        for(int i = 0; i< numberOfVertices; i++)
         {
-            rho = rho2;
+//            rho = rho2;
             double[] X0;
             
             List<LocalEdgeNode> V0;
@@ -117,7 +116,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
 //        }
 //        return ret;
 //    }
-    private double[] updateX(List<LocalEdgeNode> D, int[] n, int i, double xAvr[])
+    private double[] updateX(List<LocalEdgeNode> D, int n, int i, double xAvr[])
     {
             double[] sumd = new double[numOfFeature];
             
@@ -128,7 +127,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
                     sumd= LocalVector.plus(sumd,d.relatedValue);
                 }
             }
-            sumd = LocalVector.scale(sumd, rho/n[i]);
+            sumd = LocalVector.scale(sumd, rho/n);
 //            Vector.printV(sumd, "sum "+i+" "+n[i], true);
 //            X[i] = Vector.plus(X[i], sumd);
 //            if(Vector.isZeroVector(sumd))
@@ -199,25 +198,14 @@ TODO: review to update related V and U, increase related node, expand cluster of
     private List<LocalEdgeNode> initU(int i)
     {
         List<LocalEdgeNode> ret = new ArrayList<>();
-//        HashMap<String, double[]> a = new HashMap<>();
-//        if(null!= a.put( "s-d", 1.))
-//                    System.out.println("paper.NodeSCC.initU() insert ok "+i);
-        
         for(LocalEdge e:edges)
         {
 //            System.out.println("paper.NodeSCC.initU() E "+e.sourcevertex+ " "+e.destinationvertex );
             if(e.sourcevertex == i || e.destinationvertex == i)
             {
 //                System.out.println("paper.NodeSCC.initU() E "+e.sourcevertex+ " "+e.destinationvertex );
-                //ik
                 ret.add(new LocalEdgeNode(e.sourcevertex, e.destinationvertex, new double[numOfFeature]));
-                //ki
                 ret.add(new LocalEdgeNode(e.destinationvertex, e.sourcevertex, new double[numOfFeature]));
-                
-//                double[] v= new double[numOfFeature];
-//                int [] k = new int[]{e.destinationvertex, e.sourcevertex};
-//                if(a.put( k[0]+"-"+k[1], v)!= null)
-//                    System.out.println("paper.NodeSCC.initU() insert ok "+i);
             }
         }
 //        for(LocalEdgeNode e: ret)
@@ -231,31 +219,6 @@ TODO: review to update related V and U, increase related node, expand cluster of
     {
 //        System.out.println("paper.AMA.updateV()");
         List<LocalEdgeNode> ret = new ArrayList<>();
-        
-//        for(LocalEdgeNode e: V)
-//        {
-//                double[] Bi = getUVData(V, e.source, e.dest).relatedValue;//vik
-//                double[] Bk = getUVData(V, e.dest, e.source).relatedValue;//vki
-//                double[] Ci = getUVData(U, e.source, e.dest).relatedValue;//uik
-//                double[] Ck = getUVData(U, e.dest, e.source).relatedValue;//uki
-//                
-//                double[] Ai =Matrix.getCol((i==e.source)?A:A, (i==e.source)?e.source:e.dest); //n
-//                double[] Ak =Matrix.getCol((i==e.source)?A:A, (i==e.source)?e.dest:e.source);
-//
-//                double[] AiCi = Vector.plus(Ai,Ci); // u get ik
-//                double[] AkCk = Vector.plus(Ak,Ck); // u get ki
-//
-//                double n = 1- ((lambda)/(Vector.norm(Vector.plus(Vector.plus(Bi, Vector.scale(Bk, -1)),Vector.plus(Ai, Vector.scale(Ak, -1))))/rho));
-//                double theta = (0.5>n)? 0.5:n; //max
-//
-//    //            System.out.println("paper.NodeSCC.updateV() "+ theta);
-//
-//                double[] b_ik = Vector.plus(Vector.scale(AiCi, theta), Vector.scale(AkCk, 1- theta));
-//                ret.add(new LocalEdgeNode(e.source, e.dest, b_ik));
-//
-////                double[] b_ki = Vector.plus(Vector.scale(AiCi, 1- theta), Vector.scale(AkCk, theta));
-////                ret.add(new LocalEdgeNode(e.dest, e.source, b_ki));
-//        }
         for(LocalEdge e: edges)
         {
             if(e.sourcevertex == i || e.destinationvertex==i)

@@ -87,18 +87,19 @@ public class sSCC {
         }
 //        
         double[] u = new double[numOfFeature];
+        double[] xAvr = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
             u[i] = LocalVector.norm(LocalMatrix.getCol(X, i));
+            xAvr[i] = LocalVector.avr(LocalMatrix.getCol(A, i));
         }
         u = LocalVector.scale(u, _lamda2);
-        double[] xAvr = new double[numOfFeature];
+        
         for (int i = 0; i < numOfFeature; i++) {
             double x = 1 - (u[i] / LocalVector.norm(LocalMatrix.getCol(A, i)));
             x = (x > 0) ? x : 0;
             for (int j = 0; j < numberOfVertices; j++) {
                 X[j][i] = x * A[j][i];
             }
-            xAvr[i] = LocalVector.avr(LocalMatrix.getCol(A, i));
         }
 
 //        for(Tuple2<Integer, Vector> mi: rowsList)
@@ -141,7 +142,7 @@ public class sSCC {
                             lamda.value(),
                             eps_abs.value(),
                             eps_rel.value()));
-        }
+            }
         );
         ret.cache();
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
@@ -184,7 +185,7 @@ TODO:
         - init U,V,D,X0
       (<r,c>,v[])
          */
-        System.out.println("pt.spark.sSCC.solveADMM() " + curruntI._1 + " " + numberOfVertices + "-" + numOfFeature);
+        //System.out.println("pt.spark.sSCC.solveADMM() " + curruntI._1 + " " + numberOfVertices + "-" + numOfFeature);
 
         List<LocalEdge> _edges = new ArrayList(); //rebuild from e
         for (int i = 0; i < e.size(); i++) {
@@ -194,7 +195,7 @@ TODO:
                 _A,
                 _X,
                 _edges,
-                ni,
+                ni[curruntI._1],
                 xAvr,
                 lamda,
                 //                lamda2, 

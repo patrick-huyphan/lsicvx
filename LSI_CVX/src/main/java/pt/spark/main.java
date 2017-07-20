@@ -32,6 +32,9 @@ public class main {
      *
      * @see http://spark.apache.org/docs/latest/submitting-applications.html}
      * args[0]: input doc args[1]: output args[2]: input query
+     * 
+     * TODO:
+     * - SCC and ADMM give diff result with single mode????
      */
     public static void main(String[] args) throws IOException {
 //        checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");

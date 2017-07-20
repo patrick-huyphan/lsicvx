@@ -414,7 +414,7 @@ public class LocalMatrix implements Cloneable, java.io.Serializable {
                     if (LocalVector.isDepen(checkCol, curentCol)) {
                         eMat = RemoveColumn(eMat, tmp);
                         ret = RemoveColumn(ret, tmp);
-                        System.out.println("paper.Paper.echelon() checking "+ i+" "+j+" "+tmp);
+//                        System.out.println("paper.Paper.echelon() checking "+ i+" "+j+" "+tmp);
                         for(int e=0; e<m; e++)
                         {
                             if(dltt[e] == tmp)

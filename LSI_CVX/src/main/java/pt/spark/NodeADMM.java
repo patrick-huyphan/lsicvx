@@ -60,13 +60,7 @@ public class NodeADMM {
         lambda = _lambda;
         
         X = new double[k];//[m];
-
-//        double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
-//        double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
-//        double[][] Am = LocalMatrix.Transpose(BtB);
-//        double[][] Bm = LocalMatrix.scale(Am, -1);
-//        double[][] AtB = LocalMatrix.mul(Am, Bm);
-        
+     
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(AtB, "AtB");    
 //        Matrix.printMat(Am, "At");
@@ -108,7 +102,7 @@ public class NodeADMM {
             {
                 double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]
-                System.out.print(".");
+//                System.out.print(".");
                 X= updateX(u, z,iBtB_rho_Im,Btd);
 //                double lamPRho = ;
                 z= updateZ(X, u, lambda/rho);                
@@ -180,6 +174,7 @@ public class NodeADMM {
 //            System.err.println("s>r");
             rho =  Double.valueOf(twoDForm.format(rho* 0.75));//(r/s);//rho/2;
         }
+        System.err.println("update rho "+rho);
         return rho;
     }
     
