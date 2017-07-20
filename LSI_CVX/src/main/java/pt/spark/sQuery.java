@@ -56,18 +56,20 @@ public class sQuery {
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B);//.transpose(); //m,k
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
 
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect();
         
         Broadcast<List<Vector>> _D2 = sc.broadcast(D2);
         JavaPairRDD<Vector, Long> Q2 =  rQ.multiply(mX).rows().toJavaRDD().zipWithIndex();
+        
         JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> abc = Q2.map((Tuple2<Vector, Long> v1) -> {
             List<Tuple2<Integer, Double>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
             for (Vector v : D2L) {
                 double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
                 ret.add(new Tuple2<>(D2L.indexOf(v), value));
+                System.out.println("pt.spark.sQuery.run() "+ v1._2+" "+ D2L.indexOf(v) +": "+value);
             }
             return new Tuple2<>(v1._2.intValue(), ret);
         });
