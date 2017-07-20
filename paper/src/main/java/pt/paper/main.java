@@ -22,7 +22,7 @@ public class main {
 //        double[][] Q = Matrix.subMat(DQ, 26, 3, 0, DQ[0].length);
 //        PaperRuner(D,Q);
         
-        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv");
+        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
         double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -10, 0, docTerm[0].length);
         double[][] testQ = Matrix.subMat(docTerm, docTerm.length-10, 10, 0, docTerm[0].length);
         PaperRuner(testD,testQ);

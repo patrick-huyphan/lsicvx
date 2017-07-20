@@ -160,7 +160,7 @@ public class SCC  extends Clustering{
     @Override
     public final void getCluster(FileWriter fw)
     {
-        int  ret[] = new int[numberOfVertices];
+//        int  ret[] = new int[numberOfVertices];
         HashMap<Integer, Integer> xxx = new HashMap<>();
 //        List<Integer>  intdex = new ArrayList<Integer>();
     	for(int i = 0; i<numberOfVertices; i++)
@@ -439,10 +439,11 @@ public class SCC  extends Clustering{
                 double[] AiCi = Vector.plus(Ai,Ci); // u get ik
                 double[] AkCk = Vector.plus(Ak,Ck); // u get ki
 
-                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.sub(Bi, Bk),Vector.sub(Ai, Ak)))/rho));
+//                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.sub(Bi, Bk),Vector.sub(Ai, Ak)))/rho));
 //                System.out.println("paper.SCC.updateV() "+ (1-n));
-                double theta = 0.93;//(0.5>n)? 0.5:n; //max
+//                double theta = (0.5>n)? 0.5:n; //max
 
+                double theta = 0.93;
     //            System.out.println("paper.SCC.updateV() "+ theta);
                 
                 double[] v_ik = Vector.plus(Vector.scale(AiCi, theta), Vector.scale(AkCk, 1- theta));

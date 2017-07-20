@@ -395,7 +395,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
             if (Vector.isZeroVector(curentCol)) {
                 eMat = RemoveColumn(eMat, i);
                 ret = RemoveColumn(ret, i);
-                System.out.println("echelon() zero col "+i);
+//                System.out.println("echelon() zero col "+i);
                 for(int e=0; e<m; e++)
                 {
                     if(dltt[e] == i)
@@ -416,7 +416,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
                     if (Vector.isDepen(checkCol, curentCol)) {
                         eMat = RemoveColumn(eMat, tmp);
                         ret = RemoveColumn(ret, tmp);
-                        System.out.println("paper.Paper.echelon() checking "+ i+" "+j+" "+tmp);
+//                        System.out.println("paper.Paper.echelon() checking "+ i+" "+j+" "+tmp);
                         for(int e=0; e<m; e++)
                         {
                             if(dltt[e] == tmp)
