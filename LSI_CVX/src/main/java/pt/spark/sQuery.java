@@ -66,10 +66,12 @@ public class sQuery {
         JavaRDD<Tuple2<Integer,List<Tuple2<Integer, Double>>>> abc = Q2.map((Tuple2<Vector, Long> v1) -> {
             List<Tuple2<Integer, Double>> ret = new ArrayList<>();
             List<Vector> D2L = _D2.value();
-            for (Vector v : D2L) {
-                double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
-                ret.add(new Tuple2<>(D2L.indexOf(v), value));
-                System.out.println("pt.spark.sQuery.abc() "+ v1._2+" "+ D2L.indexOf(v) +": "+value);
+//            for (Vector v : D2L) 
+            for(int i = 0; i< D2L.size(); i++)
+            {
+                double value = LocalVector.cosSim(D2L.get(i).toArray(), v1._1.toArray());
+                ret.add(new Tuple2<>(i, value));
+//                System.out.println("pt.spark.sQuery.abc() "+ v1._2+" "+ i +": "+value);
             }
             return new Tuple2<>(v1._2.intValue(), ret);
         });
