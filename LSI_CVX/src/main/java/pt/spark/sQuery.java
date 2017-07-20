@@ -69,7 +69,6 @@ public class sQuery {
             for (Vector v : D2L) {
                 double value = LocalVector.cosSim(v.toArray(), v1._1.toArray());
                 ret.add(new Tuple2<>(D2L.indexOf(v), value));
-                System.out.println("pt.spark.sQuery.run() "+ v1._2+" "+ D2L.indexOf(v) +": "+value);
             }
             return new Tuple2<>(v1._2.intValue(), ret);
         });
@@ -93,6 +92,8 @@ public class sQuery {
                     else return 0;
                 }
             });
+            for(Tuple2<Integer, Double> i :r._2())
+                System.out.println("pt.spark.sQuery.run() "+ r._1+" "+ i._1 +": "+i._2);
             
             List<Tuple2<Integer, Double>> rl = new ArrayList<>();
             for(int i = 0; i<30; i++)
