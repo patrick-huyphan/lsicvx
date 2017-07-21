@@ -131,7 +131,7 @@ public class sADMM {
         // lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
         double _rho = 0.04;
         double _lamda = 0.8;
-        double e1 = 0.004; 
+        double e1 = 0.005; 
         double e2 = 0.0001; 
             
         NodeADMM xNode = new NodeADMM(

@@ -58,6 +58,7 @@ public class NodeADMM {
         m = _m;// m column in A
         k = _k;// k row in A
         lambda = _lambda;
+        rho = _rho;
         
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(AtB, "AtB");    
@@ -73,7 +74,7 @@ public class NodeADMM {
 //        Matrix.printMat(IMtxRho, "IMtxRho");
 //        System.out.println("paper.NodeADMM.<init>() rho "+ _rho);
         
-        rho = _rho;
+        
         boolean stop = false;
 
         //init x, u ,v
@@ -124,7 +125,7 @@ public class NodeADMM {
             }
             loop++;
         }
-        System.out.println(_Ddata._1 + "\t"+loop);
+//        System.out.println(_Ddata._1 + "\t"+loop);
 //            LocalVector.printV(X, " col "+_Ddata._1, stop);
     }
     
@@ -201,7 +202,7 @@ public class NodeADMM {
         if((r<= eP) && (s<=eD))
         {
 //            System.err.println("new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
-        		return true;
+            return true;
         }
 
         updateRho(r, s);
