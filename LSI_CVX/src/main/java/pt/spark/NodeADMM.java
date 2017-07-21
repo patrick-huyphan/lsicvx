@@ -202,7 +202,7 @@ public class NodeADMM {
         if((r<= eP) && (s<=eD))
         {
 //            System.err.println("new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
-            return true;
+//            return true;
         }
 
         updateRho(r, s);
