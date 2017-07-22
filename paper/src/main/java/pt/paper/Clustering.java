@@ -61,6 +61,7 @@ public abstract class Clustering{
         presentMat = new double[numOfFeature][cluster.size()];//[numberOfVertices];
 //        double[][] ret = new double[data[0].length][index.size()];
 //        System.out.println("paper.MSTClustering.getPresentMath()");
+//        Matrix.printMat(A, false, "A");
         for(int j = 0; j< cluster.size(); j++)
         {
             List<Integer> edgesL = cluster.get(j);
@@ -81,11 +82,11 @@ public abstract class Clustering{
                 }
                 
             }
-//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
             
             for(int i = 0; i<numOfFeature  ; i++)
             {
-                presentMat[i][j] = A[i][shotestCol]; //new Random().nextDouble(); // 
+                presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
             }
         }
     }

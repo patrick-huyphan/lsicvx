@@ -109,6 +109,7 @@ public class SCC  extends Clustering{
 //            if(V.size()==0)
 //                Vector.printV(X[i], "X "+i, false);
 //            else
+            if(V.size()>0)
             while(loop<MAX_LOOP)
             {
 //                if(i==48)
