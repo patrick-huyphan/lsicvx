@@ -352,6 +352,9 @@ public class LocalVector  implements Cloneable, java.io.Serializable {
         }
         return ret;
     }
+    public static double[] sub(double[] A, double[] B) {
+        return plus(A, scale(B, -1));
+    }
     public static double[] scale(double[] A, double scale) {
         double[] ret = new double[A.length];
         for (int i = 0; i < A.length; i++) {

@@ -53,14 +53,60 @@ public class sQuery {
          * -> i*k sim(D',Q')
          */
         System.out.println("pt.spark.sQuery.run()");
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+                
+        double [][] B2 = new double[mX.numRows()][mX.numCols()];
+        for(int i =0; i< mX.numRows(); i++)
+        {
+            for(int j =0; j< mX.numCols(); j++)
+                B2[i][j] = mX.apply(i, j);
+        }
+//        double [][] B3 = LocalMatrix.Transpose(B2)
+        double[][] DM2 = LocalMatrix.mul(D,B2);
+        double[][] QM2 = LocalMatrix.mul(Q,B2);
         
- //       double[][] D2 = LocalMatrix.mul()
-//        double[][] Q2 = 
+        double[][] ret2 = LocalMatrix.Transpose(LocalMatrix.sim(DM2, QM2));
 
+        List<List<LocalEdge>> res = new ArrayList<>();
+        
+        for(int i = 0; i< ret2[0].length; i++)
+        {
+            List<LocalEdge> e = new ArrayList<>();
+            for(int j = 0; j< ret2.length; j++)
+            {
+                e.add(new LocalEdge(i,j, ret2[j][i]));
+            }
+//            Collections.sort(e);
+            e.sort(new Comparator<LocalEdge>() {
+                @Override
+                public int compare(LocalEdge o1, LocalEdge o2) {
+                       if(o1.weight>o2.weight) return -1;
+                       else if(o1.weight<o2.weight) return 1;
+                       else return 0;
+                }
+            });
+            List<LocalEdge> e2 = new ArrayList<>();
+            for(int k = 0; k<30; k++)
+            {
+                e2.add(e.get(k));
+            }
+            res.add(e2);
+        }
+        
+        for(List<LocalEdge> e : res)
+        {
+            System.out.println("pt.paper.Paper.PaperRuner()");
+            for(LocalEdge i: e)
+            {
+                System.out.println(i.sourcevertex+" "+i.destinationvertex+":\t"+i.weight);
+            }
+        }
+        
+        
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 
-        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+
         
         List<Vector> D2 = rD.multiply(mX).rows().toJavaRDD().collect(); //n*k
         
