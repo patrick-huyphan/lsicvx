@@ -53,6 +53,10 @@ public class sQuery {
          * -> i*k sim(D',Q')
          */
         System.out.println("pt.spark.sQuery.run()");
+        
+ //       double[][] D2 = LocalMatrix.mul()
+//        double[][] Q2 = 
+
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
 

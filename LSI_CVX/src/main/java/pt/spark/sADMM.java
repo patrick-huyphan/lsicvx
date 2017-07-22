@@ -74,13 +74,22 @@ public class sADMM {
 /**
  * TODO: use spark suport matrix to process those array
  */
-        if(orthonormal)
+        if(orthonormal ==false)
+{
+            System.out.println("pt.spark.sADMM.run() with orthonormal");
             B = LocalMatrix.orthonormal(B);
+}
         double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = LocalMatrix.Transpose(BtB);
         double[][] Bm = LocalMatrix.scale(Am, -1);
         double[][] AtB = LocalMatrix.mul(Am, Bm);
+
+        //LocalMatrix.printMat(Bt, false,"Bt");
+        //LocalMatrix.printMat(BtB, "BtB");
+        //LocalMatrix.printMat(Am, "At");
+        //LocalMatrix.printMat(Bm, "Bt");
+        //LocalMatrix.printMat(AtB, "AtB");    
 
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);

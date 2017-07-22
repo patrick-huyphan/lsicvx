@@ -81,7 +81,7 @@ public class main {
         List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData,
                 ouputdir);
 
-        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, docTermData, Boolean.getBoolean(args[4]));//new double[docTermData.length][docTermData[0].length];
+        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, termDocData, Boolean.getBoolean(args[4]));//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
             
         List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, Boolean.getBoolean(args[5]), loop, 

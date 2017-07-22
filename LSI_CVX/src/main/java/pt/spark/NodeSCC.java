@@ -92,7 +92,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
 //                System.out.print("."+id);    
                 if((loop>1)&&(checkStop(X0, U0, V0, V)))// || (stop == true)))
                 {
-                    System.out.println(id+" NodeSCC STOP at "+loop);
+                    //System.out.println(id+" NodeSCC STOP at "+loop);
                     break;
                 }
                 loop++;

@@ -88,7 +88,7 @@ public class NodeADMM {
 //            Vector.printV(z, "init z "+i, true);
 //            Vector.printV(u, "init u "+i, true);
 //            Vector.printV(x, "init x "+i, true);
-//            Vector.printV(d, "di", true);
+//            LocalVector.printV(d, "di", true);
 //            Vector.printV(Btd, "Btd "+i, true);
 
 
@@ -106,25 +106,29 @@ public class NodeADMM {
 //                double lamPRho = ;
             z= updateZ(X, u, lambda/rho);                
             u= updateU(X, u, z);
-
-//            Vector.printV(z, "z:"+ i+"-"+loop, true);
-//            Vector.printV(u, "u:"+ i+"-"+loop, true);
-//            Vector.printV(x, "x:"+ i+"-"+loop, true);
-
-            if(loop>1){
-                stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB);
-                System.err.println("update rho "+ loop+": "+rho);
+            if(_Ddata._1 == 0)
+{
+            //LocalVector.printV(z0, "z:"+ _Ddata._1+"-"+loop, true);
+            //LocalVector.printV(u, "u:"+ _Ddata._1+"-"+loop, true);
+            //LocalVector.printV(X, "x:"+ _Ddata._1+"-"+loop, true);
+}
+            if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, _Ddata._1, loop)){
+                //stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB);
+                //System.err.println(_Ddata._1+" update rho "+ loop+": "+rho);
+                //System.err.println(_Ddata._1+" Stop at "+loop);
+                break;            
             }
             x0=LocalVector.copy(X);
             u0=LocalVector.copy(u);
             z0=LocalVector.copy(z);
 //                if(loop>1450)
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
-            if(stop)// && loop>1)
+/*            if(stop)// && loop>1)
             {
                 System.err.println(_Ddata._1+" Stop at "+loop);
                 break;
             }
+*/
             loop++;
         }
 //        System.out.println(_Ddata._1 + "\t"+loop);
@@ -190,7 +194,7 @@ public class NodeADMM {
     }
     
     
-    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A)
+    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A, int i, int loop)
     {
 //        if(this.rho ==0)
 //            return true;
@@ -200,10 +204,10 @@ public class NodeADMM {
         double eP = epsilonA * Math.sqrt(n) + epsilonR*((LocalVector.norm(x0)>LocalVector.norm(z0))?LocalVector.norm(x0): LocalVector.norm(z0));
         double eD = epsilonA * Math.sqrt(m) + epsilonR*(LocalVector.norm(LocalMatrix.mul(A,LocalVector.scale(u0,rho))));
 
-//        System.err.println("new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
+        //System.err.println(i+ " new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
         if((r<= eP) && (s<=eD))
         {
-//            System.err.println("new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
+            //System.err.println(i+ " stop at "+ loop+" new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
             return true;
         }
 

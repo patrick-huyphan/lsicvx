@@ -225,8 +225,8 @@ TODO:
             ret[e._1._1] = ret[e._1._1] + 1;
             ret[e._1._2] = ret[e._1._2] + 1;
         }
-        for(int i = 0; i< numberOfVertices; i++)
-            System.out.println("pt.spark.sSCC.retSize() "+i+": "+ ret[i]);
+       //for(int i = 0; i< numberOfVertices; i++)
+       //     System.out.println("pt.spark.sSCC.retSize() "+i+": "+ ret[i]);
         return ret;
     }
 
@@ -235,6 +235,8 @@ TODO:
         double[][] presentMat = new double[A.length][cluster.size()];//[numberOfVertices];
 //        double[][] ret = new double[data[0].length][index.size()];
 //        System.out.println("paper.MSTClustering.getPresentMath()");
+
+        //LocalMatrix.printMat(A, false,"At");    
         for (int j = 0; j < cluster.size(); j++) {
             List<Integer> edgesL = cluster.get(j);
             if (edgesL.isEmpty()) {
@@ -242,8 +244,9 @@ TODO:
                 continue;
             }
             int shotestCol = edgesL.get(0);
-            if(HL==true)
+            if(HL==false)
             {
+                System.out.println("getPresentMat L");
                 double min = 100;
                 for (Integer node : edgesL) {
                     double norm = LocalVector.norm(A[node - 1]);
@@ -251,11 +254,11 @@ TODO:
                         min = norm;
                         shotestCol = node - 1;
                     }
-
                 }
             }
             else
             {
+                System.out.println("getPresentMat H");
                 double max = -100;
                 for (Integer node : edgesL) {
                     double norm = LocalVector.norm(A[node - 1]);
@@ -263,10 +266,9 @@ TODO:
                         max = norm;
                         shotestCol = node - 1;
                     }
-
                 }
             }
-//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
 
             for (int i = 0; i < A.length; i++) {
                 presentMat[i][j] = A[i][shotestCol]; //new Random().nextDouble(); // 
