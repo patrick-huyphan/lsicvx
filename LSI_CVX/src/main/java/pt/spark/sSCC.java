@@ -271,7 +271,7 @@ TODO:
             System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
 
             for (int i = 0; i < A.length; i++) {
-                presentMat[i][j] = A[i][shotestCol]; //new Random().nextDouble(); // 
+                presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
             }
         }
         return presentMat;
@@ -312,7 +312,8 @@ TODO:
         }
 //    	cluster.add(intdex);
 //Test    
-        System.out.println("paper.SCC.getCluster() " + cluster.size());
+
+/*        System.out.println("paper.SCC.getCluster() " + cluster.size());
         for (int i = 0; i < cluster.size(); i++) {
             List<Integer> sub = cluster.get(i);
             System.out.print("Cluster " + i + ":\t");
@@ -321,6 +322,7 @@ TODO:
             }
             System.out.println("");
         }
+*/
         return cluster;
     }
 }

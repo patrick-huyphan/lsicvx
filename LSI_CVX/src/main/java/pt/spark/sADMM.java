@@ -127,6 +127,16 @@ public class sADMM {
         _BtB.destroy();
         _AtB.destroy();
          
+/*
+        double[][] B3 = new double[m][k];
+
+        for(Tuple2<Integer, Vector> r : retList)
+        {
+            B3[r._1] = r._2.toArray();            
+        }
+
+        LocalMatrix.printMat(B3, "B3"); 
+*/
         return retList;
     }
     

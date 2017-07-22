@@ -107,20 +107,18 @@ public class NodeADMM {
             z= updateZ(X, u, lambda/rho);                
             u= updateU(X, u, z);
             if(_Ddata._1 == 0)
-{
+            {
             //LocalVector.printV(z0, "z:"+ _Ddata._1+"-"+loop, true);
             //LocalVector.printV(u, "u:"+ _Ddata._1+"-"+loop, true);
             //LocalVector.printV(X, "x:"+ _Ddata._1+"-"+loop, true);
-}
-            if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, _Ddata._1, loop)){
+            }
+            if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, _Ddata._1, loop))
+            {
                 //stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB);
                 //System.err.println(_Ddata._1+" update rho "+ loop+": "+rho);
                 //System.err.println(_Ddata._1+" Stop at "+loop);
                 break;            
             }
-            x0=LocalVector.copy(X);
-            u0=LocalVector.copy(u);
-            z0=LocalVector.copy(z);
 //                if(loop>1450)
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
 /*            if(stop)// && loop>1)
@@ -129,6 +127,10 @@ public class NodeADMM {
                 break;
             }
 */
+
+            x0=LocalVector.copy(X);
+            u0=LocalVector.copy(u);
+            z0=LocalVector.copy(z);
             loop++;
         }
 //        System.out.println(_Ddata._1 + "\t"+loop);

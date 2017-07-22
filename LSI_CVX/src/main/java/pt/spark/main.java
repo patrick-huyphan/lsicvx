@@ -22,6 +22,7 @@ import org.apache.spark.api.java.JavaRDD;
 import java.io.IOException;
 import java.io.File;
 import java.util.Comparator;
+import org.apache.spark.mllib.linalg.Matrix;
 
 
 public class main {
@@ -47,6 +48,8 @@ public class main {
         String ouputdir = args[1]+"/"+System.currentTimeMillis();
         int numofQ = Integer.parseInt(args[2]);
         int loop = Integer.parseInt(args[3]);
+        boolean HL = (Integer.parseInt(args[4]) ==1)?true: false;
+        boolean orthognomal = (Integer.parseInt(args[5]) ==1)?true: false;
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
@@ -81,29 +84,88 @@ public class main {
         List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData,
                 ouputdir);
 
-        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, termDocData, Boolean.getBoolean(args[4]));//new double[docTermData.length][docTermData[0].length];
+        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, echelon, HL);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
             
-        List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, Boolean.getBoolean(args[5]), loop, 
+        List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, orthognomal, loop, 
                 ouputdir);
+        
 
         // read output from parse+ sADMM 
-        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = new sQuery().run(sc, 
+/*        List<Tuple2<Integer,List<Tuple2<Integer, Double>>>> t = new sQuery().run(sc, 
                 docTermData, 
                 query,
                 reduceData, //k*n
                 ouputdir);
-        //TODO: sort and get top
+*/
         
-        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:t)
+        sc.close();
+
+        query(docTermData, 
+                query,
+                reduceData);
+    }
+
+    private static void query(double[][] D,   //n*m
+            double[][] Q,   //t*m
+            List<Tuple2<Integer, Vector>> B //m*k
+            ) {
+
+        /**
+         * Input: D n*m X k*m Q i*m TODO: D' = D*Xt -> (n*m x m*k)n*k Q' = Q*Xt
+         * -> i*k sim(D',Q')
+         */
+        System.out.println("pt.spark.sQuery.run()");
+        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+                
+        double [][] B2 = new double[mX.numRows()][mX.numCols()];
+        for(int i =0; i< mX.numRows(); i++)
         {
-            System.out.println("top 30 query() "+ r._1);
-            for(Tuple2<Integer, Double> a: r._2())
+            for(int j =0; j< mX.numCols(); j++)
+                B2[i][j] = mX.apply(i, j);
+        }
+
+        //double [][] B3 = LocalMatrix.Transpose(B2);
+        double[][] DM2 = LocalMatrix.mul(D,B2);
+        double[][] QM2 = LocalMatrix.mul(Q,B2);
+        
+        double[][] ret2 = LocalMatrix.Transpose(LocalMatrix.sim(DM2, QM2));
+
+        List<List<LocalEdge>> res = new ArrayList<>();
+        
+        for(int i = 0; i< ret2[0].length; i++)
+        {
+            List<LocalEdge> e = new ArrayList<>();
+            for(int j = 0; j< ret2.length; j++)
             {
-                 System.out.println(a._1+": "+a._2);
+                e.add(new LocalEdge(i,j, ret2[j][i]));
+            }
+//            Collections.sort(e);
+            e.sort(new Comparator<LocalEdge>() {
+                @Override
+                public int compare(LocalEdge o1, LocalEdge o2) {
+                       if(o1.weight>o2.weight) return -1;
+                       else if(o1.weight<o2.weight) return 1;
+                       else return 0;
+                }
+            });
+            List<LocalEdge> e2 = new ArrayList<>();
+            for(int k = 0; k<30; k++)
+            {
+                e2.add(e.get(k));
+            }
+            res.add(e2);
+        }
+        
+        for(List<LocalEdge> e : res)
+        {
+            System.out.println("pt.paper.Paper.PaperRuner()");
+            for(LocalEdge i: e)
+            {
+                System.out.println(i.sourcevertex+" "+i.destinationvertex+":\t"+i.weight);
             }
         }
-                
-        sc.close();
+        
     }
+
 }

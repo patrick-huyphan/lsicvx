@@ -61,7 +61,8 @@ public class sQuery {
             for(int j =0; j< mX.numCols(); j++)
                 B2[i][j] = mX.apply(i, j);
         }
-//        double [][] B3 = LocalMatrix.Transpose(B2)
+
+        //double [][] B3 = LocalMatrix.Transpose(B2);
         double[][] DM2 = LocalMatrix.mul(D,B2);
         double[][] QM2 = LocalMatrix.mul(Q,B2);
         
@@ -102,6 +103,7 @@ public class sQuery {
             }
         }
         
+
         
         RowMatrix rD = sCommonFunc.loadRowM(sc, D); //n,m
         RowMatrix rQ = sCommonFunc.loadRowM(sc, Q); //t,m 
@@ -161,6 +163,15 @@ public class sQuery {
                 tmp++;
             }
             ret.add(new Tuple2<>(r._1,rl));
+        }
+
+        for(Tuple2<Integer,List<Tuple2<Integer, Double>>> r:ret)
+        {
+        //    System.out.println("top 30 query() "+ r._1);
+            for(Tuple2<Integer, Double> a: r._2())
+            {
+        //         System.out.println(a._1+": "+a._2);
+            }
         }
         return ret;
     }
