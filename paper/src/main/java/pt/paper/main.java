@@ -15,17 +15,19 @@ import static pt.paper.Paper.PaperRuner;
 public class main {
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        double[][] DQ = Matrix.int2double(ReadData.readDataTestN());
+        double[][] DQ = Matrix.int2double(ReadData.readDataTestN(data.inputJobSearch));
+        int n = DQ.length;
+        int q = 5;
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
-//        Matrix.printMat(DQ, "DQ init");
-//        double[][] D = Matrix.subMat(DQ, 0, 26, 0, DQ[0].length);
-//        double[][] Q = Matrix.subMat(DQ, 26, 3, 0, DQ[0].length);
-//        PaperRuner(D,Q);
+        Matrix.printMat(DQ, "DQ init");
+        double[][] D = Matrix.subMat(DQ, 0, n-q, 0, DQ[0].length);
+        double[][] Q = Matrix.subMat(DQ, n-q, q, 0, DQ[0].length);
+        PaperRuner(D,Q, 10);
         
-        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
-        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -10, 0, docTerm[0].length);
-        double[][] testQ = Matrix.subMat(docTerm, docTerm.length-10, 10, 0, docTerm[0].length);
-        PaperRuner(testD,testQ);
+//        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
+//        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -10, 0, docTerm[0].length);
+//        double[][] testQ = Matrix.subMat(docTerm, docTerm.length-10, 10, 0, docTerm[0].length);
+//        PaperRuner(testD,testQ, 30);
 
 //        //printMat(docTerm, false,"docTerm");
 //

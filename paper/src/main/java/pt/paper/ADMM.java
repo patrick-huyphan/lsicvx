@@ -96,7 +96,7 @@ public class ADMM extends LSI{
             {
 //            Vector.printV(z0, "z:"+ i+"-"+loop, true);
 //            Vector.printV(u, "u:"+ i+"-"+loop, true);
-            Vector.printV(x0, "x:"+ i+"-"+loop, true);
+//            Vector.printV(x0, "x:"+ i+"-"+loop, true);
             }
                 if(loop>1){
                     stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
@@ -114,11 +114,11 @@ public class ADMM extends LSI{
                 }
                 loop++;
             }
-            System.out.println(".");
+//            System.out.println(".");
 //            Vector.printV(x, "x_"+ i, true);
             X = Matrix.updateCol(X, x,i);
         }
-        Matrix.printMat(X, "return");
+//        Matrix.printMat(X, "return");
     }
     
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
@@ -186,7 +186,7 @@ public class ADMM extends LSI{
 //        System.err.println(time+ "new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
         if((r<= eP) && (s<=eD))
         {
-//            System.err.println(time+ "Stop new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
+//            System.err.println(" Stop at "+time+ " new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
             return true;
         }
 

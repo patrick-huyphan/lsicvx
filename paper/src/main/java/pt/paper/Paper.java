@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q) throws IOException {
+    public static void PaperRuner(double[][] D,double[][] Q, int top) throws IOException {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -101,7 +101,7 @@ public class Paper {
                 }
             });
             List<Edge> e2 = new ArrayList<>();
-            for(int k = 0; k<30; k++)
+            for(int k = 0; k<top; k++)
             {
                 e2.add(e.get(k));
             }

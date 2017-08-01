@@ -30,38 +30,8 @@ import java.util.StringTokenizer;
  */
 public class ReadData {
 
-    private static String[] inputTest = {
-        "make Bread Roll Demonstration", //0
-        "Ingredient Roll", //1
-        "Recipe Dough Bread", //Sourdough									//2
-        "Recipe Dough Ingredient", //3
-        "Homemade Bread Recipe", //4
-        "make Homemade Bread", //5
-        "Human interface computer", //6
-        "survey user computer system response time", //7	
-        "EPS user interface system", //8
-        "System human system EPS", //9
-        "user response time",//10	
-        "trees", //11
-        "graph trees", //12
-        "Graph minors trees", //13
-        "Graph minors survey", //14
-        "Medicine ingredient make Drowsiness", //15
-        "Drugs Medicine treat Drowsiness", //16
-        "treat drugs", //17
-        "Rock Roll Music", //18
-        "Drum Roll Demonstration", //19
-        "Drum Composition", //20
-        "Rock Music", //21
-        "Music Composition", //22
-        "Effect Music Human Response", //23
-        "Rock Music System", //24
-        "effect music",//25
-        "make bread",//Q1
-        "treat Drowsiness", //q2
-        "effect rock music" //q3
-    };
 
+        
     public static double[][] readData(String file) {
         double[][] ret = null;
         return ret;
@@ -72,9 +42,8 @@ public class ReadData {
         return ret;
     }
 
-    public static int[][] readDataTestN() throws IOException {
-        int[][] ret = countMatrix(inputTest, ".");
-        return ret;
+    public static int[][] readDataTestN(String [] data) throws IOException {
+        return countMatrix(data, ".");
     }
 
     public static int[][] countMatrix(String[] input, String output) throws FileNotFoundException, IOException {
@@ -108,7 +77,7 @@ public class ReadData {
 //          st = new StringTokenizer(s, " ", false);
 //          while (st.hasMoreTokens()){ 
 //        	temp = st.nextToken();
-            String st2[] = s.split(" ");
+            String st2[] = s.split(" | ");
 //            System.out.println(s);
             for (String strT : st2) {
                 temp = strT;
