@@ -197,7 +197,7 @@ public class SCC  extends Clustering{
     	}
 //    	cluster.add(intdex);
 //Test    
-        System.out.println("paper.AMA.getCluster() "+cluster.size());
+        System.out.println("paper.SCC.getCluster() "+cluster.size());
     	for(int i = 0; i<cluster.size(); i++)
     	{
     		List<Integer> sub = cluster.get(i);
@@ -403,8 +403,8 @@ public class SCC  extends Clustering{
         {
             if(e.scr == i || e.dst==i)
             {
-                double[] Bi = null;//vik
-                double[] Bk = null;//vki
+//                double[] Bi = null;//vik
+//                double[] Bk = null;//vki
                 double[] Ci = null;//uik
                 double[] Ck = null;//uki
                 int get = 0;
@@ -418,14 +418,14 @@ public class SCC  extends Clustering{
 
                     if(B.scr == e.scr && B.dst == e.dst)
                     {
-                        Bi = B.relatedValue;
+//                        Bi = B.relatedValue;
                         Ci = C.relatedValue;
                         get++;
                     }
 //                    EdgeNode C2 = getUVData(U, B.dst, B.scr);// U.get(V.indexOf(B));
                     if(B.scr == e.dst && B.dst == e.scr)
                     {
-                        Bk = B.relatedValue; 
+//                        Bk = B.relatedValue; 
                         Ck = C.relatedValue; 
                         get++;
                     }

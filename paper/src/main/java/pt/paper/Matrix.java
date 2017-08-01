@@ -232,7 +232,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
 
     public static void printMat(double[][] a, String mess) {
 //        DecimalFormat twoDForm = new DecimalFormat("0.00000000");
-        System.out.println("\n" + mess);
+        System.out.println("\n" + mess +" "+a.length +"-"+a[0].length);
         int i = 1;
         for (double[] a1 : a) {
             System.out.print(i+":");
@@ -498,7 +498,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
 //        printMat(ret, "after echelon");
 
 //        Matrix.printMat(eMat, " emath");
-//        Matrix.printMat(ret, " echelon");
+        Matrix.printMat(ret, " echelon");
         return ret;
     }
 

@@ -42,7 +42,7 @@ public class ReadData {
         return ret;
     }
 
-    public static int[][] readDataTestN(String [] data) throws IOException {
+    public static int[][] readDataTest(String [] data) throws IOException {
         return countMatrix(data, ".");
     }
 

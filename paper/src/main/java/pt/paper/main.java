@@ -15,13 +15,15 @@ import static pt.paper.Paper.PaperRuner;
 public class main {
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        double[][] DQ = Matrix.int2double(ReadData.readDataTestN(data.inputJobSearch));
+        double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
         int n = DQ.length;
         int q = 5;
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
-        Matrix.printMat(DQ, "DQ init");
+        
         double[][] D = Matrix.subMat(DQ, 0, n-q, 0, DQ[0].length);
+        Matrix.printMat(D, "D init");
         double[][] Q = Matrix.subMat(DQ, n-q, q, 0, DQ[0].length);
+        Matrix.printMat(Q, "Q init");
         PaperRuner(D,Q, 10);
         
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
