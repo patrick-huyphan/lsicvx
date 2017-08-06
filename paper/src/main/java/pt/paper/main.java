@@ -21,9 +21,9 @@ public class main {
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
         
         double[][] D = Matrix.subMat(DQ, 0, n-q, 0, DQ[0].length);
-        Matrix.printMat(D, "D init");
+//        Matrix.printMat(D, "D init");
         double[][] Q = Matrix.subMat(DQ, n-q, q, 0, DQ[0].length);
-        Matrix.printMat(Q, "Q init");
+//        Matrix.printMat(Q, "Q init");
         PaperRuner(D,Q, 10);
         
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109

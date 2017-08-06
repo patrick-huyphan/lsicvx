@@ -145,12 +145,19 @@ public class SCC  extends Clustering{
 //            Vector.printV(X[i], "X "+i, stop);
             Vector.formV(X[i], "0.0000000");
         }
-        
+        FileWriter fw = new FileWriter("X_data.txt");
+        for(int i = 0; i< numberOfVertices; i++)
+        {
+            for(int j = 0; j< numOfFeature; j++)
+                fw.append(X[i][j]+"\t");
+            fw.append("\n");
+        }
+//        getCluster(fw);
 //        Matrix.printMat(X, "SCC x");
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new ArrayList<>();
 
-        FileWriter fw = new FileWriter("cluster.txt");
+        fw = new FileWriter("cluster.txt");
         getCluster(fw);
         fw.close();
         presentMat= new double[cluster.size()][A[0].length];
@@ -174,7 +181,7 @@ public class SCC  extends Clustering{
                     if(!xxx.containsKey(j))
                         if((Vector.isSameVec(Matrix.getRow(X, i),Matrix.getRow(X, j))))
                         {
-                                xxx.put(j, i);
+                            xxx.put(j, i);
                         }
                 }
             }
@@ -184,12 +191,12 @@ public class SCC  extends Clustering{
     	
     	for(int i = 0; i<numberOfVertices; i++)
     	{
-            List<Integer> sub = new ArrayList<Integer>();
+            List<Integer> sub = new ArrayList<>();
             for(int j = i; j<numberOfVertices; j++)
             {
                 if(xxx.get(j)==i)
                 { 
-                    sub.add(j+1);
+                    sub.add(j);
                 }
             }
             if(!sub.isEmpty())
@@ -200,13 +207,13 @@ public class SCC  extends Clustering{
         System.out.println("paper.SCC.getCluster() "+cluster.size());
     	for(int i = 0; i<cluster.size(); i++)
     	{
-    		List<Integer> sub = cluster.get(i);
-    		System.out.print("Cluster "+ i+":\t");
-    		for(int j = 0; j<sub.size(); j++)
-    		{
-    			System.out.print(sub.get(j) +"\t");
-    		}
-                System.out.println("");
+            List<Integer> sub = cluster.get(i);
+            System.out.print("Cluster "+ i+":\t");
+            for(int j = 0; j<sub.size(); j++)
+            {
+                    System.out.print(sub.get(j) +"\t");
+            }
+            System.out.println("");
     	}
 
     }

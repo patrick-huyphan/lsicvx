@@ -494,11 +494,11 @@ public class Matrix implements Cloneable, java.io.Serializable {
 
         //check again, this line just for b1 data
 //        ret = RemoveColumn(ret, ret[0].length-1);
-        System.out.println("paper.Matrix.echelon() " + ret.length +" - "+ret[0].length);
+//        System.out.println("paper.Matrix.echelon() " + ret.length +" - "+ret[0].length);
 //        printMat(ret, "after echelon");
 
 //        Matrix.printMat(eMat, " emath");
-        Matrix.printMat(ret, " echelon");
+//        Matrix.printMat(ret, " echelon");
         return ret;
     }
 

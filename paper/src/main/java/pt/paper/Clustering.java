@@ -38,7 +38,7 @@ public abstract class Clustering{
         for (int source = 0; source < numberOfVertices; source++) {
             for (int destination = source + 1; destination < numberOfVertices; destination++) {
                 double sim = Vector.cosSim(Matrix.getRow(_Matrix, source), Matrix.getRow(_Matrix, destination));
-                if (sim > 0) 
+                if (sim > 0.19) 
                 {
                     Edge edge = new Edge(source, destination, sim );
                     edges.add(edge);
@@ -56,6 +56,9 @@ public abstract class Clustering{
 
     public abstract void getCluster(FileWriter fw);
     
+    /**
+     * Get pair V has max sim in cluster, base on this pare, select H or L
+     */
     public void getPresentMat()
     {
         presentMat = new double[numOfFeature][cluster.size()];//[numberOfVertices];
@@ -71,16 +74,31 @@ public abstract class Clustering{
                 continue;
             }
             int shotestCol= edgesL.get(0);
-            double min = 100;
-            for(Integer node: edgesL)
-            {
-                double norm = Vector.norm(A[node-1]);
-                if(norm<min)
+            if(edgesL.size() > 1)
+            {        
+                double min = 100;
+                double maxS = -1;
+                for(Integer node: edgesL)
                 {
-                    min = norm;
-                    shotestCol = node-1;
+                    for(Edge e : edges)
+                    {
+                        if((e.dst == node || e.scr == node) && (edgesL.contains(e.dst) && edgesL.contains(e.scr)))
+                        {
+                            if(e.weight>maxS)
+                            {
+                                maxS = e.weight;
+                                System.out.println("getPresentMat() "+ e.dst+" "+e.scr+": "+e.weight);
+                                shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
+                            }
+                        }
+                    }
+//                    double norm = Vector.norm(A[node]);
+//                    if(norm<min)
+//                    {
+//                        min = norm;
+//                        shotestCol = node;
+//                    }                
                 }
-                
             }
             System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
             
