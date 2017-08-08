@@ -38,7 +38,7 @@ public abstract class Clustering{
         for (int source = 0; source < numberOfVertices; source++) {
             for (int destination = source + 1; destination < numberOfVertices; destination++) {
                 double sim = Vector.cosSim(Matrix.getRow(_Matrix, source), Matrix.getRow(_Matrix, destination));
-                if (sim > 0.19) 
+                if (sim > 0.15) 
                 {
                     Edge edge = new Edge(source, destination, sim );
                     edges.add(edge);
@@ -87,7 +87,7 @@ public abstract class Clustering{
                             if(e.weight>maxS)
                             {
                                 maxS = e.weight;
-                                System.out.println("getPresentMat() "+ e.dst+" "+e.scr+": "+e.weight);
+//                                System.out.println("getPresentMat() "+ e.dst+" "+e.scr+": "+e.weight);
                                 shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
                             }
                         }
