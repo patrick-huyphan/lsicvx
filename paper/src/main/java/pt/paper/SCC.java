@@ -253,12 +253,11 @@ public class SCC  extends Clustering{
             
             for(EdgeNode d:D)
             {
-                if(d.scr == i)
-                {
-                    sumd= Vector.plus(sumd,d.relatedValue);
-                }
+                if(i==d.scr) sumd= Vector.plus(sumd,d.relatedValue);
+                if(i==50) System.out.println("pt.paper.SCC.updateX()"+ d.scr +" - " +d.dst);
+//                sumd= (d.scr == i)?Vector.plus(sumd,d.relatedValue);//:Vector.sub(sumd,d.relatedValue);
             }
-            sumd = Vector.scale(sumd, rho/(14*n));
+            sumd = Vector.scale(sumd, rho/(n*14));
 //            Vector.printV(sumd, "sum "+i+" "+n[i], true);
 //            X[i] = Vector.plus(X[i], sumd);
 //            if(Vector.isZeroVector(sumd))
@@ -321,10 +320,13 @@ public class SCC  extends Clustering{
                 EdgeNode u = getUVData(U, v.scr, v.dst);// U.get(k);
 
                 double[] d = Vector.sub(Matrix.getRow(X, i), v.relatedValue);
+                //(v.scr == i)?Vector.sub(Matrix.getRow(X, i), v.relatedValue):Vector.plus(Matrix.getRow(X, i), v.relatedValue);
                 d =         Vector.plus(d, u.relatedValue);
+                //(v.scr == i)?Vector.plus(d, u.relatedValue):Vector.sub(d, u.relatedValue);
     //            d = Vector.plus(Matrix.getRow(X0, e.scr), Vector.scale(e.relatedValue,-1));
                 D.add(new EdgeNode(v.scr, v.dst, d));
             }
+            
         }
         return D;
     }
@@ -387,12 +389,15 @@ public class SCC  extends Clustering{
         for(Edge e:edges)
         {
 //            System.out.println("paper.SCC.initU() E "+e.scr+ " "+e.dst );
-            if(e.scr == i || e.dst == i)
+            if(e.scr == i)// || e.dst == i)
             {
 //                System.out.println("paper.SCC.initU() E "+e.scr+ " "+e.dst );
                 //ik
                 ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
+            }
                 //ki
+            if(e.dst == i)// || e.dst == i)
+            {    
                 ret.add(new EdgeNode(e.dst, e.scr, new double[numOfFeature]));
             }
         }
@@ -408,10 +413,13 @@ public class SCC  extends Clustering{
         
         for(Edge e:edges)
         {
-            if(e.scr == i || e.dst == i)
+            if(e.scr == i)// || e.dst == i)
             {
             //ik
                 ret.put(e.scr, e.dst, new double[numOfFeature]);
+            }
+            if(e.dst == i)
+            {
             //ki
                 ret.put(e.dst, e.scr, new double[numOfFeature]);
             }
@@ -434,10 +442,10 @@ public class SCC  extends Clustering{
             {
 //                double[] Bi = null;//vik
 //                double[] Bk = null;//vki
-                double[] Ci = null;//uik
-                double[] Ck = null;//uki
+                double[] Ci = new double[numOfFeature];//uik
+                double[] Ck = new double[numOfFeature];//uki
                 int get = 0;
-//                System.out.println(e.scr+" "+e.dst);
+                
                 for(EdgeNode C:U)
                 {
 //                    EdgeNode B:V
@@ -445,10 +453,12 @@ public class SCC  extends Clustering{
 //                    if((B.scr != C.scr) || (B.dst != C.dst))
 //                        System.out.println("paper.SCC.updateV()wrong ve "+B.scr+ " "+B.dst+" "+C.scr+" "+C.dst);
 
-                    if(C.scr == e.scr && C.dst == e.dst)
+                    if((C.scr == e.scr && C.dst == e.dst))//|| (C.scr == e.dst && C.dst == e.scr)) 
                     {
 //                        Bi = B.relatedValue;
                         Ci = C.relatedValue;
+                        
+                        Ck= Vector.plus(Ck, Matrix.getRow(A, (C.dst == e.dst)?e.dst:e.scr));
                         get++;
                     }
 //                    EdgeNode C2 = getUVData(U, B.dst, B.scr);// U.get(V.indexOf(B));
@@ -466,8 +476,8 @@ public class SCC  extends Clustering{
                 double[] Ai =Matrix.getRow(A, (i==e.scr)?e.scr:e.dst); //n
                 double[] Ak =Matrix.getRow(A, (i==e.scr)?e.dst:e.scr);
 
-                double[] AiCi = Vector.plus(Ai,Ci); // u get ik
-                double[] AkCk = Vector.plus(Ak,Ck); // u get ki
+                double[] AiCi = Vector.plus(Ai,Ci); // u get ik As+Us
+                double[] AkCk = Vector.plus(Ak,Ck); // u get ki Ad+Ud
 
 //                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.sub(Bi, Bk),Vector.sub(Ai, Ak)))/rho));
 //                System.out.println("paper.SCC.updateV() "+ (1-n));
@@ -478,13 +488,13 @@ public class SCC  extends Clustering{
 //                double thet = theta;
 //                double thet = (1.5+lambda);    
 
-                double a = 1.- e.weight/2;
-                double b = e.weight/2;
+                double a = 1- 0.125;// e.weight/2;
+                double b = 0.125;//e.weight/2;
                 double[] v_ik = Vector.plus(Vector.scale(AiCi, a), Vector.scale(AkCk, b));
-                ret.add(new EdgeNode(e.scr, e.dst, v_ik));
-                
-                double[] v_ki = Vector.plus(Vector.scale(AiCi, b), Vector.scale(AkCk, a));
-                ret.add(new EdgeNode(e.dst, e.scr, v_ki));
+                ret.add(new EdgeNode(e.scr, e.dst, Vector.scale(v_ik,e.weight)));
+//                if(i==50 ) System.out.println("V "+e.scr+" "+e.dst);
+//                double[] v_ki = Vector.plus(Vector.scale(AiCi, b), Vector.scale(AkCk, a));
+//                ret.add(new EdgeNode(e.dst, e.scr, Vector.scale(v_ki,e.weight)));
 
 //            Vector.printV(b_ik, "Bik "+e.scr, true);
 //            Vector.printV(b_ki, "Bki "+e.dst, true);
@@ -575,9 +585,9 @@ public class SCC  extends Clustering{
     private double updateRho(double r, double s)
     {
         if(r>10*s)
-            rho =  Double.valueOf(twoDForm.format(rho* 0.748));//(r/s);//2*rho;
+            rho =  Double.valueOf(twoDForm.format(rho* 0.745));//(r/s);//2*rho;
         if(s>10*r)
-            rho =  Double.valueOf(twoDForm.format(rho* 2));//(r/s);//rho/2;
+            rho =  Double.valueOf(twoDForm.format(rho* 3));//(r/s);//rho/2;
         return rho;
     }
     

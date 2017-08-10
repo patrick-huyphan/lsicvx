@@ -36,15 +36,15 @@ public class Paper {
 
 ////        printMat(echelon, false, "echelong");
 //
-        double[][] termDocMat = Matrix.Transpose(echelon);
-
-                
+        double[][] termDocMat = Matrix.Transpose(echelon);          
 
 //        new KMeans_Ex4a(termDocMat, 0, 5);
         
         clt = new SCC(termDocMat, 1.9, 0.05, 0.01, 1e-3, 1e-3);
 //        SCC scc = new SCC(termDocMat, 3.5, 0.15, 0.25, 1e-3, 1e-3);
 //        new SCC(scc.X, 3.5, 0.15, 0.25, 1e-3, 1e-3);
+
+//        clt = new kmean(termDocMat, 0.15, 27, new int[]{1,2,3});
 
 //        clt = new MSTClustering(termDocMat,0.28);
         
