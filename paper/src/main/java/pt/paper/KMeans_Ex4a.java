@@ -20,7 +20,8 @@ public class KMeans_Ex4a extends Clustering
     private int TOTAL_DATA;      // Total data points.
 //    private double [][] dataS;
 
-    int mat[]={1,4,5,12,22};
+//    int mat[]={1,4,5,12,22};
+    int mat[];
 //    int mat[]={6,10,17,18,23};
 //    int mat[]={4,5,16,9,20};
     private static ArrayList<Data> dataSet;// = new ArrayList<Data>();
@@ -36,7 +37,7 @@ public class KMeans_Ex4a extends Clustering
         {
             List<Integer> subCl = new ArrayList<>();
             
-            System.out.println("Centroids "+i);
+            System.out.print("Centroids "+i+":\t");
 //            for(int k = 0; k < A[0].length; k++)
 //                System.out.print(centroids.get(i).data[k] + "\t");
 //            System.out.print("\n");
@@ -45,7 +46,7 @@ public class KMeans_Ex4a extends Clustering
             for(int j = 0; j < TOTAL_DATA; j++)
             {
                 if(dataSet.get(j).cluster() == i){
-                    System.out.print(j+1+" \t");
+                    System.out.print(j+" \t");
                     subCl.add(j+1);
 //                    for(int k = 0; k < A[0].length; k++)
 //                        System.out.print(dataSet.get(j).data[k] + "\t");
@@ -65,9 +66,9 @@ public class KMeans_Ex4a extends Clustering
         for(int i = 0; i< NUM_CLUSTERS; i++)
         {
             centroids.add(new Centroid(A[mat[i]]));
-            Vector.printV(centroids.get(i).data, "centroids "+ i, true);
+//            Vector.printV(centroids.get(i).data, "centroids "+ i, true);
         }
-        System.out.print("\n");
+//        System.out.print("\n");
     }
     
 
@@ -83,7 +84,7 @@ public class KMeans_Ex4a extends Clustering
 //        Matrix.printMat(A, "A");
         
         // Add in new data, one at a time, recalculating centroids with each new one. 
-        while(dataSet.size() < TOTAL_DATA)
+        while(dataSet.size() < numberOfVertices)
         {
             double[] a= A[sampleNumber];
             
@@ -109,7 +110,7 @@ public class KMeans_Ex4a extends Clustering
 //            for(int i = 0; i < NUM_CLUSTERS; i++)
             {
 //                int i = cluster;
-                int newC = 0;
+                int newC = cluster;
                 minimum = bigNumber;
                 for(int j = 0; j < dataSet.size(); j++)
                 {
@@ -140,7 +141,7 @@ public class KMeans_Ex4a extends Clustering
         while(isStillMoving)
         {
             System.out.println("paper.KMeans_Ex4a.kMeanCluster()..."+run);
-            if(run++>4)
+            if(run++>9)
                 break;
             // calculate new centroids.
             for(int i = 0; i < NUM_CLUSTERS; i++)
@@ -405,14 +406,15 @@ public class KMeans_Ex4a extends Clustering
         }
     }
     
-    public KMeans_Ex4a(double [][] _data, double _lam, int numOfC)throws IOException
+    public KMeans_Ex4a(double [][] _data, double _lam, int [] initC ,int numOfC)throws IOException
     {
         super(_data, _lam);
 
         NUM_CLUSTERS = numOfC;
-        TOTAL_DATA = _data.length;
+        TOTAL_DATA = numberOfVertices;// _data.length;
         dataSet = new ArrayList<>();
         centroids = new ArrayList<>();
+        mat = initC;
         
         initialize();
         kMeanCluster();
