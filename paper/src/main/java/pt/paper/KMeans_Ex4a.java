@@ -97,17 +97,20 @@ public class KMeans_Ex4a extends Clustering
             
             minimum = bigNumber;
             Data newData = new Data(a);
+            cluster = 0;
             for(int i = 0; i < NUM_CLUSTERS; i++)
             {
-                distance = dist(newData, centroids.get(i));
-                if(distance>0 && distance <= minimum){
-//                    System.err.println(" dis : " + sampleNumber+"-"+ mat[i]+" "+ distance);
-                    minimum = distance;
-                    if(distance < minimum)
+                if(Vector.cosSim(a, centroids.get(i).data)>Vector.cosSim(a, centroids.get(cluster).data))
                         cluster = i;
-                    else if(Vector.cosSim(a, centroids.get(i).data)>Vector.cosSim(a, centroids.get(cluster).data))
-                        cluster = i;
-                }
+//                distance = dist(newData, centroids.get(i));
+//                if(distance>0 && distance <= minimum){
+////                    System.err.println(" dis : " + sampleNumber+"-"+ mat[i]+" "+ distance);
+//                    minimum = distance;
+//                    if(distance < minimum)
+//                        cluster = i;
+//                    else if(Vector.cosSim(a, centroids.get(i).data)>Vector.cosSim(a, centroids.get(cluster).data))
+//                        cluster = i;
+//                }
             }
 //            System.err.println(" Set nearest centroid: "+ sampleNumber+" -> " + mat[cluster]);
             newData.cluster(cluster);
@@ -119,27 +122,27 @@ public class KMeans_Ex4a extends Clustering
                 int totalP = 0;
                 double totalDis[] = new double[numOfFeature];
                 
-                int newC = cluster;
+//                int newC = cluster;
                 minimum = bigNumber;
                 // calc sum of distance in cluster 
                 for(int j = 0; j < dataSet.size(); j++)
                 {
 //                    System.err.println(j+" Checking... "+cluster+" "+dataSet.get(j).cluster());
-                    if(dataSet.get(j).cluster() == cluster){
+                    if(dataSet.get(j).cluster() == i){
                         for(int t= 0; t< numOfFeature; t++)
                             totalDis[t] += dataSet.get(j).data[t];
                         totalP++;
                         
-                        distance = dist(dataSet.get(j), centroids.get(cluster));
-
-                      if(distance>0 && distance <= minimum){
-//                          System.err.println(distance+" "+minimum+" "+ newC);
-                            minimum = distance;
-//                            if(distance < minimum)
-//                                newC = j;
-//                            else if(Vector.cosSim(dataSet.get(j).data, dataSet.get(newC).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
-                                newC = j;                            
-                        }
+//                        distance = dist(dataSet.get(j), centroids.get(cluster));
+//
+//                      if(distance>0 && distance <= minimum){
+////                          System.err.println(distance+" "+minimum+" "+ newC);
+//                            minimum = distance;
+////                            if(distance < minimum)
+////                                newC = j;
+////                            else if(Vector.cosSim(dataSet.get(j).data, dataSet.get(newC).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
+//                                newC = j;                            
+//                        }
                     }
                 }
                 //reset centroid point with avr point in cluster
@@ -147,7 +150,7 @@ public class KMeans_Ex4a extends Clustering
                 if(totalP>0)    
                 {
 //                    System.out.println("update new centroid " + cluster  +"-> "+ newC);
-                    centroids.get(cluster).data = Vector.scale(totalDis, 1./totalP);
+                    centroids.get(i).data = Vector.scale(totalDis, 1./totalP);
                 }
             }
             sampleNumber++;
@@ -158,7 +161,7 @@ public class KMeans_Ex4a extends Clustering
         while(isStillMoving)
         {
             System.out.println("paper.KMeans_Ex4a.kMeanCluster()..."+run);
-            if(run++>9)
+            if(run++>29)
                 break;
             // re-calculate new centroids for all node has centroid i.
             for(int i = 0; i < NUM_CLUSTERS; i++)
@@ -175,22 +178,22 @@ public class KMeans_Ex4a extends Clustering
                             totalDis[t] += dataSet.get(j).data[t];
                         totalP++;
                         
-                    distance = dist(dataSet.get(j), centroids.get(i));
-                      if(distance>0 && distance <= minimum){
-//                          System.err.println(j+" -> "+ newC);
-                            minimum = distance;
-//                            if(distance < minimum)
+//                    distance = dist(dataSet.get(j), centroids.get(i));
+//                      if(distance>0 && distance <= minimum){
+////                          System.err.println(j+" -> "+ newC);
+//                            minimum = distance;
+////                            if(distance < minimum)
+////                                newC = j;
+////                            else if(Vector.cosSim(dataSet.get(j).data, dataSet.get(newC).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
 //                                newC = j;
-//                            else if(Vector.cosSim(dataSet.get(j).data, dataSet.get(newC).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
-                                newC = j;
-//                            newC = j;
-                        }
+////                            newC = j;
+//                        }
                     }
                 }
                 if(totalP>0)    
                 {
 //                    System.out.println("update new centroid " + cluster  +"-> "+ newC);
-                    centroids.get(cluster).data = Vector.scale(totalDis, 1./totalP);
+                    centroids.get(i).data = Vector.scale(totalDis, 1./totalP);
                 }
 //                if(i!= newC)
 //                {
@@ -209,25 +212,31 @@ public class KMeans_Ex4a extends Clustering
                 //check distance in new centroids
                 for(int j = 0; j < NUM_CLUSTERS; j++)
                 {
-                    distance = dist(tempData, centroids.get(j));
-                    if((distance>0) && (distance <= minimum)){
-//                        System.out.println("paper.KMeans_Ex4a.kMeanCluster() "+ i+"-"+j+" "+ distance);
-                        minimum = distance;
-//                        cluster = j;
-                            if(distance < minimum)
-                                cluster = j;
-                            else if(Vector.cosSim(dataSet.get(j).data, centroids.get(j).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
-                                cluster = j;
-                    }
+                    if(Vector.cosSim(dataSet.get(i).data, centroids.get(j).data)>Vector.cosSim(dataSet.get(i).data, centroids.get(cluster).data))
+                        cluster = j;
+//                    distance = dist(tempData, centroids.get(j));
+//                    if((distance>0) && (distance <= minimum)){
+////                        System.out.println("paper.KMeans_Ex4a.kMeanCluster() "+ i+"-"+j+" "+ distance);
+//                        minimum = distance;
+////                        cluster = j;
+//                            if(distance < minimum)
+//                                cluster = j;
+//                            else if(Vector.cosSim(dataSet.get(j).data, centroids.get(j).data)>Vector.cosSim(dataSet.get(j).data, centroids.get(cluster).data))
+//                                cluster = j;
+//                    }
                 }
                 
 //                System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
 //                tempData.cluster(cluster);
                 //  if change cluster, still moving untill centroid not change
                 if(dataSet.get(i).cluster() != cluster){
-//                    System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
+                    System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
                     dataSet.get(i).cluster(cluster);
                     isStillMoving = true;
+                }
+                else
+                {
+                    System.out.println("pt.paper.KMeans_Ex4a.kMeanCluster() stop "+run);
                 }
             }
         }
@@ -236,7 +245,7 @@ public class KMeans_Ex4a extends Clustering
         for(Centroid c: centroids)
         {
 //            Vector.printV(c.data, " centroid data", true);
-            double min = -3;
+            double min = -10;
             
             for(int i = 0; i< dataSet.size(); i++)
             {
@@ -253,9 +262,9 @@ public class KMeans_Ex4a extends Clustering
         }
         for(Data d: dataSet)
         {
-            System.out.println("old cluster of data "+d.mCluster);
+//            System.out.println("old cluster of data "+d.mCluster);
             d.mCluster = centroidList[d.mCluster];
-            System.out.println("new cluster of data "+d.mCluster);
+//            System.out.println("new cluster of data "+d.mCluster);
         }
 
 //        return;
