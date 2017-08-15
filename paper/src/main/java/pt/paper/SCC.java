@@ -146,7 +146,7 @@ public class SCC  extends Clustering{
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new ArrayList<>();
 
-        fw = new FileWriter("cluster.txt");
+        fw = new FileWriter("SCC_Cluster.txt");
         getCluster(fw);
         fw.close();
         presentMat= new double[cluster.size()][A[0].length];

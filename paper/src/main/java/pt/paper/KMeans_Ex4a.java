@@ -431,7 +431,7 @@ public class KMeans_Ex4a extends Clustering
         initialize();
         kMeanCluster();
         
-        FileWriter fw = new FileWriter("cluster.txt");
+        FileWriter fw = new FileWriter("Kmean_Cluster.txt");
         getCluster(fw);
         fw.close();
         

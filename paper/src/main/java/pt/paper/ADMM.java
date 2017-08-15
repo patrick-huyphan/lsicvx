@@ -92,14 +92,14 @@ public class ADMM extends LSI{
 //                double lamPRho = ;
                 z= updateZ(x, u, lambda/rho);                
                 u= updateU(x, u, z);
-            if(i==0)
-            {
+//            if(i==0)
+//            {
 //            Vector.printV(z0, "z:"+ i+"-"+loop, true);
 //            Vector.printV(u, "u:"+ i+"-"+loop, true);
 //            Vector.printV(x0, "x:"+ i+"-"+loop, true);
-            }
-                if(loop>1){
-                    stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop);
+//            }
+                if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop)){
+                    break;
 //                    System.err.println("update rho "+ loop+": "+rho);
                 }
                 x0=Vector.copy(x);
@@ -107,11 +107,6 @@ public class ADMM extends LSI{
                 z0=Vector.copy(z);
 //                if(loop>1450)
 //                    Vector.printV(x, "x:"+ i+"-"+loop +" rho:"+rho, true);
-                if(stop)// && loop>1)
-                {
-//                    System.err.println(i+" Stop at "+loop);
-                    break;
-                }
                 loop++;
             }
 //            System.out.println(".");
