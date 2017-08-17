@@ -7,6 +7,9 @@ package pt.paper;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -14,6 +17,13 @@ import java.io.IOException;
  */
 public class NewSCC  extends Clustering{
 
+    int numofEdge;
+    double[][] X;
+    List<EdgeNode> V;
+    List<EdgeNode> U;    
+    double[][] X0;
+    List<EdgeNode> V0;
+    List<EdgeNode> U0;
     /**
      * 
      * @param _Matrix
@@ -29,11 +39,18 @@ public class NewSCC  extends Clustering{
     public NewSCC(double[][] _Matrix, double _lambda) throws IOException {
         super(_Matrix, _lambda);
         
+        init();
+        initZ();
+        initU();
+        
         while(true)
         {
-            x_ADMM();
-            z_ADMM();
-            u_ADMM();
+            for(int i = 0; i< numberOfVertices; i++)
+                x_ADMM(i);
+            for(int i = 0; i< numofEdge; i++)
+                z_ADMM(i);
+            for(int i = 0; i< numofEdge; i++)
+                u_ADMM(i);
             
             if(checkStop())
                 break;
@@ -45,18 +62,62 @@ public class NewSCC  extends Clustering{
     public void getCluster(FileWriter fw) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    private void init()
+    {
+        X=A;
+        X0 = new double[numberOfVertices][numOfFeature];
+        numofEdge = edges.size();
+    }
     
-    private void x_ADMM()
+    //for all edge
+    private void initZ()
+    {
+        List<EdgeNode> ret = new ArrayList<>();
+       
+        for(Edge e:edges)
+        {
+            ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
+            ret.add(new EdgeNode(e.dst, e.scr, new double[numOfFeature]));
+        }    
+    }
+    //for all edge
+    private void initU()
+    {
+        List<EdgeNode> ret = new ArrayList<>();
+       
+        for(Edge e:edges)
+        {
+            ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
+            ret.add(new EdgeNode(e.dst, e.scr, new double[numOfFeature]));
+        }    
+    
+    }    
+    /**
+     * for each node
+     * should get related x-, z- and u-
+     * solve min problem
+     * @param id 
+     */
+    private void x_ADMM(int id)
     {
         
     }
-    
-    private void z_ADMM()
+    /**
+     * for each edge
+     * should get related z-, x and u-
+     * solve min problem
+     * @param id 
+     */
+    private void z_ADMM(int id)
     {
         
     }
-    
-    private void u_ADMM()
+    /**
+     * for each edge: u = u +(x-z)
+     * should get related u-, x and z
+     * @param id 
+     */    
+    private void u_ADMM(int id)
     {
         
     }
