@@ -7,6 +7,7 @@ package pt.paper;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +16,18 @@ import java.util.List;
  *
  * @author patrick_huy
  */
-public class NewSCC  extends Clustering{
+public class SCCNew  extends Clustering{
 
+    double rho;
+    double rho2;
+    double lambda2;
+    double ea, er;
+//    public double [][] X;
+    DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
+    boolean stop = false;
+    
+    double[] u ;
+    double[] xAvr;
     int numofEdge;
     double[][] X;
     List<EdgeNode> V;
@@ -36,7 +47,7 @@ public class NewSCC  extends Clustering{
      * z = min(lamda*weigh||zi-zj||+ r/2(||xi-zi+ui||+||xj-zj+uj||))
      * u = u +(x-z)
      */
-    public NewSCC(double[][] _Matrix, double _lambda) throws IOException {
+    public SCCNew(double[][] _Matrix, double _lambda, double _lambda2,double _rho, double _e1, double _e2) throws IOException {
         super(_Matrix, _lambda);
         
         init();

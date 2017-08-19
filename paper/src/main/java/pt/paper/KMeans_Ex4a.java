@@ -175,14 +175,14 @@ public class KMeans_Ex4a extends Clustering
 //                System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
                 //  if change cluster, still moving untill centroid not change
                 if(dataSet.get(i).cluster() != cluster){
-                    System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
+//                    System.out.println("paper.KMeans_Ex4a.kMeanCluster() new centroid "+ cluster+ " " +tempData.cluster());
                     dataSet.get(i).cluster(cluster);
                     isStillMoving = true;
                 }
-                else
-                {
-                    System.out.println("pt.paper.KMeans_Ex4a.kMeanCluster() stop "+run);
-                }
+//                else
+//                {
+//                    System.out.println("pt.paper.KMeans_Ex4a.kMeanCluster() stop "+run);
+//                }
             }
         }
 
@@ -190,7 +190,6 @@ public class KMeans_Ex4a extends Clustering
         {
 //            Vector.printV(c.data, " centroid data", true);
             double min = -10;
-            
             for(int i = 0; i< dataSet.size(); i++)
             {
                 double sim = Vector.cosSim(c.data, dataSet.get(i).data);
@@ -200,7 +199,7 @@ public class KMeans_Ex4a extends Clustering
                     centroidList[centroids.indexOf(c)] = i;
                 }
             }
-            System.out.println("re-cal centroid "+centroids.indexOf(c)+" -> "+centroidList[centroids.indexOf(c)]);
+//            System.out.println("re-cal centroid "+centroids.indexOf(c)+" -> "+centroidList[centroids.indexOf(c)]);
         }
         for(Data d: dataSet)
         {
