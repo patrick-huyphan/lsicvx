@@ -5,6 +5,12 @@
  */
 package pt.paper;
 
+import cern.colt.matrix.tdouble.DoubleFactory1D;
+import cern.colt.matrix.tdouble.DoubleFactory2D;
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tint.IntFactory1D;
+import cern.colt.matrix.tint.IntFactory2D;
 import com.joptimizer.exception.JOptimizerException;
 import com.joptimizer.functions.BarrierFunction;
 import com.joptimizer.functions.ConvexMultivariateRealFunction;
@@ -15,6 +21,8 @@ import com.joptimizer.functions.PDQuadraticMultivariateRealFunction;
 import com.joptimizer.functions.SDPLogarithmicBarrier;
 import com.joptimizer.functions.SOCPLogarithmicBarrier;
 import com.joptimizer.functions.SOCPLogarithmicBarrier.SOCPConstraintParameters;
+import com.joptimizer.optimizers.BIPLokbaTableMethod;
+import com.joptimizer.optimizers.BIPOptimizationRequest;
 import com.joptimizer.optimizers.BarrierMethod;
 import com.joptimizer.optimizers.JOptimizer;
 import com.joptimizer.optimizers.LPOptimizationRequest;
@@ -35,8 +43,13 @@ public class main {
     public static void main(String[] args) throws IOException, JOptimizerException {
         // TODO code application logic here
 
-        jopQOP();
-
+        jopLP();
+        jopQP();
+        jopQQP();
+        jopGP();
+        jopSP();
+        jopSCP();
+        
         double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
         int n = DQ.length;
         int q = 5;
@@ -59,42 +72,6 @@ public class main {
 //      Paper run = new Paper(docTerm,"echelon.csv");
     }
 
-    private static void jopQOP() throws JOptimizerException {
-
-        double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}};
-        PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
-
-        //equalities
-        double[][] A = new double[][]{{1, 1}};
-        double[] b = new double[]{1};
-
-        //inequalities
-        ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[2];
-        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0);
-        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0);
-
-        //optimization problem
-        OptimizationRequest or = new OptimizationRequest();
-        or.setF0(objectiveFunction);
-        or.setInitialPoint(new double[]{0.1, 0.9});
-        //or.setFi(inequalities); //if you want x>0 and y>0
-        or.setA(A);
-        or.setB(b);
-        or.setToleranceFeas(1.E-12);
-        or.setTolerance(1.E-12);
-
-        //optimization
-        JOptimizer opt = new JOptimizer();
-        opt.setOptimizationRequest(or);
-        opt.optimize();
-
-        double[] sol = opt.getOptimizationResponse().getSolution();
-        for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
-        }
-//                sol[0] = 1.5
-//		sol[1]= 0.0
-    }
 
     private static void jopLP() throws JOptimizerException {
         double[] c = new double[]{-1., -1.};
@@ -127,11 +104,50 @@ public class main {
 
         double[] sol = opt.getOptimizationResponse().getSolution();
         for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
+            System.out.println("pt.paper.main.jopE() LP :" + s);
         }
     }
 
-    private void jopQQP() throws JOptimizerException {
+
+    private static void jopQP() throws JOptimizerException {
+
+        double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}};
+//        double[][] P = new double[][]{{0., 0.}, {0., 0.}};
+        PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
+
+        //equalities
+        double[][] A = new double[][]{{1, 1}};
+        double[] b = new double[]{1};
+
+        //inequalities
+        ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[2];
+        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0);
+        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0);
+
+        //optimization problem
+        OptimizationRequest or = new OptimizationRequest();
+        or.setF0(objectiveFunction);
+        or.setInitialPoint(new double[]{0.1, 0.9});
+//        or.setFi(inequalities); //if you want x>0 and y>0
+        or.setA(A);
+        or.setB(b);
+        or.setToleranceFeas(1.E-12);
+        or.setTolerance(1.E-12);
+
+        //optimization
+        JOptimizer opt = new JOptimizer();
+        opt.setOptimizationRequest(or);
+        opt.optimize();
+
+        double[] sol = opt.getOptimizationResponse().getSolution();
+        for (double s : sol) {
+            System.out.println("pt.paper.main.jopE() QP :" + s);
+        }
+//                sol[0] = 1.5
+//		sol[1]= 0.0
+    }
+    
+    private static void jopQQP() throws JOptimizerException {
 
         // Objective function
         double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}};
@@ -155,11 +171,11 @@ public class main {
 
         double[] sol = opt.getOptimizationResponse().getSolution();
         for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
+            System.out.println("pt.paper.main.jopE() QQP :" + s);
         }
     }
 
-    private void jopSCP() throws JOptimizerException {
+    private static void jopSCP() throws JOptimizerException {
         // Objective function (plane)
         double[] c = new double[]{-1., -1.};
         LinearMultivariateRealFunction objectiveFunction = new LinearMultivariateRealFunction(c, 6);
@@ -202,11 +218,11 @@ public class main {
 
         double[] sol = opt.getOptimizationResponse().getSolution();
         for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
+            System.out.println("pt.paper.main.jopE() SCP :" + s);
         }
     }
 
-    private void jopSP() throws JOptimizerException {
+    private static void jopSP() throws JOptimizerException {
         // Objective function (variables (x,y,t), dim = 3)
         double[] c = new double[]{0, 0, 1};
         LinearMultivariateRealFunction objectiveFunction = new LinearMultivariateRealFunction(c, 0);
@@ -275,11 +291,11 @@ public class main {
         opt.optimize();
         double[] sol = opt.getOptimizationResponse().getSolution();
         for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
+            System.out.println("pt.paper.main.jopE() SP  :" + s);
         }
     }
 
-    private void jopGP() throws JOptimizerException {
+    private static void jopGP() throws JOptimizerException {
         // Objective function (variables (x,y), dim = 2)
         double[] a01 = new double[]{2, 1};
         double b01 = 0;
@@ -303,6 +319,7 @@ public class main {
         OptimizationRequest or = new OptimizationRequest();
         or.setF0(objectiveFunction);
         or.setFi(inequalities);
+//        System.out.println("pt.paper.main.jopGP() "+Math.log(0.9));
         or.setInitialPoint(new double[]{Math.log(0.9), Math.log(0.9)});
         //or.setInteriorPointMethod(JOptimizer.BARRIER_METHOD);//if you prefer the barrier-method
 
@@ -312,7 +329,35 @@ public class main {
         opt.optimize();
         double[] sol = opt.getOptimizationResponse().getSolution();
         for (double s : sol) {
-            System.out.println("pt.paper.main.jopE() :" + s);
+            System.out.println("pt.paper.main.jopE GP() :" + s);
         }
+    }
+    private static void jopBIP() throws JOptimizerException
+    {
+        DoubleFactory1D F1  = DoubleFactory1D.dense;
+        DoubleFactory2D F2 = DoubleFactory2D.dense;
+        DoubleMatrix1D c = F1.dense.make(new double[] { 1, 4, 0, 7, 0, 0, 8, 6, 0, 4 });
+        DoubleMatrix2D G = F2.dense.make(new double[][] { 
+                        { -3, -1, -4, -4, -1, -5, -4, -4, -1, -1 },
+                        {  0,  0, -3, -1, -5, -5, -5, -1,  0, 0 }, 
+                        { -4, -1, -5, -2, -4, -3, -2, -4, -4, 0 },
+                        { -3, -4, -3, -5, -3, -1, -4, -5, -1, -4 } });
+        DoubleMatrix1D h = F1.dense.make(new double[] { 0, -2, -2, -8 });
+
+        BIPOptimizationRequest or = new BIPOptimizationRequest();
+        or.setC(c);
+        or.setG(G);
+        or.setH(h);
+        or.setDumpProblem(true);
+
+        //optimization
+        BIPLokbaTableMethod opt = new BIPLokbaTableMethod();
+        opt.setBIPOptimizationRequest(or);
+        opt.optimize();
+        int[] sol = opt.getBIPOptimizationResponse().getSolution();
+        for (int s : sol) {
+            System.out.println("pt.paper.main.jopE BIP() :" + s);
+        } 
+
     }
 }

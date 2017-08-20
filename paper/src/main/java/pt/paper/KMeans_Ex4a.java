@@ -48,7 +48,7 @@ public class KMeans_Ex4a extends Clustering
             {
                 if(dataSet.get(j).cluster() == c){
                     System.out.print(j+" \t");
-                    subCl.add(j+1);
+                    subCl.add(j);
 //                    for(int k = 0; k < A[0].length; k++)
 //                        System.out.print(dataSet.get(j).data[k] + "\t");
 //                    System.out.print("\n");

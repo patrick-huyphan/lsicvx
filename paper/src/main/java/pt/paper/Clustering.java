@@ -76,7 +76,7 @@ public abstract class Clustering{
             int shotestCol= edgesL.get(0);
             if(edgesL.size() > 1)
             {        
-                double min = 100;
+//                double min = 100;
                 double maxS = -1;
                 for(Integer node: edgesL)
                 {
@@ -92,12 +92,6 @@ public abstract class Clustering{
                             }
                         }
                     }
-//                    double norm = Vector.norm(A[node]);
-//                    if(norm<min)
-//                    {
-//                        min = norm;
-//                        shotestCol = node;
-//                    }                
                 }
             }
             System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
@@ -107,6 +101,14 @@ public abstract class Clustering{
                 presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
             }
         }
+    }
+    public double getEdgeW(int s, int d)
+    {
+//        double ret = 0;
+        for(Edge e:edges)
+            if(e.scr == s && e.dst ==d)
+                return e.weight;
+        return 0.;
     }
 //    private void 
 }
