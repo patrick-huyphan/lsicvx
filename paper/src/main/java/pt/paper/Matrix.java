@@ -552,7 +552,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     }
 
     public static double[][] scale(double[][] A, double rate) {
-        double[][] ret = new double[A.length][A.length];
+        double[][] ret = new double[A.length][A[0].length];
         for(int i = 0; i< A.length; i++)
 //            Vector.scale(A[i], rate);
             for(int j = 0 ; j<A[0].length;j++)

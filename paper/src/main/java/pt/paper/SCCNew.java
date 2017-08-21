@@ -113,9 +113,6 @@ public class SCCNew extends Clustering {
 //                }
 
             System.out.println("pt.paper.SCCNew.<loop>() " + loop);
-            /**
-             * TODO: reduce calc D
-             */
             for (int i = 0; i < numberOfVertices; i++) {
                 List<EdgeNode> D = calcD(i, V, U); //x-v+u
                 updateX(i, D, ni[i]); //xAvr +sumD                    
@@ -189,7 +186,7 @@ public class SCCNew extends Clustering {
 //            double x = 1- (u[i]/Vector.norm(Matrix.getCol(A, i))); //u[i]
 //            x = (x>0)? x:0;
             for (int j = 0; j < numberOfVertices; j++) {
-                X[j][i] =  xAvr[i];
+//                X[j][i] =  xAvr[i];
 //                X[j][i] =  x*A[j][i]; 
 //                X[j][i] =  xAvr[i]*(1+A[j][i]);
 //                X[j][i] = xAvr[i] * A[j][i];
@@ -203,15 +200,15 @@ public class SCCNew extends Clustering {
     @Override
     public final void getCluster(FileWriter fw) {
 //        int  ret[] = new int[numberOfVertices];
-        HashMap<Integer, Integer> xxx = new HashMap<>();
+        HashMap<Integer, Integer> C = new HashMap<>();
 //        List<Integer>  intdex = new ArrayList<Integer>();
         for (int i = 0; i < numberOfVertices; i++) {
-            if (!xxx.containsKey(i)) {
-                xxx.put(i, i);
+            if (!C.containsKey(i)) {
+                C.put(i, i);
                 for (int j = i + 1; j < numberOfVertices; j++) {
-                    if (!xxx.containsKey(j)) {
+                    if (!C.containsKey(j)) {
                         if ((Vector.isSameVec(Matrix.getRow(X, i), Matrix.getRow(X, j)))) {
-                            xxx.put(j, i);
+                            C.put(j, i);
                         }
                     }
                 }
@@ -223,7 +220,7 @@ public class SCCNew extends Clustering {
         for (int i = 0; i < numberOfVertices; i++) {
             List<Integer> sub = new LinkedList<>();
             for (int j = i; j < numberOfVertices; j++) {
-                if (xxx.get(j) == i) {
+                if (C.get(j) == i) {
                     sub.add(j);
                 }
             }
@@ -269,7 +266,7 @@ public class SCCNew extends Clustering {
         for (EdgeNode d : D) {
             sumd = Vector.plus(sumd, d.relatedValue);
         }
-        sumd = Vector.scale(sumd, rho / (n*15));
+        sumd = Vector.scale(sumd, rho / (n*14));
 //        if(i==1)    Vector.printV(sumd,(rho/n)+" X "+i,true);
         X[i] = Vector.plus(xAvr, sumd);
 //        if(i==1)    Vector.printV(X[i],"X "+i,true);
@@ -285,8 +282,8 @@ public class SCCNew extends Clustering {
         List<EdgeNode> D = new LinkedList<>();
 
         for (EdgeNode v : V) {
-            if (v.dst == i || v.scr == i) {
-//                if(i == 50) System.out.println("V D "+v.scr+" "+v.dst);
+            if (v.scr == i) {
+//                if(i == 93) System.out.println("V D "+v.scr+" "+v.dst);
                 double[] d = Vector.sub(Matrix.getRow(X, i), v.relatedValue);
                 EdgeNode u = EdgeNode.getEdgeNodeData(U, v.scr, v.dst);// U.get(k);
                 d = Vector.plus(d, u.relatedValue);
@@ -294,6 +291,19 @@ public class SCCNew extends Clustering {
             }
         }
         return D;
+    }
+    
+    private List<EdgeNode> initU() {
+        List<EdgeNode> ret = new LinkedList<>();
+
+        for (Edge e : edges) {
+                ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
+                ret.add(new EdgeNode(e.dst, e.scr, new double[numOfFeature]));
+        }
+//        for(EdgeNode e: ret)
+//            System.out.println("paper.SCC.initU() "+e.scr+ " "+e.dst );
+//        System.out.println("paper.SCC.initU() "+ret.size());
+        return ret;
     }
     
     /**
@@ -309,10 +319,8 @@ public class SCCNew extends Clustering {
         List<EdgeNode> ret = new LinkedList<>();
 //        System.out.println("pt.paper.SCCNew.updateU()");
         for (EdgeNode v : V) {
+//            if(v.scr == 50)  System.out.println("V D "+v.scr+" "+v.dst);
             EdgeNode u = EdgeNode.getEdgeNodeData(U, v.scr, v.dst);// V.get(U.indexOf(e));
-            if ((u.scr != v.scr) || (u.dst != v.dst)) {
-                System.out.println("paper.SCC.updateU()wrong ve " + u.scr + " " + u.dst + " " + v.scr + " " + v.dst);
-            }
             //Ai - Be
             double[] data = Vector.sub(Matrix.getRow(X, u.scr), v.relatedValue);
             //data = Vector.scale(data, rho);
@@ -323,18 +331,21 @@ public class SCCNew extends Clustering {
         return ret;
     }
 
-    private List<EdgeNode> initU() {
-        List<EdgeNode> ret = new LinkedList<>();
 
+    private List<EdgeNode> initV() {
+        List<EdgeNode> ret = new LinkedList<>();
         for (Edge e : edges) {
-                ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
+            //ik
+            double[] value1 = Matrix.getRow(X, e.scr);//new double[dataLength];
+            ret.add(new EdgeNode(e.scr, e.dst, value1));
+            ret.add(new EdgeNode(e.dst, e.scr, value1));
         }
 //        for(EdgeNode e: ret)
-//            System.out.println("paper.SCC.initU() "+e.scr+ " "+e.dst );
-//        System.out.println("paper.SCC.initU() "+ret.size());
+//            System.out.println("paper.SCC.initV() "+e.scr+ " "+e.dst );
+//        System.out.println("paper.SCC.initV() " +ret.size());
         return ret;
     }
-
+    
     /*
     lamda - e.weigh
      */
@@ -342,6 +353,7 @@ public class SCCNew extends Clustering {
      * TODO: review code, should update with optimize problem: Min
      * (lambda*w||v1-v2|| + rho/2(||x1-v1+u1||+||x2-v2+u2||))
      *
+     * 
      * @param V
      * @param U
      * @return
@@ -363,14 +375,14 @@ public class SCCNew extends Clustering {
             int count = 0;
             for (Edge e : edges) {
 //                    if(C.scr == i && ((C.dst==u.scr && u.dst != i) || (C.dst== u.dst && u.scr != i)))
-                if (C.scr == e.scr) {
+                if (v.scr == e.scr) {
 //                        if(i==50 ) System.out.println(i+ " U s "+u.scr+" "+u.dst);
 //                        Ck= Vector.plus( Ck,  Matrix.getRow(A, (C.scr == i)?u.dst:u.scr));
                     Ck = Vector.plus(Ck, Matrix.getRow(A, e.dst));
                     count++;
                 }
 //                    if(C.dst == i && ((C.scr==u.scr && u.dst != i) || (C.scr== u.dst && u.scr != i)))
-                if (C.dst == e.scr) {
+                if (v.scr == e.dst) {
 //                        if(i==50 ) System.out.println(i+ " U d "+u.scr+" "+u.dst);
 //                        Ck= Vector.plus( Ck,  Matrix.getRow(A, (C.dst == i)?u.scr:u.dst));
                     Ck = Vector.plus(Ck, Matrix.getRow(A, e.scr));
@@ -378,15 +390,16 @@ public class SCCNew extends Clustering {
                 }
             }
 
-            double[] AkCk;// = new double[numOfFeature];
-            if (count > 0) {
-                AkCk = Vector.scale(Ck, 1. / count);
+            double[] AkCk = Vector.scale(Ck, 1. / count);//new double[numOfFeature];
+            if (count ==0) {
+                System.out.println(" pt.paper.SCC.updateV() "+ v.scr +" "+v.dst);
+            }
+//            } else {
+//                AkCk = Vector.scale(Ck, 1. / count);
 //                    if(i==50)
 //                        Vector.printV(Ck, " CK "+e.scr+" "+e.dst, false);
-            } else {
-//                    System.out.println(i+ " pt.paper.SCC.updateV() "+ e.scr +" "+e.dst);
-                AkCk = Matrix.getRow(A, C.dst);//i
-            }
+//                AkCk = Matrix.getRow(A, v.scr);//i
+//            }
 
 //                System.out.println("paper.SCC.updateV() "+ i+ ": "+e.scr+"-"+e.dst);
 //                double[] Ai = Matrix.getRow(A,i); //n
@@ -409,24 +422,13 @@ public class SCCNew extends Clustering {
 //                ret.add(new EdgeNode(e.dst, e.scr, Vector.scale(v_ik,lambda)));
 //                if(i==90 ) System.out.println("V in "+e.scr+" "+e.dst);
 //                double[] v_ki = Vector.plus(Vector.scale(AiCi, b), Vector.scale(AkCk, a));
+//            ret.add(new EdgeNode(v.scr, v.dst, v_ik));
             ret.add(new EdgeNode(v.scr, v.dst, Vector.scale(v_ik, weight)));
         }
 
         return ret;
     }
 
-    private List<EdgeNode> initV() {
-        List<EdgeNode> ret = new LinkedList<>();
-        for (Edge e : edges) {
-            //ik
-            double[] value1 = Matrix.getRow(X, e.scr);//new double[dataLength];
-            ret.add(new EdgeNode(e.scr, e.dst, value1));
-        }
-//        for(EdgeNode e: ret)
-//            System.out.println("paper.SCC.initV() "+e.scr+ " "+e.dst );
-//        System.out.println("paper.SCC.initV() " +ret.size());
-        return ret;
-    }
 
     private double updateRho(double r, double s) {
         if (r > 10 * s) {
@@ -502,11 +504,11 @@ public class SCCNew extends Clustering {
         double []x = new double[V.size()];
         int i =0;
         for (EdgeNode n : V) {
-            double[] bikp = EdgeNode.getEdgeNodeData(V, n.scr, n.dst).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
+            double[] bikp = EdgeNode.getEdgeNodeData(Vp, n.scr, n.dst).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
             double[] ai = Vector.scale(Vector.sub(bikp, n.relatedValue), rho);
-            double normS = Vector.norm(ai);
+//            double normS = Vector.norm(ai);
 //            ret = (ret > normS) ? ret : normS;
-            x[i] = normS;
+            x[i] = Vector.norm(ai);;
             i++;    
         }
         return Vector.norm(x);

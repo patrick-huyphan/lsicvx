@@ -344,7 +344,7 @@ public class Vector implements Cloneable, java.io.Serializable {
      */
     public static double[] plus(double[] A, double[] B) {
         if (A.length != B.length) {
-            throw new UnsupportedOperationException("Not support Am=! b.m" + A.length +" "+ B.length);
+            throw new UnsupportedOperationException("Not support Am=! b.m " + A.length +" "+ B.length);
         }
         double[] ret = new double[A.length];
         for (int i = 0; i < A.length ; i++) {

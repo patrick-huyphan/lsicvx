@@ -30,7 +30,7 @@ public class Edge implements Comparator<Edge>{
     {
 //        double ret = 0;
         for(Edge e:edges)
-            if(e.scr == s && e.dst ==d)
+            if((e.scr == s && e.dst ==d)|| (e.scr == d && e.dst ==s))
                 return e.weight;
         return 0.;
     }

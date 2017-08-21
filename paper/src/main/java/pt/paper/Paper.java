@@ -71,7 +71,7 @@ public class Paper {
 //        double[][] ret = Matrix.sim(A, Q2);
 //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
 ////        
-        lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
+        lsi = new ADMMNew(D, B, 0.04, 0.8, 0.005, 0.0001);
         double[][] X2= Matrix.Transpose(lsi.X);
 //        CSVFile.saveMatrixData("ADMM", X2, "X2");
 //        Matrix.printMat(X2, "Projection");
