@@ -24,6 +24,7 @@ public abstract class Clustering{
     int numberOfVertices;
     int numOfFeature;
     double lambda;
+    int[] ni;
     
     public Clustering(double[][] _Matrix, double _lambda) throws IOException
     {
@@ -52,6 +53,8 @@ public abstract class Clustering{
             }
         }
         fw.close();
+        
+        ni = Edge.retSize(edges, numberOfVertices);
     }
 
     public abstract void getCluster(FileWriter fw);
@@ -102,14 +105,7 @@ public abstract class Clustering{
             }
         }
     }
-    public double getEdgeW(int s, int d)
-    {
-//        double ret = 0;
-        for(Edge e:edges)
-            if(e.scr == s && e.dst ==d)
-                return e.weight;
-        return 0.;
-    }
+    
 //    private void 
 }
 

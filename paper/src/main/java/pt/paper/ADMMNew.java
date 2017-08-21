@@ -187,14 +187,24 @@ public class ADMMNew extends LSI{
         return rho;
     }
     
-    private double dualResidual(double[] Zp, double[] Z)
+    private double dualResidual(double[][] Zp, double[][] Z)
     {
-        return Vector.norm(Vector.scale(Vector.plus(Zp, Vector.scale(Z, -1)),rho));
+        double x[] = new double[Zp.length];
+        for(int i = 0; i< Zp.length; i++)
+        {
+            x[i] = Vector.norm(Vector.scale(Vector.sub(Zp[i], Z[i]),rho));
+        }
+        return Vector.norm(x);
     }
     
-    private double primalResidual(double[] X0, double[] Z0)
+    private double primalResidual(double[][] X0, double[][] Z0)
     {
-        return Vector.norm(Vector.plus(X0, Vector.scale(Z0,-1)));
+        double x[] = new double[X0.length];
+        for(int i = 0; i< X0.length; i++)
+        {
+            x[i] = Vector.norm(Vector.sub(X0[i], Z0[i]));
+        }
+        return Vector.norm(x);
     }
     
     /**
@@ -216,8 +226,8 @@ public class ADMMNew extends LSI{
     {
 //        if(this.rho ==0)
 //            return true;
-        double r = primalResidual(x0[0], z0[0]);
-        double s = dualResidual(z0[0], z[0]);
+        double r = primalResidual(x0, z0);
+        double s = dualResidual(z0, z);
 
         double eP = epsilonA * Math.sqrt(n) + epsilonR*((Vector.norm(x0[0])>Vector.norm(z0[0]))?Vector.norm(x0[0]): Vector.norm(z0[0]));
         double eD = epsilonA * Math.sqrt(m) + epsilonR*(Vector.norm(Matrix.mul(A,Vector.scale(u0[0],rho))));

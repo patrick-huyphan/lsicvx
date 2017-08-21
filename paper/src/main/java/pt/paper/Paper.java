@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top) throws IOException {
+    public static void PaperRuner(double[][] D,double[][] Q, int top) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
