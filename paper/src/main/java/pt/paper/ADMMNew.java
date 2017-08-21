@@ -124,7 +124,16 @@ public class ADMMNew extends LSI{
 //        Matrix.printMat(X, "return");
     }
     
-    //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
+    /**
+     * TODO: min||||
+     * x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
+     * @param id
+     * @param u
+     * @param z
+     * @param BtB_rho_Im
+     * @param Btd
+     * @return 
+     */
     private double[] updateX(int id,double[][] u, double[][] z,double[][] BtB_rho_Im, double[] Btd)
     {
         //- rho (z^k - u^k)[k]-[k]
@@ -133,20 +142,33 @@ public class ADMMNew extends LSI{
         return Vector.scale(ret,2);
     }
     
-    /*
+    /**
      * u^{k+1} = u^k + x^{k+1} - z^{k+1}
+     * 
+     * @param id
+     * @param x
+     * @param u
+     * @param z
+     * @return
      */    
     private double[] updateU(int id,double[][] x, double[][] u, double[][] z)
     {
         return Vector.plus(u[id], Vector.sub(x[id], z[id]));
     }
 
-    /*
+    /**
+     * TODO: min ||||
      * z^{k+1} = S_{\frag{\lambda}{\rho}}(x^{k+1} + u^k)
      * = x^{k+1} +u^k - frag{\lambda}{\rho} if >
      * = 0 if || \leq
      * = x^{k+1} +u^k + frag{\lambda}{\rho} if < 
-     */    
+     * 
+     * @param id
+     * @param x
+     * @param u
+     * @param lamPRho
+     * @return 
+     */
     private double[] updateZ(int id, double[][] x, double[][] u, double lamPRho)
     {
 //        double lamPRho = lambda/rho;
@@ -175,7 +197,21 @@ public class ADMMNew extends LSI{
         return Vector.norm(Vector.plus(X0, Vector.scale(Z0,-1)));
     }
     
-    
+    /**
+     * TODO:
+     * 
+     * @param z
+     * @param x0
+     * @param u0
+     * @param z0
+     * @param epsilonA
+     * @param epsilonR
+     * @param n
+     * @param m
+     * @param A
+     * @param time
+     * @return 
+     */
     private boolean checkStop(double[][] z, double[][] x0, double[][] u0, double[][] z0, double epsilonA, double epsilonR, int n, int m, double [][] A,int time)
     {
 //        if(this.rho ==0)

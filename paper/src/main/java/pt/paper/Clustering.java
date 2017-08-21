@@ -94,7 +94,7 @@ public abstract class Clustering{
                     }
                 }
             }
-            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
             
             for(int i = 0; i<numOfFeature  ; i++)
             {
