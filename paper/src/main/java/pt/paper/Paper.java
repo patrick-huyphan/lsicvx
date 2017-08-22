@@ -63,7 +63,7 @@ public class Paper {
 //        Matrix.printMat(B, "B");
 //////        Matrix.printMat(D, "D");
 //        
-//        lsi = new CD(D, B, 0.005);
+//        lsi = new CDNew(D, B, 0.005);
 //        double[][] X= Matrix.Transpose(lsi.X);
 //        double[][] A = Matrix.mul(D, X); //n*k
 //        Matrix.printMat(A, "LSI");

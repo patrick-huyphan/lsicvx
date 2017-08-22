@@ -353,7 +353,8 @@ public class SCCNew extends Clustering {
      * TODO: review code, should update with optimize problem: Min
      * (lambda*w||v1-v2|| + rho/2(||x1-v1+u1||+||x2-v2+u2||))
      *
-     * 
+     * v1 = L() + (1-L)()
+     * v2 = (1-L)() +L()
      * @param V
      * @param U
      * @return
