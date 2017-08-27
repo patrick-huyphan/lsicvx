@@ -43,7 +43,7 @@ public class ADMM extends LSI{
         double[][] Am = Matrix.Transpose(BtB);
         double[][] Bm = Matrix.scale(Am, -1);
         double[][] AtB = Matrix.mul(Am, Bm);
-        
+        double[][] BtD= Matrix.mul(Bt, D); //[nk]*[n] = k
 //        double[][] BD = Matrix.mul(Bt,D );
 //        Matrix.printMat(_Bdata, "B");
 //        Matrix.printMat(B, "B2");
@@ -60,16 +60,23 @@ public class ADMM extends LSI{
 //        System.out.println("paper.ADMM.<init>() rho "+ _rho);
         
         for(int i = 0;i<m; i++)
-        {
+        {           
+            X = Matrix.updateCol(X, admmProcess(i, _rho,BtB, BtD, AtB, e1, e2),i);
+        }
+//        Matrix.printMat(X, "return");
+    }
+    
+    private double[] admmProcess(int i, double _rho, double[][] BtB, double[][] BtD, double[][] AtB, double e1, double e2)
+    {
             rho = _rho;
-            boolean stop = false;
+//            boolean stop = false;
             
             //init x, u ,v
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= Vector.rVector(k, 0.4);
             double[] u = Vector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
             double[] d=  Matrix.getCol(D, i); //[n]*m
-            double[] Btd= Matrix.mul(Bt, d); //[nk]*[n] = k
+            double[] Btd= Matrix.getCol(BtD, i);//Matrix.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
 //            Vector.printV(u, "init u "+i, true);
@@ -111,11 +118,8 @@ public class ADMM extends LSI{
             }
 //            System.out.println(".");
 //            Vector.printV(x, "x_"+ i, true);
-            X = Matrix.updateCol(X, x,i);
-        }
-//        Matrix.printMat(X, "return");
+            return x;
     }
-    
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
     private double[] updateX(double[] u, double[] z,double[][] BtB_rho_Im, double[] Btd)
     {

@@ -40,7 +40,7 @@ import static pt.paper.Paper.PaperRuner;
  */
 public class main {
 
-    public static void main(String[] args) throws IOException, JOptimizerException {
+    public static void main(String[] args) throws IOException, JOptimizerException, Exception {
         // TODO code application logic here
 
         jopLP();
@@ -49,6 +49,7 @@ public class main {
         jopGP();
         jopSP();
         jopSCP();
+        jopBIP();
         
         double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
         int n = DQ.length;
@@ -72,17 +73,39 @@ public class main {
 //      Paper run = new Paper(docTerm,"echelon.csv");
     }
 
-
+    /**
+     * min: c
+     * s: Ax = b or Gx = h 
+     * C: (-1)x+(-1)y=0
+     * Ax = b: 
+     *  4/3x    -y = 2
+     *  -x/2    +y = 1/2
+     *  -2x     -y = 2
+     *  x/3     +y = 1/2
+     * @throws JOptimizerException 
+     * 
+     * A = matrix([ [-1.0, -1.0, 0.0, 1.0], [1.0, -1.0, -1.0, -2.0] ])
+     * b = matrix([ 1.0, -2.0, 0.0, 4.0 ])
+     * c = matrix([ 2.0, 1.0 ])
+     */
+    
     private static void jopLP() throws JOptimizerException {
-        double[] c = new double[]{-1., -1.};
+        double[] c = new double[]{2., 1.};
 
         //Inequalities constraints
-        double[][] G = new double[][]{{4. / 3., -1},
-        {-1. / 2., 1.},
-        {-2., -1.},
-        {1. / 3., 1.}};
-        double[] h = new double[]{2., 1. / 2., 2., 1. / 2.};
+//        double[][] G = new double[][]{{4. / 3., -1},
+//        {-1. / 2., 1.},
+//        {-2., -1.},
+//        {1. / 3., 1.}};
+//        double[] h = new double[]{2., 1. / 2., 2., 1. / 2.};
 
+        double[][] G = new double[][]{
+            {-1., 1.},
+            {-1., -1.},
+            {0, -1.},
+            {1., -2.},
+        };
+        double[] h = new double[]{1.,-2., 0, 4.};
         //Bounds on variables
         double[] lb = new double[]{0, 0};
         double[] ub = new double[]{10, 10};
@@ -92,8 +115,8 @@ public class main {
         or.setC(c);
         or.setG(G);
         or.setH(h);
-        or.setLb(lb);
-        or.setUb(ub);
+//        or.setLb(lb);
+//        or.setUb(ub);
         or.setDumpProblem(true);
 
         //optimization
@@ -108,21 +131,29 @@ public class main {
         }
     }
 
-
+/**
+ *  minimizex (1/2)xTPx+qTx+r  s.t. 
+ *  inequalities: Gx ≤ h 
+ *  equalities: Ax = b,  
+ *  
+ *  
+ * 
+ * @throws JOptimizerException 
+ */
     private static void jopQP() throws JOptimizerException {
 
         double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}};
 //        double[][] P = new double[][]{{0., 0.}, {0., 0.}};
         PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
 
-        //equalities
-        double[][] A = new double[][]{{1, 1}};
+        //equalities : x+y = 1
+        double[][] A = new double[][]{{1, 1}}; 
         double[] b = new double[]{1};
 
         //inequalities
         ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[2];
-        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0);
-        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0);
+        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0); // -x < 0
+        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0); // -y < 0
 
         //optimization problem
         OptimizationRequest or = new OptimizationRequest();
@@ -146,7 +177,12 @@ public class main {
 //                sol[0] = 1.5
 //		sol[1]= 0.0
     }
-    
+    /**
+     *   minimizex (1/2)xTP0x+q0T+r0  s.t.  
+     * inequalities: (1/2)xTPix+qiT+ri ≤ 0,  i=1,...,m 
+     * Ax = b,  
+     * @throws JOptimizerException 
+     */
     private static void jopQQP() throws JOptimizerException {
 
         // Objective function
@@ -175,6 +211,13 @@ public class main {
         }
     }
 
+    /**
+     *  minimizex fTx  s.t. 
+     *  ||Aix+bi||2 ≤ ciTx+di,  i=1,...,m 
+     *  Fx = g,
+     * 
+     * @throws JOptimizerException 
+     */
     private static void jopSCP() throws JOptimizerException {
         // Objective function (plane)
         double[] c = new double[]{-1., -1.};

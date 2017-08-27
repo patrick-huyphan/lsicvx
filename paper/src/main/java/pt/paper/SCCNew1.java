@@ -5,6 +5,12 @@
  */
 package pt.paper;
 
+import com.joptimizer.exception.JOptimizerException;
+import com.joptimizer.functions.ConvexMultivariateRealFunction;
+import com.joptimizer.functions.LinearMultivariateRealFunction;
+import com.joptimizer.functions.PDQuadraticMultivariateRealFunction;
+import com.joptimizer.optimizers.JOptimizer;
+import com.joptimizer.optimizers.OptimizationRequest;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -33,7 +39,7 @@ import static pt.paper.Clustering.MAX_LOOP;
  * 
  */
 
-public class SCCNew extends Clustering {
+public class SCCNew1 extends Clustering {
 
     double rho;
     double rho2;
@@ -63,7 +69,7 @@ public class SCCNew extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException, Exception {
+    public SCCNew1(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
@@ -99,7 +105,6 @@ public class SCCNew extends Clustering {
         stop = false;
 //            if(V.size()==0)
 //                Vector.printV(X[i], "X "+i, false);
-
 //            if(i==1)
 //            Vector.printV(X[i],"X "+i,true);
         while (loop < MAX_LOOP) {
@@ -113,11 +118,8 @@ public class SCCNew extends Clustering {
 //                }
 
             System.out.println("pt.paper.SCCNew.<loop>() " + loop);
-            for (int i = 0; i < numberOfVertices; i++) {
-                List<EdgeNode> D = calcD(i, V, U); //x-v+u
-                updateX(i, D, ni[i]); //xAvr +sumD                    
-            }
-
+            
+            updateX(V, U); //xAvr +sumD                               
             V = updateV(V, U); //
             U = updateU(U, V); //u-x+v
 //                Matrix.printMat(X, "SCC x "+loop +" "+i);
@@ -153,7 +155,7 @@ public class SCCNew extends Clustering {
 //        getCluster(fw);
 //        Matrix.printMat(X, "SCC x");
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
-        cluster = new ArrayList<>();
+        cluster = new LinkedList<>();
 
         fw = new FileWriter("SCC_Cluster.txt");
         getCluster(fw);
@@ -253,7 +255,7 @@ public class SCCNew extends Clustering {
 
     /**
      * TODO: should update with optimize problem: 
-     * min ||X-A|| + sum rho/2 ||x-z+u||
+     * min ||A-xi|| + sum rho/2 ||xi-zij+uij||
      *
      * @param i
      * @param D
@@ -261,39 +263,85 @@ public class SCCNew extends Clustering {
      * @param xAvr
      * @return
      */
-    private double[][] updateX(int i, List<EdgeNode> D, int n) {
-        double[] sumd = new double[numOfFeature];
-
-        for (EdgeNode d : D) {
-            sumd = Vector.plus(sumd, d.relatedValue);
+    private double[][] updateX(List<EdgeNode> V, List<EdgeNode> U) throws JOptimizerException, Exception {
+        double ret[] = new double[numOfFeature];
+        for (int i = 0; i < numberOfVertices; i++) {
+            
+            qp(i, V,U);
+            X[i] = ret;
         }
-        sumd = Vector.scale(sumd, rho / (n*14));
-//        if(i==1)    Vector.printV(sumd,(rho/n)+" X "+i,true);
-        X[i] = Vector.plus(xAvr, sumd);
-//        if(i==1)    Vector.printV(X[i],"X "+i,true);
-//        Matrix.updateRow(X, Vector.plus(X[i], sumd), i); //
         return X;
     }
 
-    /*
-     * De = A - Be + Ce
+    /**
+     * x= argmin gx+hx
+     * g = 0/5 ||A-x||
+     * h = sum rho/2||x-z+u||
+     * 
+     * @param i
+     * @param V
+     * @param U
+     * @return
+     * @throws JOptimizerException
+     * @throws Exception 
      */
-    private List<EdgeNode> calcD(int i, List<EdgeNode> V, List<EdgeNode> U) throws Exception //(B-C)
+    private double[] qp(int i, List<EdgeNode> V, List<EdgeNode> U) throws JOptimizerException, Exception
     {
-        List<EdgeNode> D = new LinkedList<>();
+        double h[][] = new double[numOfFeature][numOfFeature];
+        double x[] = Matrix.getCol(X, i);
 
-        for (EdgeNode v : V) {
-            if (v.scr == i) {
-//                if(i == 93) System.out.println("V D "+v.scr+" "+v.dst);
-                double[] d = Vector.sub(Matrix.getRow(X, i), v.relatedValue);
-                EdgeNode u = EdgeNode.getEdgeNodeData(U, v.scr, v.dst);// U.get(k);
-                d = Vector.plus(d, u.relatedValue);
-                D.add(new EdgeNode(v.scr, v.dst, d));
+        //h = sum rho/2 ||x-v+u||
+        
+        for(Edge e:edges)
+        {
+            if(i== e.scr || i== e.dst)
+            {
+                double ui[] = EdgeNode.getEdgeNodeData(U, e.scr, e.dst).relatedValue;
+                double vi[] = EdgeNode.getEdgeNodeData(V, e.scr, e.dst).relatedValue;
+                h[0] = Vector.plus(ui, Vector.sub(x, vi));
+                
+//                  h[0] = h[0]+  rho/2 *Math.sqrt(Vector.norm(Vector.plus(ui, Vector.sub(x, vi))));
             }
         }
-        return D;
+        
+        
+        
+        // min gx + h
+        double[][] P = new double[][]{{1., 0.4}, 
+                                      {0.4, 1.}}; //invertable matrix m*m
+        // min X^T P X + qT x + b
+        PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
+
+        //equalities contrain Ax=b: x+y = 1 
+        double[][] A = new double[][]{{1, 1}}; 
+        double[] b = new double[]{1};
+
+        //inequalities contrains Gx<h: 
+        ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[2];
+        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0); // -x < 0
+        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0); // -y < 0
+
+        //optimization problem
+        OptimizationRequest or = new OptimizationRequest();
+        or.setF0(objectiveFunction);
+        or.setInitialPoint(new double[]{0.1, 0.9});
+//        or.setFi(inequalities); //if you want x>0 and y>0
+        or.setA(A);
+        or.setB(b);
+        or.setToleranceFeas(1.E-12);
+        or.setTolerance(1.E-12);
+
+        //optimization
+        JOptimizer opt = new JOptimizer();
+        opt.setOptimizationRequest(or);
+        opt.optimize();
+
+        double[] sol = opt.getOptimizationResponse().getSolution();
+//        for (double s : sol) {
+//            System.out.println("pt.paper.main.jopE() QP :" + s);
+//        }
+        return sol;
     }
-    
     private List<EdgeNode> initU() {
         List<EdgeNode> ret = new LinkedList<>();
 
@@ -332,14 +380,18 @@ public class SCCNew extends Clustering {
         return ret;
     }
 
-
+    /**
+     * @return 
+     */
     private List<EdgeNode> initV() {
         List<EdgeNode> ret = new LinkedList<>();
+               
         for (Edge e : edges) {
             //ik
-            double[] value1 = Matrix.getRow(X, e.scr);//new double[dataLength];
-            ret.add(new EdgeNode(e.scr, e.dst, value1));
-            ret.add(new EdgeNode(e.dst, e.scr, value1));
+            double[] src = Matrix.getRow(X, e.scr);//new double[dataLength];
+            double[] dst = Matrix.getRow(X, e.dst);
+            ret.add(new EdgeNode(e.scr, e.dst, src));
+            ret.add(new EdgeNode(e.dst, e.scr, dst));
         }
 //        for(EdgeNode e: ret)
 //            System.out.println("paper.SCC.initV() "+e.scr+ " "+e.dst );
@@ -354,8 +406,11 @@ public class SCCNew extends Clustering {
      * TODO: review code, should update with optimize problem: Min
      * (lambda*w||v1-v2|| + rho/2(||x1-v1+u1||+||x2-v2+u2||))
      *
-     * v1 = L() + (1-L)()
-     * v2 = (1-L)() +L()
+     * zij = theta(xi+uij) + (1-theta)(xj-uji)
+     * 
+     * theta= max(.5, 1-((lambda w)/(rho ||(xi+uij)- (xj+uji)||)))
+     * 
+     * 
      * @param V
      * @param U
      * @return
@@ -364,70 +419,27 @@ public class SCCNew extends Clustering {
     {
 //        System.out.println("paper.AMA.updateV()");
         List<EdgeNode> ret = new LinkedList<>();
-
-        for (EdgeNode v : V) {
-            double[] Ck = new double[numOfFeature];//uki
-//                int get = 0;
-//                int i=0 ;
-
-            EdgeNode C = EdgeNode.getEdgeNodeData(U, v.scr, v.dst);
-//            EdgeNode B = EdgeNode.getEdgeNodeData(V, v.scr, v.dst);
-            double[] Vi = v.relatedValue;
-            double[] Ui = C.relatedValue;
-            int count = 0;
-            for (Edge e : edges) {
-//                    if(C.scr == i && ((C.dst==u.scr && u.dst != i) || (C.dst== u.dst && u.scr != i)))
-                if (v.scr == e.scr) {
-//                        if(i==50 ) System.out.println(i+ " U s "+u.scr+" "+u.dst);
-//                        Ck= Vector.plus( Ck,  Matrix.getRow(A, (C.scr == i)?u.dst:u.scr));
-                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.dst));
-                    count++;
-                }
-//                    if(C.dst == i && ((C.scr==u.scr && u.dst != i) || (C.scr== u.dst && u.scr != i)))
-                if (v.scr == e.dst) {
-//                        if(i==50 ) System.out.println(i+ " U d "+u.scr+" "+u.dst);
-//                        Ck= Vector.plus( Ck,  Matrix.getRow(A, (C.dst == i)?u.scr:u.dst));
-                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.scr));
-                    count++;
-                }
-            }
-
-            double[] AkCk = Vector.scale(Ck, 1. / count);//new double[numOfFeature];
-            if (count ==0) {
-                System.out.println(" pt.paper.SCC.updateV() "+ v.scr +" "+v.dst);
-            }
-//            } else {
-//                AkCk = Vector.scale(Ck, 1. / count);
-//                    if(i==50)
-//                        Vector.printV(Ck, " CK "+e.scr+" "+e.dst, false);
-//                AkCk = Matrix.getRow(A, v.scr);//i
-//            }
-
-//                System.out.println("paper.SCC.updateV() "+ i+ ": "+e.scr+"-"+e.dst);
-//                double[] Ai = Matrix.getRow(A,i); //n
-//                double[] Ak =Matrix.getRow(A, (i==e.scr)?e.dst:e.scr);
-            double[] AiCi = Vector.plus(Matrix.getRow(A, C.scr), Vector.plus(Vi, Ui)); // u get ik As+Us
-//                double[] AkCk = Vector.plus(Ak,Ck); // u get ki Ad+Ud
-
-//                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.sub(Bi, Bk),Vector.sub(Ai, Ak)))/rho));
-//                System.out.println("paper.SCC.updateV() "+ (1-n));
-//                double theta = (0.5>n)? 0.5:n; //max
-//                double theta = 0.6;
-//                System.out.println(i+ " paper.SCC.updateV() " + e.scr+"-"+e.dst+": "+ e.weight +"  "+lambda);
-//                double thet = theta;
-//                double thet = (1.5+lambda);    
-            double weight = Edge.getEdgeW(edges,v.scr, v.dst);
-            double a = (1 - weight) + lambda;// e.weight/2;
-            double b = weight / lambda;
-            double[] v_ik = Vector.plus(Vector.scale(AiCi, a), Vector.scale(AkCk, b));
-//                ret.add(new EdgeNode(e.scr, e.dst, v_ik));
-//                ret.add(new EdgeNode(e.dst, e.scr, Vector.scale(v_ik,lambda)));
-//                if(i==90 ) System.out.println("V in "+e.scr+" "+e.dst);
-//                double[] v_ki = Vector.plus(Vector.scale(AiCi, b), Vector.scale(AkCk, a));
-//            ret.add(new EdgeNode(v.scr, v.dst, v_ik));
-            ret.add(new EdgeNode(v.scr, v.dst, Vector.scale(v_ik, weight)));
+        
+        for (Edge e : edges) {
+            double theta = 0;
+            
+            double xi[] = Matrix.getCol(X, e.scr);
+            double xj[] = Matrix.getCol(X, e.dst);
+            double uij[] = EdgeNode.getEdgeNodeData(U, e.scr, e.dst).relatedValue;
+            double uji[] = EdgeNode.getEdgeNodeData(U, e.dst, e.scr).relatedValue;
+            
+            double tmp = Vector.norm(Vector.sub(Vector.plus(xi, uij), Vector.plus(xj, uji)));
+            double w = Edge.getEdgeW(edges, e.scr, e.dst);
+            tmp = 1-((lambda*w)/(rho *tmp));
+            theta = (tmp>0.5)?tmp:0.5;
+            
+            //the(x-u) + (1-the)(x-u)
+            double vij[]= Vector.plus(Vector.scale(Vector.plus(xi, uij), theta), Vector.scale(Vector.plus(xj, uji), 1-theta));
+            double vji[]= Vector.plus(Vector.scale(Vector.plus(xj, uji), theta), Vector.scale(Vector.plus(xi, uij), 1-theta));
+            
+            ret.add(new EdgeNode(e.scr, e.dst, vij));
+            ret.add(new EdgeNode(e.dst, e.scr, vji));            
         }
-
         return ret;
     }
 
