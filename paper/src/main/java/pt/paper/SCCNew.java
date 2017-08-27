@@ -119,7 +119,7 @@ public class SCCNew extends Clustering {
             System.out.println("pt.paper.SCCNew.<loop>() " + loop);
             for (int i = 0; i < numberOfVertices; i++) {
                 List<EdgeNode> D = calcD(i, V, U); //x-v+u
-                updateX(i, D, ni[i]); //xAvr +sumD 
+                updateX(i, D); //xAvr +sumD 
             }
 
             V = updateV(V, U); //
@@ -269,18 +269,16 @@ public class SCCNew extends Clustering {
      * @param xAvr
      * @return
      */
-    private double[][] updateX(int i, List<EdgeNode> D, int n) {
+    private void updateX(int i, List<EdgeNode> D) {
         double[] sumd = new double[numOfFeature];
 
         for (EdgeNode d : D) {
-            sumd = Vector.plus(sumd, d.relatedValue);
+            sumd = Vector.scale(Vector.plus(sumd, d.relatedValue),rho/2);
         }
-        sumd = Vector.scale(sumd, rho / (n*14));
-//        if(i==1)    Vector.printV(sumd,(rho/n)+" X "+i,true);
+        sumd = Vector.scale(sumd, 1. / (ni[i]));
+//        if(i==1)    Vector.printV(sumd," X "+i,true);
         X[i] = Vector.plus(xAvr, sumd);
 //        if(i==1)    Vector.printV(X[i],"X "+i,true);
-//        Matrix.updateRow(X, Vector.plus(X[i], sumd), i); //
-        return X;
     }
 
     /*
@@ -404,16 +402,10 @@ public class SCCNew extends Clustering {
                 }
             }
 
-            double[] AkCk = Vector.scale(Ck, 1. / count);//new double[numOfFeature];
+            double[] AkCk = Vector.scale(Ck, 1./ count);//new double[numOfFeature];
             if (count ==0) {
                 System.out.println(" pt.paper.SCC.updateV() "+ v.scr +" "+v.dst);
             }
-//            } else {
-//                AkCk = Vector.scale(Ck, 1. / count);
-//                    if(i==50)
-//                        Vector.printV(Ck, " CK "+e.scr+" "+e.dst, false);
-//                AkCk = Matrix.getRow(A, v.scr);//i
-//            }
 
 //                System.out.println("paper.SCC.updateV() "+ i+ ": "+e.scr+"-"+e.dst);
 //                double[] Ai = Matrix.getRow(A,i); //n
@@ -424,20 +416,15 @@ public class SCCNew extends Clustering {
 //                double n = 1- ((lambda*e.weight)/(Vector.norm(Vector.plus(Vector.sub(Bi, Bk),Vector.sub(Ai, Ak)))/rho));
 //                System.out.println("paper.SCC.updateV() "+ (1-n));
 //                double theta = (0.5>n)? 0.5:n; //max
-//                double theta = 0.6;
-//                System.out.println(i+ " paper.SCC.updateV() " + e.scr+"-"+e.dst+": "+ e.weight +"  "+lambda);
-//                double thet = theta;
-//                double thet = (1.5+lambda);    
+
             double weight = Edge.getEdgeW(edges,v.scr, v.dst);
-            double a = (1 - weight) + lambda;// e.weight/2;
-            double b = weight / lambda;
+            double a = (1 - weight);// e.weight/2;
+            double b = weight;
             double[] v_ik = Vector.plus(Vector.scale(AiCi, a), Vector.scale(AkCk, b));
-//                ret.add(new EdgeNode(e.scr, e.dst, v_ik));
-//                ret.add(new EdgeNode(e.dst, e.scr, Vector.scale(v_ik,lambda)));
 //                if(i==90 ) System.out.println("V in "+e.scr+" "+e.dst);
 //                double[] v_ki = Vector.plus(Vector.scale(AiCi, b), Vector.scale(AkCk, a));
 //            ret.add(new EdgeNode(v.scr, v.dst, v_ik));
-            ret.add(new EdgeNode(v.scr, v.dst, Vector.scale(v_ik, weight)));
+            ret.add(new EdgeNode(v.scr, v.dst, Vector.scale(v_ik, lambda)));
         }
 
         return ret;
@@ -507,7 +494,6 @@ public class SCCNew extends Clustering {
         for (EdgeNode n : V0) {
 //            double normR 
             x[i] = Vector.norm(Vector.plus(Matrix.getRow(X0, n.scr), n.relatedValue));
-//            ret = (ret > normR) ? ret : normR;
             i++;
         }
         
@@ -522,8 +508,6 @@ public class SCCNew extends Clustering {
         for (EdgeNode n : V) {
             double[] bikp = EdgeNode.getEdgeNodeData(Vp, n.scr, n.dst).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
             double[] ai = Vector.scale(Vector.sub(bikp, n.relatedValue), rho);
-//            double normS = Vector.norm(ai);
-//            ret = (ret > normS) ? ret : normS;
             x[i] = Vector.norm(ai);;
             i++;    
         }
