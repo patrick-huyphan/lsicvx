@@ -344,11 +344,15 @@ public class SCCNew1 extends Clustering {
     }
     private List<EdgeNode> initU() {
         List<EdgeNode> ret = new LinkedList<>();
-
+        ListENode tmp = new ListENode();
+        
         for (Edge e : edges) {
                 ret.add(new EdgeNode(e.scr, e.dst, new double[numOfFeature]));
                 ret.add(new EdgeNode(e.dst, e.scr, new double[numOfFeature]));
+                tmp.put(e.scr, e.dst, new double[numOfFeature]);
         }
+
+//        System.out.println("pt.paper.SCCNew1.initU() " +tmp.size());
 //        for(EdgeNode e: ret)
 //            System.out.println("paper.SCC.initU() "+e.scr+ " "+e.dst );
 //        System.out.println("paper.SCC.initU() "+ret.size());

@@ -273,13 +273,13 @@ public class SCC  extends Clustering{
         {
             double[] sumd = new double[numOfFeature];
             
-            for(int[] d:D.keySet())
+            for(Key d:D.E.keySet())
             {
-                if(d[0] == i)
-                {
-//                    System.out.println("paper.SCC.updateX() "+i);
-                    sumd= Vector.scale(Vector.plus(sumd,D.get(d[0], d[1])), rho/2);
-                }
+//                if(d[0] == i)
+//                {
+////                    System.out.println("paper.SCC.updateX() "+i);
+//                    sumd= Vector.scale(Vector.plus(sumd,D.get(d[0], d[1])), rho/2);
+//                }
             }
 //            sumd = Vector.scale(sumd, 1/n[i]);
 //            Vector.printV(sumd, "sum "+i, true);
@@ -322,14 +322,14 @@ public class SCC  extends Clustering{
     private ListENode calcD(double [][] X0,ListENode V, ListENode U, int i) //(B-C)
     {
         ListENode D = new ListENode();
-        for(int[] e: V.keySet())
+        for(Key e: V.E.keySet())
         {
-            System.out.println("paper.SCC.calcD() "+ e[0]+" "+ e[1]);
-            double[] v = V.get(e[0],e[1]);
-            double[] d = Vector.plus(Matrix.getRow(X0, e[0]), Vector.scale(V.get(e),-1));
-            d = Vector.plus(d,U.get(e[0],e[1]));//        Vector.plus(d, U.get(V.indexOf(e)).relatedValue);
-//            d = Vector.plus(Matrix.getRow(X0, e.scr), Vector.scale(e.relatedValue,-1));
-            D.put(e, d);//set(e, d);
+//            System.out.println("paper.SCC.calcD() "+ e[0]+" "+ e[1]);
+//            double[] v = V.get(e[0],e[1]);
+//            double[] d = Vector.plus(Matrix.getRow(X0, e[0]), Vector.scale(V.get(e),-1));
+//            d = Vector.plus(d,U.get(e[0],e[1]));//        Vector.plus(d, U.get(V.indexOf(e)).relatedValue);
+////            d = Vector.plus(Matrix.getRow(X0, e.scr), Vector.scale(e.relatedValue,-1));
+//            D.put(e, d);//set(e, d);
         }
         return D;
     }
@@ -357,11 +357,11 @@ public class SCC  extends Clustering{
     private ListENode updateU(ListENode U, ListENode V, int i) //C
     {
         ListENode ret = new ListENode();
-        for(int[] key: U.keySet())
+        for(Key key: U.E.keySet())
         {
-            double[] data = Vector.plus(Matrix.getRow((i==key[0])?X:A, key[0]),Vector.scale(V.get(key[0], key[1]) , -1));
-            data = Vector.plus(U.get(key[0], key[1]), data);
-            ret.put(key[0], key[1], data);
+//            double[] data = Vector.plus(Matrix.getRow((i==key[0])?X:A, key[0]),Vector.scale(V.get(key[0], key[1]) , -1));
+//            data = Vector.plus(U.get(key[0], key[1]), data);
+//            ret.put(key[0], key[1], data);
         }
         return ret;        
     }
@@ -399,8 +399,8 @@ public class SCC  extends Clustering{
                 ret.put(e.scr, e.dst, new double[numOfFeature]);
             }
         }
-        for(int[] key: ret.keySet())
-            System.out.println("paper.SCC.initU2() " + key[0]+" "+key[1]);
+//        for(Key key: ret.E.keySet())
+//            System.out.println("paper.SCC.initU2() " + key[0]+" "+key[1]);
         return ret;        
     }
 
@@ -555,7 +555,7 @@ public class SCC  extends Clustering{
             //ik
                 double[] value1 = Matrix.getRow(X, e.scr) ;//new double[dataLength];
 //            Vector.printV(value1, "V1", true);
-                ret.put( new int[]{e.scr, e.dst}, value1);
+//                ret.put( new int[]{e.scr, e.dst}, value1);
             }
         }
         return ret;        
@@ -633,33 +633,33 @@ public class SCC  extends Clustering{
 ////        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
 //        return (r<=ep) && (s<=ed);
 //    }
-    private boolean checkStop(double[][] X0, ListENode U, ListENode V0, ListENode V)
-    {
-        double r = primalResidual(X0,V0);
-        double s = dualResidual(V0, V);
-        updateRho(r, s);
-        
-        double maxAB= 0;
-        for(int[] b:V.keySet())
-        {
-            double be = Vector.norm(V.get(b[0], b[1]));
-            double a = Vector.norm(A[b[0]]);
-            double ab = (a>be)? a:be;
-            maxAB = (ab>maxAB)? ab:maxAB;
-        }
-        
-        double maxC = 0;
-        for(int[] c:U.keySet())
-        {
-            double value = Vector.norm(U.get(c[0], c[1]));
-            maxC = (value>maxC)? value:maxC;
-        }
-        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
-        double ed = ea+er*maxC;//Cik?
-        
-//        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
-        return (r<=ep) && (s<=ed);
-    }
+//    private boolean checkStop(double[][] X0, ListENode U, ListENode V0, ListENode V)
+//    {
+//        double r = primalResidual(X0,V0);
+//        double s = dualResidual(V0, V);
+//        updateRho(r, s);
+//        
+//        double maxAB= 0;
+//        for(int[] b:V.keySet())
+//        {
+//            double be = Vector.norm(V.get(b[0], b[1]));
+//            double a = Vector.norm(A[b[0]]);
+//            double ab = (a>be)? a:be;
+//            maxAB = (ab>maxAB)? ab:maxAB;
+//        }
+//        
+//        double maxC = 0;
+//        for(int[] c:U.keySet())
+//        {
+//            double value = Vector.norm(U.get(c[0], c[1]));
+//            maxC = (value>maxC)? value:maxC;
+//        }
+//        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
+//        double ed = ea+er*maxC;//Cik?
+//        
+////        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
+//        return (r<=ep) && (s<=ed);
+//    }
     
     private double primalResidual(double[][] X0, List<EdgeNode> V0)
     {
@@ -685,11 +685,11 @@ public class SCC  extends Clustering{
     private double primalResidual(double[][] X0, ListENode V0)
     {
         double ret = 0;
-        for(int[] key: V0.keySet())
-        {
-            double normR = Vector.norm(Vector.plus(Matrix.getRow(X0, key[0]), V0.get(key[0], key[1])));
-            ret = (ret>normR)?ret:normR;
-        }
+//        for(int[] key: V0.keySet())
+//        {
+//            double normR = Vector.norm(Vector.plus(Matrix.getRow(X0, key[0]), V0.get(key[0], key[1])));
+//            ret = (ret>normR)?ret:normR;
+//        }
         return ret;
     }
         
@@ -721,13 +721,13 @@ public class SCC  extends Clustering{
     private double dualResidual(ListENode Vp, ListENode V)
     {
         double ret = 0;
-        for(int[] n: V.keySet())
-        {
-            double[] bikp = Vp.get(n[0], n[1]);
-            double[] ai = Vector.scale(Vector.plus(bikp, Vector.scale(V.get(n[0], n[1]), -1)),rho);
-            double normS = Vector.norm(ai);
-            ret = (ret>normS)?ret:normS;
-        }
+//        for(int[] n: V.keySet())
+//        {
+//            double[] bikp = Vp.get(n[0], n[1]);
+//            double[] ai = Vector.scale(Vector.plus(bikp, Vector.scale(V.get(n[0], n[1]), -1)),rho);
+//            double normS = Vector.norm(ai);
+//            ret = (ret>normS)?ret:normS;
+//        }
         return ret;
     }
     
