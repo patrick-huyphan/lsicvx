@@ -84,10 +84,10 @@ public class SCCNew2 extends Clustering {
         ListENode U0;
         ListENode U = initU();
         ListENode V = initV();
-
+        FileWriter fw = null;
 //            Vector.printV(X[i], "X "+i, stop);
         int loop = 0; 
-        while (loop < 100) {
+        while (loop < 40) {
             X0 = X;            
             V0 = V;
             U0 = U;
@@ -99,14 +99,16 @@ public class SCCNew2 extends Clustering {
 
             System.out.println("pt.paper.SCCNew.<loop>() " + loop);
             for (int i = 0; i < numberOfVertices; i++) {             
-                ListENode D = calcD(i, V, U); 
-                updateX(i, D, V, U);
+//                ListENode D = calcD(i, V, U); 
+                updateX(i, V, U);
             }
             
             V = updateV(V, U); //
             U = updateU(U, V); //u-x+v
 //            Matrix.printMat(X, "SCC x "+loop);
 
+            if(loop>9)  logData(loop, fw, U, V);
+            
             if (checkStop(X0, U0, V0, V) && (loop > 1))// || (stop == true)))
             {
                 System.out.println(" SCC 2 STOP at " + loop);
@@ -126,20 +128,14 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[i], "X[i] " + i, true);
         }
 
-        FileWriter fw = new FileWriter("X_data.txt");
 
-        for (int i = 0; i < numberOfVertices; i++) {
-            for (int j = 0; j < numOfFeature; j++) {
-                fw.append(X[i][j] + "\t");
-            }
-            fw.append("\n");
-        }
+        
 //        getCluster(fw);
 //        Matrix.printMat(X, "SCC x");
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new ArrayList<>();
 
-        fw = new FileWriter("SCC_Cluster.txt");
+        fw = new FileWriter("tmp/SCC_Cluster.txt");
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
@@ -181,6 +177,42 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[j],"init X "+j,true);
     }
 
+    private void logData(int loop, FileWriter fw, ListENode U, ListENode V) throws IOException
+    {
+        fw = new FileWriter("tmp/"+loop+"_X_data.txt");
+
+        for (int i = 0; i < numberOfVertices; i++) {
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append(X[i][j] + "\t");
+            }
+            fw.append("\n");
+        }
+        fw.close();
+
+        fw = new FileWriter("tmp/"+loop+"_z_data.txt");
+        for(Key k: V.E.keySet())
+        {
+            fw.append("\n" + k.src+"-"+k.dst+"\t");
+            double [] tmp = V.get(k);
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append(tmp[j] + "\t");
+            }
+            fw.append("\n");
+        }
+        fw.close();
+
+        fw = new FileWriter("tmp/"+loop+"_u_data.txt");
+        for(Key k: U.E.keySet())
+        {
+            fw.append("\n" + k.src+"-"+k.dst+"\t");
+            double [] tmp = U.get(k);
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append(tmp[j] + "\t");
+            }
+            fw.append("\n");
+        }
+        fw.close();
+    }
     @Override
     public final void getCluster(FileWriter fw) {
 //        int  ret[] = new int[numberOfVertices];
@@ -245,14 +277,16 @@ public class SCCNew2 extends Clustering {
      * @param xAvr
      * @return
      */
-    private void updateX(int i, ListENode D, ListENode V, ListENode U) {
-        double[] sumd = new double[numOfFeature];
+    private void updateX(int i, ListENode V, ListENode U) {
+        
         double[] sumdi = new double[numOfFeature];
         double[] sumdj = new double[numOfFeature];
-        double[] uj = new double[numOfFeature];
-        double[] vj = new double[numOfFeature];
-        double[] ui = new double[numOfFeature];
-        double[] vi = new double[numOfFeature];
+        double[] sumd;
+        double[] uj;
+        double[] vj;
+        double[] ui;
+        double[] vi;
+        
 //        for (Key k : D.E.keySet()) {
 //            sumd = Vector.scale(Vector.plus(sumd, D.get(k)), rho/2);
 //        }
@@ -267,38 +301,38 @@ public class SCCNew2 extends Clustering {
             {
                 ui = U.get(k);
                 vi = V.get(k);
-                sumdi = Vector.plus(sumdi, Vector.sub(ui, vi));
+                sumdi = Vector.plus(sumdi, Vector.plus(ui, vi));
             }
             if(i == k.src)
             {
                 uj = U.get(k);
                 vj = V.get(k);
-                sumdj = Vector.plus(sumdj, Vector.sub(uj, vj));
+                sumdj = Vector.plus(sumdj, Vector.plus(uj, vj));
             }
         }
         sumd = Vector.sub(sumdi, sumdj);
         
         X[i] = Vector.scale(Vector.plus(Vector.plus(X[i], Vector.scale(xAvr, numberOfVertices)),sumd), 1./(1+numberOfVertices));
-        if(i==1)    Vector.printV(X[i],"X "+i,true);
+//        if(i==1)    Vector.printV(X[i],"X "+i,true);
     }
     /*
      * De = A - Be + Ce
      */
     
-    private ListENode calcD(int i, ListENode V, ListENode U) throws Exception //(B-C)
-    {
-        ListENode D = new ListENode();
-
-        for (Key k : V.E.keySet()) {
-            if (k.src == i) {
-//                if(i == 50) System.out.println("V D "+k.src+" "+k.dst);
-                double[] d = Vector.sub(Matrix.getRow(X, i), V.get(k));
-                d = Vector.plus(d, U.get(k));
-                D.put(k.src, k.dst, d);
-            }
-        }
-        return D;
-    }
+//    private ListENode calcD(int i, ListENode V, ListENode U) throws Exception //(B-C)
+//    {
+//        ListENode D = new ListENode();
+//
+//        for (Key k : V.E.keySet()) {
+//            if (k.src == i) {
+////                if(i == 50) System.out.println("V D "+k.src+" "+k.dst);
+//                double[] d = Vector.sub(Matrix.getRow(X, i), V.get(k));
+//                d = Vector.plus(d, U.get(k));
+//                D.put(k.src, k.dst, d);
+//            }
+//        }
+//        return D;
+//    }
         
     private ListENode initU() {
          ListENode ret = new ListENode();
@@ -360,7 +394,8 @@ public class SCCNew2 extends Clustering {
      * @param V
      * @param U
      * @return
-     * proximal_2
+     * 
+     * proximal_2 (xi-xj- ui, lambda*w)
      */
     
     private ListENode updateV(ListENode V, ListENode U) throws Exception //B
@@ -368,53 +403,56 @@ public class SCCNew2 extends Clustering {
 //        System.out.println("paper.AMA.updateV()");
         ListENode ret = new ListENode();
 
-//        Vector.proxN2(u, rho);
-        
-        for (Key v : V.E.keySet()) {
-            double[] Ck = new double[numOfFeature];//uki
-
-            int count = 0;
-            for (Edge e : edges) {
-                if (v.src == e.scr) {
-//                        if(i==50 ) System.out.println(i+ " U s "+u.scr+" "+u.dst);
-                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.dst));
-                    count++;
-                }
-                if (v.src == e.dst) {
-//                        if(i==50 ) System.out.println(i+ " U d "+u.scr+" "+u.dst);
-                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.scr));
-                    count++;
-                }
-            }
-
-            double[] AkCk = Vector.scale(Ck, 1. / count);//new double[numOfFeature];
-
-
-//                System.out.println("paper.SCC.updateV() "+ i+ ": "+e.scr+"-"+e.dst);
-//                double[] Ai = Matrix.getRow(A,i); //n
-//                double[] Ak =Matrix.getRow(A, (i==e.scr)?e.dst:e.scr);
-            double[] Vi = V.get(v);
-            double[] Ui = U.get(v);//C.relatedValue;
-            double[] AiCi = Vector.plus(Matrix.getRow(A, v.src), Vector.plus(Vi, Ui)); // u get ik As+Us
-
-            double weight = Edge.getEdgeW(edges, v.src, v.dst);
-            double a = (1 - weight) + lambda;// e.weight/2;
-            double b = weight / lambda;
-            double[] v_ik = Vector.plus(Vector.scale(AiCi, a), Vector.scale(AkCk, b));
-//                if(i==90 ) System.out.println("V in "+v.scr+" "+v.dst);
-//            if(v.src == 5 && v.dst ==90) Vector.printV(v_ik, "V in "+v.src+" "+v.dst, true);
-            ret.put(v.src, v.dst, Vector.scale(v_ik, weight));
-        }
+        V.E.keySet().stream().forEach((v) -> {
+            double[] tmp = Vector.sub(Vector.sub(X[v.src], X[v.dst]), U.get(v));
+            double w = Edge.getEdgeW(edges, v.src, v.dst);
+            ret.put(v.src, v.dst, Vector.proxN2_2(tmp, lambda*w));
+        });//
+//        for (Key v : V.E.keySet()) {
+//            double[] Ck = new double[numOfFeature];//uki
+//
+//            int count = 0;
+//            for (Edge e : edges) {
+//                if (v.src == e.scr) {
+////                        if(i==50 ) System.out.println(i+ " U s "+u.scr+" "+u.dst);
+//                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.dst));
+//                    count++;
+//                }
+//                if (v.src == e.dst) {
+////                        if(i==50 ) System.out.println(i+ " U d "+u.scr+" "+u.dst);
+//                    Ck = Vector.plus(Ck, Matrix.getRow(A, e.scr));
+//                    count++;
+//                }
+//            }
+//
+//            double[] AkCk = Vector.scale(Ck, 1. / count);//new double[numOfFeature];
+//
+//
+////                System.out.println("paper.SCC.updateV() "+ i+ ": "+e.scr+"-"+e.dst);
+////                double[] Ai = Matrix.getRow(A,i); //n
+////                double[] Ak =Matrix.getRow(A, (i==e.scr)?e.dst:e.scr);
+//            double[] Vi = V.get(v);
+//            double[] Ui = U.get(v);//C.relatedValue;
+//            double[] AiCi = Vector.plus(Matrix.getRow(A, v.src), Vector.plus(Vi, Ui)); // u get ik As+Us
+//
+//            double weight = Edge.getEdgeW(edges, v.src, v.dst);
+//            double a = (1 - weight) + lambda;// e.weight/2;
+//            double b = weight / lambda;
+//            double[] v_ik = Vector.plus(Vector.scale(AiCi, a), Vector.scale(AkCk, b));
+////                if(i==90 ) System.out.println("V in "+v.scr+" "+v.dst);
+////            if(v.src == 5 && v.dst ==90) Vector.printV(v_ik, "V in "+v.src+" "+v.dst, true);
+//            ret.put(v.src, v.dst, Vector.scale(v_ik, weight));
+//        }
 
         return ret;
     }
 
     private double updateRho(double r, double s) {
         if (r > 10 * s) {
-            rho = Double.valueOf(twoDForm.format(rho * 0.745));//(r/s);//2*rho;
+            rho = Double.valueOf(twoDForm.format(rho * 0.5));//(r/s);//2*rho;
         }
         if (s > 10 * r) {
-            rho = Double.valueOf(twoDForm.format(rho * 3));//(r/s);//rho/2;
+            rho = Double.valueOf(twoDForm.format(rho * 2));//(r/s);//rho/2;
         }
         return rho;
     }
@@ -440,27 +478,33 @@ public class SCCNew2 extends Clustering {
         double s = dualResidual(V0, V);
 //        System.err.println("rho "+rho);
 
-        double maxAB = 0;
+        double maxAB[] = new double[V.E.size()];
+        int i = 0;
         for (Key b : V.E.keySet()) {
             double be = Vector.norm(V.get(b));
             double a = Vector.norm(A[b.src]);
-            double ab = (a > be) ? a : be;
-            maxAB = (ab > maxAB) ? ab : maxAB;
+            maxAB[i] = (a > be) ? a : be;
+            i++;
+//          maxAB   = (ab > maxAB) ? ab : maxAB;
         }
 
-        double maxC = 0;
+        double maxC[] = new double[U.E.size()];
+        i=0;
         for (Key c : U.E.keySet()) {
-            double value = Vector.norm(U.get(c));
-            maxC = (value > maxC) ? value : maxC;
+            maxC[i] = Vector.norm(U.get(c));
+            i++;
+//            maxC = (value > maxC) ? value : maxC;
         }
-        double ed = ea + er * maxC;//Cik?
-        double ep = ea * Math.sqrt(numberOfVertices) + er * maxAB; //Bik?
+        double ed = ea + er * Vector.norm(maxC);//Cik?
+        double ep = ea * Math.sqrt(numberOfVertices) + er * Vector.norm(maxAB); //Bik?
 
         updateRho(r, s);
         if (rho == 0) {
             //System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
             return true;
         }
+        
+        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s);
         return (r <= ep) && (s <= ed);
     }
         

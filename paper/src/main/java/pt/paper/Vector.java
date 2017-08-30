@@ -281,15 +281,28 @@ public class Vector implements Cloneable, java.io.Serializable {
      * @return
      */
     public static double[] proxN2(double[] a, double sic) {
-        double[] ret = copy(a);
+//        double[] ret = copy(a);
 
         double norm = Vector.norm(a);
         double rate = 1. - 1. / (sic * norm);
-        ret = (norm >= 1. / sic) ? Vector.scale(ret, rate): ret;// .scale(0);//
-
-        return ret;
+        if(norm >= 1. / sic)
+            System.out.println("pt.paper.Vector.proxN2() " +norm+" "+ (1./sic) +" "+rate);
+        return (norm >= 1. / sic) ? Vector.scale(a, rate): a;// .scale(0);//
     }
 
+    public static double[] proxN2_2(double[] a, double sic) {
+//        double[] ret = copy(a);
+
+        double norm = Vector.norm(a);
+        if(norm == 0)
+            return a;
+//        else
+        {
+            double rate = 1. - sic/norm;
+//            System.out.println("proxN2_2() " +norm +" "+rate);
+            return (rate>0) ? Vector.scale(a, rate): Vector.scale(a, 0);
+        }
+    }
     /**
      *
      * @param A
