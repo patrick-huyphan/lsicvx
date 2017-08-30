@@ -17,6 +17,7 @@ import com.joptimizer.functions.ConvexMultivariateRealFunction;
 import com.joptimizer.functions.FunctionsUtils;
 import com.joptimizer.functions.LinearMultivariateRealFunction;
 import com.joptimizer.functions.LogTransformedPosynomial;
+import com.joptimizer.functions.QuadraticMultivariateRealFunction;
 import com.joptimizer.functions.PDQuadraticMultivariateRealFunction;
 import com.joptimizer.functions.SDPLogarithmicBarrier;
 import com.joptimizer.functions.SOCPLogarithmicBarrier;
@@ -27,6 +28,8 @@ import com.joptimizer.optimizers.BarrierMethod;
 import com.joptimizer.optimizers.JOptimizer;
 import com.joptimizer.optimizers.LPOptimizationRequest;
 import com.joptimizer.optimizers.LPPrimalDualMethod;
+import com.joptimizer.optimizers.NewtonLEConstrainedFSP;
+import com.joptimizer.optimizers.NewtonUnconstrained;
 import com.joptimizer.optimizers.OptimizationRequest;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -136,7 +139,7 @@ public class main {
  *  inequalities: Gx ≤ h 
  *  equalities: Ax = b,  
  *  
- *  
+ *  x = (P+rho ATA)^-1 (rho ATc - q)
  * 
  * @throws JOptimizerException 
  */
@@ -145,6 +148,7 @@ public class main {
         double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}};
 //        double[][] P = new double[][]{{0., 0.}, {0., 0.}};
         PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
+//        QuadraticMultivariateRealFunction objectiveFunction = new QuadraticMultivariateRealFunction(null, null, 0);
 
         //equalities : x+y = 1
         double[][] A = new double[][]{{1, 1}}; 

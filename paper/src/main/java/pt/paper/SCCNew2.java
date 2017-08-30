@@ -87,7 +87,7 @@ public class SCCNew2 extends Clustering {
 
 //            Vector.printV(X[i], "X "+i, stop);
         int loop = 0; 
-        while (loop < MAX_LOOP) {
+        while (loop < 100) {
             X0 = X;            
             V0 = V;
             U0 = U;
@@ -100,7 +100,7 @@ public class SCCNew2 extends Clustering {
             System.out.println("pt.paper.SCCNew.<loop>() " + loop);
             for (int i = 0; i < numberOfVertices; i++) {             
                 ListENode D = calcD(i, V, U); 
-                updateX(i, D);
+                updateX(i, D, V, U);
             }
             
             V = updateV(V, U); //
@@ -238,22 +238,47 @@ public class SCCNew2 extends Clustering {
     /**
      * TODO: should update with optimize problem: 
      * min ||X-A|| + sum rho/2 ||x-z+u||
-     *
+     * = (1/(1+n))(x + n*xAvr + (sum(j>i)(ui-zi)-sum(i>j)(uj-zj)))
      * @param i
      * @param D
      * @param n
      * @param xAvr
      * @return
      */
-    private void updateX(int i, ListENode D) {
+    private void updateX(int i, ListENode D, ListENode V, ListENode U) {
         double[] sumd = new double[numOfFeature];
+        double[] sumdi = new double[numOfFeature];
+        double[] sumdj = new double[numOfFeature];
+        double[] uj = new double[numOfFeature];
+        double[] vj = new double[numOfFeature];
+        double[] ui = new double[numOfFeature];
+        double[] vi = new double[numOfFeature];
+//        for (Key k : D.E.keySet()) {
+//            sumd = Vector.scale(Vector.plus(sumd, D.get(k)), rho/2);
+//        }
+////        if(i==1)    Vector.printV(sumd," X "+i,true);
+////        sumd = Vector.scale(sumd, 1. / (ni[i]));
+//        X[i] = Vector.plus(xAvr, sumd);
 
-        for (Key k : D.E.keySet()) {
-            sumd = Vector.scale(Vector.plus(sumd, D.get(k)), rho/2);
+        // (sum(j>i)(ui-zi)-sum(i>j)(uj-zj))
+        for(Key k: V.E.keySet())
+        {
+            if(i == k.dst)
+            {
+                ui = U.get(k);
+                vi = V.get(k);
+                sumdi = Vector.plus(sumdi, Vector.sub(ui, vi));
+            }
+            if(i == k.src)
+            {
+                uj = U.get(k);
+                vj = V.get(k);
+                sumdj = Vector.plus(sumdj, Vector.sub(uj, vj));
+            }
         }
-//        if(i==1)    Vector.printV(sumd," X "+i,true);
-//        sumd = Vector.scale(sumd, 1. / (ni[i]));
-        X[i] = Vector.plus(xAvr, sumd);
+        sumd = Vector.sub(sumdi, sumdj);
+        
+        X[i] = Vector.scale(Vector.plus(Vector.plus(X[i], Vector.scale(xAvr, numberOfVertices)),sumd), 1./(1+numberOfVertices));
         if(i==1)    Vector.printV(X[i],"X "+i,true);
     }
     /*
@@ -335,6 +360,7 @@ public class SCCNew2 extends Clustering {
      * @param V
      * @param U
      * @return
+     * proximal_2
      */
     
     private ListENode updateV(ListENode V, ListENode U) throws Exception //B
@@ -342,6 +368,8 @@ public class SCCNew2 extends Clustering {
 //        System.out.println("paper.AMA.updateV()");
         ListENode ret = new ListENode();
 
+//        Vector.proxN2(u, rho);
+        
         for (Key v : V.E.keySet()) {
             double[] Ck = new double[numOfFeature];//uki
 

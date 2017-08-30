@@ -75,7 +75,7 @@ public class ADMM extends LSI{
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= Vector.rVector(k, 0.4);
             double[] u = Vector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
-            double[] d=  Matrix.getCol(D, i); //[n]*m
+//            double[] d=  Matrix.getCol(D, i); //[n]*m
             double[] Btd= Matrix.getCol(BtD, i);//Matrix.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
@@ -121,11 +121,11 @@ public class ADMM extends LSI{
             return x;
     }
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
-    private double[] updateX(double[] u, double[] z,double[][] BtB_rho_Im, double[] Btd)
+    private double[] updateX(double[] u, double[] z,double[][] AtA_rho_Im, double[] Atb)
     {
         //- rho (z^k - u^k)[k]-[k]
         double[] rho_zk_uk=  Vector.scale((Vector.sub(z, u)),rho*(-1.0));
-        double[] ret = Matrix.mul(BtB_rho_Im, Vector.plus(Btd, rho_zk_uk));
+        double[] ret = Matrix.mul(AtA_rho_Im, Vector.plus(Atb, rho_zk_uk));
         return Vector.scale(ret,2);
     }
     

@@ -62,7 +62,7 @@ public abstract class Clustering{
     /**
      * Get pair V has max sim in cluster, base on this pare, select H or L
      */
-    public void getPresentMat()
+    protected void getPresentMat()
     {
         presentMat = new double[numOfFeature][cluster.size()];//[numberOfVertices];
 //        double[][] ret = new double[data[0].length][index.size()];

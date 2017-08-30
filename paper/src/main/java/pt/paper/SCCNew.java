@@ -41,7 +41,7 @@ public class SCCNew extends Clustering {
     double ea, er;
     public double[][] X;
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
-    boolean stop = false;
+//    boolean stop = false;
 
     double[] u;
     double[] xAvr;
@@ -71,16 +71,7 @@ public class SCCNew extends Clustering {
         ea = _e1;
         er = _e2;
 
-//        A = Matrix.centered(A);
-//        presentMat = new double[numOfFeature][5];
-//        int mat[]={1,4,5,12,22};
-//        int mat[]={6,10,17,18,23};
-//        for(int i = 0; i<numOfFeature; i++)
-//        {
-//            for(int j =0; j<5; j++)
-//            presentMat[i][j]= _Matrix[i][mat[j]];
-//        }
-        
+//        A = Matrix.centered(A);       
 //        Matrix.printMat(A, "centered");
         //Init
         init();
@@ -93,16 +84,10 @@ public class SCCNew extends Clustering {
         List<EdgeNode> V0;
         List<EdgeNode> U0;
         List<EdgeNode> U = initU();
-        List<EdgeNode> V = initV();
-        
-        
+        List<EdgeNode> V = initV();        
 
 //            Vector.printV(X[i], "X "+i, stop);
         int loop = 0;
-        stop = false;
-//            if(V.size()==0)
-//                Vector.printV(X[i], "X "+i, false);
-
 //            if(i==1)
 //            Vector.printV(X[i],"X "+i,true);
         while (loop < MAX_LOOP) {
@@ -121,7 +106,6 @@ public class SCCNew extends Clustering {
                 List<EdgeNode> D = calcD(i, V, U); //x-v+u
                 updateX(i, D); //xAvr +sumD 
             }
-
             V = updateV(V, U); //
             U = updateU(U, V); //u-x+v
             
@@ -132,19 +116,9 @@ public class SCCNew extends Clustering {
                 System.out.println(" SCC STOP at " + loop);
                 break;
             }
-            
-
             loop++;
         }
-//            else
-//                System.out.println("SCC v size =0 "+i);
-//            Matrix.printMat(X, "SCC x "+i);
-//            DecimalFormat twoDForml = new DecimalFormat("0.00000000");
-//            for(int r = 0; r < numOfFeature; r++)
-//            {
-//                X[i][r] = (Double.isNaN(X[i][r]))?0:Double.valueOf(twoDForml.format(X[i][r]));
-//            }
-//            Vector.printV(X[i], "X "+i, stop);
+
         for (int i = 0; i < numberOfVertices; i++) {
             Vector.formV(X[i], "0.00000000");
 //            Vector.printV(X[i], "X[i] " + i, true);
@@ -158,9 +132,7 @@ public class SCCNew extends Clustering {
             }
             fw.append("\n");
         }
-//        getCluster(fw);
-//        Matrix.printMat(X, "SCC x");
-//        CSVFile.saveMatrixData("SCC", X, "SCC");
+
         cluster = new ArrayList<>();
 
         fw = new FileWriter("SCC_Cluster.txt");

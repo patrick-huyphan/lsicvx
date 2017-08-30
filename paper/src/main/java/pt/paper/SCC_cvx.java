@@ -39,10 +39,10 @@ import static pt.paper.Clustering.MAX_LOOP;
  * 
  */
 
-public class SCCNew1 extends Clustering {
+public class SCC_cvx extends Clustering {
 
     double rho;
-    double rho2;
+//    double rho2;
     double lambda2;
     double ea, er;
     public double[][] X;
@@ -61,6 +61,10 @@ public class SCCNew1 extends Clustering {
      * V = min lambda *w ||v-v|| + rho/2(||x-z+u||+||x-z+u||) 
      * U = u + rho(x-z)
      *
+     * Solve 2 step
+     * - min ||x-a|| +lamba sum ||x|| => X1
+     * - min 1/2sum||A-X|| + lambda sum(rho||X-X||) -> A= X1
+     * 
      * @param _Matrix
      * @param _lambda: in range 1->2
      * @param _lambda2
@@ -69,30 +73,21 @@ public class SCCNew1 extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew1(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException, Exception {
+    public SCC_cvx(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
-        rho = rho2 = _rho;
+        rho = _rho;
         ea = _e1;
         er = _e2;
 
-//        A = Matrix.centered(A);
-//        presentMat = new double[numOfFeature][5];
-//        int mat[]={1,4,5,12,22};
-//        int mat[]={6,10,17,18,23};
-//        for(int i = 0; i<numOfFeature; i++)
-//        {
-//            for(int j =0; j<5; j++)
-//            presentMat[i][j]= _Matrix[i][mat[j]];
-//        }
-        
+//        A = Matrix.centered(A);        
 //        Matrix.printMat(A, "centered");
         //Init
         init();
 //        Matrix.printMat(X, false,"SCC x0");
 
-        rho = rho2;        
+//        rho = rho2;        
 //            Matrix.printMat(X, "SCC x "+i);
         double[][] X0;
         List<EdgeNode> V0;
@@ -100,13 +95,7 @@ public class SCCNew1 extends Clustering {
         List<EdgeNode> U = initU();
         List<EdgeNode> V = initV();
 
-//            Vector.printV(X[i], "X "+i, stop);
         int loop = 0;
-        stop = false;
-//            if(V.size()==0)
-//                Vector.printV(X[i], "X "+i, false);
-//            if(i==1)
-//            Vector.printV(X[i],"X "+i,true);
         while (loop < MAX_LOOP) {
             X0 = X;
             V0 = V;
@@ -130,14 +119,7 @@ public class SCCNew1 extends Clustering {
             }
             loop++;
         }
-//            else
-//                System.out.println("SCC v size =0 "+i);
-//            Matrix.printMat(X, "SCC x "+i);
-//            DecimalFormat twoDForml = new DecimalFormat("0.00000000");
-//            for(int r = 0; r < numOfFeature; r++)
-//            {
-//                X[i][r] = (Double.isNaN(X[i][r]))?0:Double.valueOf(twoDForml.format(X[i][r]));
-//            }
+
 //            Vector.printV(X[i], "X "+i, stop);
         for (int i = 0; i < numberOfVertices; i++) {
             Vector.formV(X[i], "0.00000000");
@@ -152,9 +134,6 @@ public class SCCNew1 extends Clustering {
             }
             fw.append("\n");
         }
-//        getCluster(fw);
-//        Matrix.printMat(X, "SCC x");
-//        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new LinkedList<>();
 
         fw = new FileWriter("SCC_Cluster.txt");
@@ -164,8 +143,18 @@ public class SCCNew1 extends Clustering {
         getPresentMat();
     }
 
+    // call ADMM to solve X1???
+    
     void init() {
-        X = new double[numberOfVertices][numOfFeature];
+        int uAdmm = 0;
+        if(uAdmm==1)
+        {
+            ADMM X1= new ADMM(A, A, rho, lambda, ea, ea);
+            X= X1.X;
+        }
+        else
+            X = new double[numberOfVertices][numOfFeature];       
+        
 //        for(int i = 0; i< numOfFeature; i++)
 //        {
 //            double x = 1- ((lambda2)/Vector.norm(Matrix.getCol(A, i)));
@@ -176,7 +165,7 @@ public class SCCNew1 extends Clustering {
 //                X[j][i] = x*A[j][i];
 //            }
 //        }
-
+       
         u = new double[numOfFeature];
         xAvr = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
@@ -244,19 +233,22 @@ public class SCCNew1 extends Clustering {
 
     }
 
-//    private int[] retSize() {
-//        int[] ret = new int[numberOfVertices];
-//        for (Edge e : edges) {
-//            ret[e.scr] = ret[e.scr] + 1;
-//            ret[e.dst] = ret[e.dst] + 1;
-//        }
-//        return ret;
-//    }
-
     /**
      * TODO: should update with optimize problem: 
-     * min ||A-xi|| + sum rho/2 ||xi-zij+uij||
-     *
+     * min 1/2||xi - a|| + sum rho/2 ||xi-zij+uij||
+     * j is neighbours node of i 
+     * gi   = 1/2||xi-a|| 
+     *      = 1/2 (xi-a)^2
+     *      = 1/2 (xxT - 2Atx +AtA)
+     * hi   = sum rho/2 ||xi-(zij-uij)||  
+     *      = sum rho/2 ||xi- zuij||
+     *      = sum rho/2 ()
+     * 
+     * P = ATA
+     * Q = ??
+     * convert input to P  matrix, and q vector
+     * solve QP
+     * 
      * @param i
      * @param D
      * @param n
@@ -265,9 +257,38 @@ public class SCCNew1 extends Clustering {
      */
     private double[][] updateX(List<EdgeNode> V, List<EdgeNode> U) throws JOptimizerException, Exception {
         double ret[] = new double[numOfFeature];
+                
         for (int i = 0; i < numberOfVertices; i++) {
+            double zu[][] = new double[ni[i]][numOfFeature];
+            double x[] = Matrix.getCol(X, i);
+
+            //h = sum rho/2 ||x-v+u||
+            int cNeighbour = 0;
+            for(Edge e:edges)
+            {
+                if(i== e.scr || i== e.dst)
+                {
+                    double ui[] = EdgeNode.getEdgeNodeData(U, e.scr, e.dst).relatedValue;
+                    double vi[] = EdgeNode.getEdgeNodeData(V, e.scr, e.dst).relatedValue;
+                    zu[cNeighbour] = Vector.sub(vi, ui);
+                    cNeighbour++;
+                }
+            }
             
-            qp(i, V,U);
+            /**
+             * min g + h
+             * g = 1/2 ||x-a|| -> minimum dist bw point a and x
+             * h = sum rho/2 ||x-h|| -> minimum dist bw x and dummy neighbour point
+             */
+            double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}}; //invertable matrix m*m
+            double[][] A = new double[][]{{1, 1}}; 
+            double[] b = new double[]{1};
+            double[][] G = new double[][]{{-1, 0},{0, -1}}; 
+            double[] c = new double[]{0,0};
+            double[] initPoint = new double[]{0.1, 0.9};
+            
+            solveQP(P, c, A, b, G, c, initPoint);
+            
             X[i] = ret;
         }
         return X;
@@ -275,8 +296,8 @@ public class SCCNew1 extends Clustering {
 
     /**
      * x= argmin gx+hx
-     * g = 0/5 ||A-x||
-     * h = sum rho/2||x-z+u||
+     * g = 0/5 ||x-a||
+     * h = sum rho/2||x-z+u|| -> book 8.7???
      * 
      * @param i
      * @param V
@@ -285,46 +306,27 @@ public class SCCNew1 extends Clustering {
      * @throws JOptimizerException
      * @throws Exception 
      */
-    private double[] qp(int i, List<EdgeNode> V, List<EdgeNode> U) throws JOptimizerException, Exception
-    {
-        double h[][] = new double[numOfFeature][numOfFeature];
-        double x[] = Matrix.getCol(X, i);
-
-        //h = sum rho/2 ||x-v+u||
-        
-        for(Edge e:edges)
-        {
-            if(i== e.scr || i== e.dst)
-            {
-                double ui[] = EdgeNode.getEdgeNodeData(U, e.scr, e.dst).relatedValue;
-                double vi[] = EdgeNode.getEdgeNodeData(V, e.scr, e.dst).relatedValue;
-                h[0] = Vector.plus(ui, Vector.sub(x, vi));
-                
-//                  h[0] = h[0]+  rho/2 *Math.sqrt(Vector.norm(Vector.plus(ui, Vector.sub(x, vi))));
-            }
-        }
-        
-        
-        
-        // min gx + h
-        double[][] P = new double[][]{{1., 0.4}, 
-                                      {0.4, 1.}}; //invertable matrix m*m
+    private double[] solveQP(double[][] P, double[] q, double[][] A, double[] b , double[][] G, double[] h, double[] initPoint) throws JOptimizerException, Exception
+    {        
+//        double[][] P = new double[][]{{1., 0.4}, {0.4, 1.}}; //invertable matrix m*m
         // min X^T P X + qT x + b
-        PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, null, 0);
+        PDQuadraticMultivariateRealFunction objectiveFunction = new PDQuadraticMultivariateRealFunction(P, q, 0);
 
         //equalities contrain Ax=b: x+y = 1 
-        double[][] A = new double[][]{{1, 1}}; 
-        double[] b = new double[]{1};
+//        double[][] A = new double[][]{{1, 1}}; 
+//        double[] b = new double[]{1};
 
         //inequalities contrains Gx<h: 
-        ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[2];
-        inequalities[0] = new LinearMultivariateRealFunction(new double[]{-1, 0}, 0); // -x < 0
-        inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, 0); // -y < 0
+//        List<ConvexMultivariateRealFunction>
+        ConvexMultivariateRealFunction[] inequalities = new ConvexMultivariateRealFunction[h.length];
+        for(int i = 0; i< h.length; i++)
+            inequalities[i] = new LinearMultivariateRealFunction(G[i], h[i]); // -x < 0
+    //      inequalities[1] = new LinearMultivariateRealFunction(new double[]{0, -1}, h[1]); // -y < 0
 
         //optimization problem
         OptimizationRequest or = new OptimizationRequest();
         or.setF0(objectiveFunction);
-        or.setInitialPoint(new double[]{0.1, 0.9});
+        or.setInitialPoint(initPoint);
 //        or.setFi(inequalities); //if you want x>0 and y>0
         or.setA(A);
         or.setB(b);
@@ -342,6 +344,10 @@ public class SCCNew1 extends Clustering {
 //        }
         return sol;
     }
+    /**
+     * 
+     * @return 
+     */
     private List<EdgeNode> initU() {
         List<EdgeNode> ret = new LinkedList<>();
         ListENode tmp = new ListENode();
@@ -352,7 +358,7 @@ public class SCCNew1 extends Clustering {
                 tmp.put(e.scr, e.dst, new double[numOfFeature]);
         }
 
-//        System.out.println("pt.paper.SCCNew1.initU() " +tmp.size());
+//        System.out.println("pt.paper.SCC_cvx.initU() " +tmp.size());
 //        for(EdgeNode e: ret)
 //            System.out.println("paper.SCC.initU() "+e.scr+ " "+e.dst );
 //        System.out.println("paper.SCC.initU() "+ret.size());
@@ -427,8 +433,8 @@ public class SCCNew1 extends Clustering {
         for (Edge e : edges) {
             double theta = 0;
             
-            double xi[] = Matrix.getCol(X, e.scr);
-            double xj[] = Matrix.getCol(X, e.dst);
+            double xi[] = Matrix.getRow(X, e.scr);
+            double xj[] = Matrix.getRow(X, e.dst);
             double uij[] = EdgeNode.getEdgeNodeData(U, e.scr, e.dst).relatedValue;
             double uji[] = EdgeNode.getEdgeNodeData(U, e.dst, e.scr).relatedValue;
             
