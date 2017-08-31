@@ -295,19 +295,20 @@ public class SCCNew2 extends Clustering {
 //        X[i] = Vector.plus(xAvr, sumd);
 
         // (sum(j>i)(ui-zi)-sum(i>j)(uj-zj))
+        //TODO: review i>j and i>j???
         for(Key k: V.E.keySet())
         {
             if(i == k.dst)
             {
                 ui = U.get(k);
                 vi = V.get(k);
-                sumdi = Vector.plus(sumdi, Vector.plus(ui, vi));
+                sumdi = Vector.plus(sumdi, Vector.sub(ui, vi));
             }
             if(i == k.src)
             {
                 uj = U.get(k);
                 vj = V.get(k);
-                sumdj = Vector.plus(sumdj, Vector.plus(uj, vj));
+                sumdj = Vector.plus(sumdj, Vector.sub(uj, vj));
             }
         }
         sumd = Vector.sub(sumdi, sumdj);
