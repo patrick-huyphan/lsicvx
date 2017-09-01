@@ -126,6 +126,10 @@ public class ADMM extends LSI{
         //- rho (z^k - u^k)[k]-[k]
         double[] rho_zk_uk=  Vector.scale((Vector.sub(z, u)),rho*(-1.0));
         double[] ret = Matrix.mul(AtA_rho_Im, Vector.plus(Atb, rho_zk_uk));
+        for(int i = 0; i< k; i++)
+        {
+            ret[i] = (ret[i]>0)?ret[i]:0; // sastify A>0
+        }
         return Vector.scale(ret,2);
     }
     

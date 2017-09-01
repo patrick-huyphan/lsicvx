@@ -38,7 +38,7 @@ public class Paper {
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
 
-        clt = new SCCNew2(termDocMat, 2.5, 0.05, 0.01, 1e-5, 1e-5);
+        clt = new SCCNew2(termDocMat, 1, 0.05, 0.01, 1e-5, 1e-5);
         
 //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
 
