@@ -295,7 +295,10 @@ public class Vector implements Cloneable, java.io.Serializable {
 
         double norm = Vector.norm(a);
         if(norm == 0)
+        {
+            System.out.println("pt.paper.Vector.proxN2_2() zero");
             return a;
+        }
 //        else
         {
             double rate = 1. - sic/norm;

@@ -121,6 +121,8 @@ public class ADMM extends LSI{
             return x;
     }
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
+    // H= (AtA/n+I)^-1
+    // X = HAtb +H(z-u) = (AtA/n+I)^-1 Atb + (AtA/n+I)^-1(z-u)
     private double[] updateX(double[] u, double[] z,double[][] AtA_rho_Im, double[] Atb)
     {
         //- rho (z^k - u^k)[k]-[k]
