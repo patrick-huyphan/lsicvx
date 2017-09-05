@@ -43,7 +43,7 @@ import com.joptimizer.util.Utils;
  * 
  * @TODO: i problemi con noLoop(forcedValue) sono gia presolti
  */
-public class BIPLokbaTableMethod extends IBIPOptimizationRequestHandler{
+public class BIPLokbaTableMethod extends BIPOptimizationRequestHandler{
 	
 	public static final int DEFAULT_BRUTE_FORCE_THRESHOLD = 7;
 	public static final int DEFAULT_FULL_PRESOLVING_FREQUENCY = 1;

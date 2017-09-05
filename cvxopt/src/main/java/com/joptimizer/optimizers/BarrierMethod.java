@@ -31,7 +31,7 @@ import com.joptimizer.functions.IConvexMultivariateRealFunction;
  * @see "S.Boyd and L.Vandenberghe, Convex Optimization, p. 568"
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class BarrierMethod extends IOptimizationRequestHandler {
+public class BarrierMethod extends OptimizationRequestHandler {
 
 	private IBarrierFunction barrierFunction = null;
 	private static Log log = LogFactory.getLog(BarrierMethod.class.getName());

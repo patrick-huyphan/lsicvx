@@ -22,13 +22,13 @@ import com.joptimizer.util.ColtUtils;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import com.joptimizer.functions.IStrictlyConvexMultivariateRealFunction;
+import com.joptimizer.functions.IConvexMultivariateRealFunction; //Strictly
 
 /**
  * @see "S.Boyd and L.Vandenberghe, Convex Optimization, p. 487"
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class NewtonUnconstrained extends IOptimizationRequestHandler {
+public class NewtonUnconstrained extends OptimizationRequestHandler {
 
 	private static Log log = LogFactory.getLog(NewtonUnconstrained.class.getName());
 	
@@ -55,7 +55,7 @@ public class NewtonUnconstrained extends IOptimizationRequestHandler {
 			forwardOptimizationRequest();
 			return;
 		}
-		if (getF0() instanceof IStrictlyConvexMultivariateRealFunction) {
+		if (getF0() instanceof IConvexMultivariateRealFunction) { //Strictly
 			// OK, it's my duty
 		} else {
 			throw new JOptimizerException("Unsolvable problem");

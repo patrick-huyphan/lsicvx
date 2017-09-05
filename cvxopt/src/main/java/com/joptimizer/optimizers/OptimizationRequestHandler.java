@@ -31,8 +31,8 @@ import com.joptimizer.util.ColtUtils;
 import com.joptimizer.functions.IConvexMultivariateRealFunction;
 
 
-public abstract class IOptimizationRequestHandler {
-	protected IOptimizationRequestHandler successor = null;
+public abstract class OptimizationRequestHandler {
+	protected OptimizationRequestHandler successor = null;
 	protected OptimizationRequest request;
 	protected OptimizationResponse response;
 	protected int dim = -1;

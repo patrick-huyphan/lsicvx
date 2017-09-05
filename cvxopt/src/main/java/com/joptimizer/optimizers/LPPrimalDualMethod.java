@@ -44,7 +44,7 @@ import cern.jet.math.tdouble.DoubleFunctions;
  * @see "S.Boyd and L.Vandenberghe, Convex Optimization, p. 609"
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class LPPrimalDualMethod extends ILPOptimizationRequestHandler {
+public class LPPrimalDualMethod extends LPOptimizationRequestHandler {
 
 	public static final double DEFAULT_MIN_LOWER_BOUND = -99999;
 	public static final double DEFAULT_MAX_UPPER_BOUND = +99999;
@@ -154,7 +154,7 @@ public class LPPrimalDualMethod extends ILPOptimizationRequestHandler {
 		opt.optimizeStandardLP(nOfSlackVariables);
 		
 		//back to original form
-		LPOptimizationResponse lpResponse = opt.getLPOptimizationResponse();
+		OptimizationResponse lpResponse = opt.getLPOptimizationResponse();
 		double[] standardSolution = lpResponse.getSolution();
 		double[] originalSol = lpConverter.postConvert(standardSolution);
 		lpResponse.setSolution(originalSol);
@@ -177,7 +177,7 @@ public class LPPrimalDualMethod extends ILPOptimizationRequestHandler {
 			log.debug("LP problem: " + lpRequest.toString());
 		}
 		
-		LPOptimizationResponse lpResponse;
+		OptimizationResponse lpResponse;
 		if(lpRequest.isPresolvingDisabled()){
 			//optimization
 			LPPrimalDualMethod opt = new LPPrimalDualMethod(minLBValue, maxUBValue);
@@ -203,7 +203,7 @@ public class LPPrimalDualMethod extends ILPOptimizationRequestHandler {
 					log.debug("presolvedDim : " + presolvedDim);
 					log.debug("deterministic LP problem");
 				}
-				lpResponse = new LPOptimizationResponse();
+				lpResponse = new OptimizationResponse();
 				lpResponse.setSolution(new double[]{});
 			}else{
 				//solving the presolved problem
@@ -316,7 +316,7 @@ public class LPPrimalDualMethod extends ILPOptimizationRequestHandler {
 			log.debug("mieq: " + getMieq());
 		}
 		
-		LPOptimizationResponse lpResponse = new LPOptimizationResponse();
+		OptimizationResponse lpResponse = new OptimizationResponse();
 		
 		DoubleMatrix1D X0 = getInitialPoint();
 		if(X0==null){

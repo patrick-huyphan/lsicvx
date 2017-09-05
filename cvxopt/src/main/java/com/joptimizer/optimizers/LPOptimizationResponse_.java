@@ -18,5 +18,5 @@ package com.joptimizer.optimizers;
 /**
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class LPOptimizationResponse extends OptimizationResponse{
+public class LPOptimizationResponse_ extends OptimizationResponse{
 }

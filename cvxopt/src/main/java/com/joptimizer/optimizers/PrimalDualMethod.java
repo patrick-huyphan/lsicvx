@@ -31,7 +31,7 @@ import com.joptimizer.util.ColtUtils;
  * @see "S.Boyd and L.Vandenberghe, Convex Optimization, p. 609"
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class PrimalDualMethod extends IOptimizationRequestHandler {
+public class PrimalDualMethod extends OptimizationRequestHandler {
 
 	private KKTSolver kktSolver;
 	private static Log log = LogFactory.getLog(PrimalDualMethod.class.getName());

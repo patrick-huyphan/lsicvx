@@ -24,7 +24,7 @@ import com.joptimizer.exception.JOptimizerException;
  * 
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class PDQuadraticMultivariateRealFunction extends PSDQuadraticMultivariateRealFunction implements IStrictlyConvexMultivariateRealFunction{
+public class PDQuadraticMultivariateRealFunction extends PSDQuadraticMultivariateRealFunction implements IConvexMultivariateRealFunction{
 
 	public PDQuadraticMultivariateRealFunction(double[][] PMatrix,	double[] qVector, double r) {
 		this((PMatrix!=null)? DoubleFactory2D.dense.make(PMatrix) : null, (qVector!= null)? DoubleFactory1D.dense.make(qVector) : null, r, false);

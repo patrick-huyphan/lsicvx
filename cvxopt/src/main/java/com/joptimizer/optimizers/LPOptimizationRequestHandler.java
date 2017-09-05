@@ -15,8 +15,8 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 
 
 
-public abstract class ILPOptimizationRequestHandler extends IOptimizationRequestHandler{
-	protected ILPOptimizationRequestHandler successor = null;
+public abstract class LPOptimizationRequestHandler extends OptimizationRequestHandler{
+	protected LPOptimizationRequestHandler successor = null;
 	//private LPOptimizationRequest lpRequest;
 	//private LPOptimizationResponse lpResponse;
 
@@ -28,12 +28,12 @@ public abstract class ILPOptimizationRequestHandler extends IOptimizationRequest
 		return (LPOptimizationRequest)this.request;
 	}
 	
-	protected void setLPOptimizationResponse(LPOptimizationResponse lpResponse) {
+	protected void setLPOptimizationResponse(OptimizationResponse lpResponse) {
 		this.response = lpResponse;
 	}
 
-	public LPOptimizationResponse getLPOptimizationResponse() {
-		return (LPOptimizationResponse)this.response;
+	public OptimizationResponse getLPOptimizationResponse() {
+		return (OptimizationResponse)this.response;
 	}
 	
 	@Override
@@ -57,7 +57,7 @@ public abstract class ILPOptimizationRequestHandler extends IOptimizationRequest
 	
 	@Override
 	protected void setOptimizationResponse(OptimizationResponse response) {
-		if(response instanceof LPOptimizationResponse){
+		if(response instanceof OptimizationResponse){
 			super.setOptimizationResponse(response);
 		}else{
 			throw new UnsupportedOperationException("Use the matrix formulation with the class " +LPOptimizationRequest.class.getName()+ " for this linear problem");	

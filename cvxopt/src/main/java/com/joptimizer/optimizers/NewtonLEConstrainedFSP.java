@@ -30,7 +30,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
  * @see "S.Boyd and L.Vandenberghe, Convex Optimization, p. 521"
  * @author alberto trivellato (alberto.trivellato@gmail.com)
  */
-public class NewtonLEConstrainedFSP extends IOptimizationRequestHandler {
+public class NewtonLEConstrainedFSP extends OptimizationRequestHandler {
 
 	private KKTSolver kktSolver;
 	private static Log log = LogFactory.getLog(NewtonLEConstrainedFSP.class.getName());

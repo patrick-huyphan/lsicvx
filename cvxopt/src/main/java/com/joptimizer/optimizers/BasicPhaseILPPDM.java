@@ -156,7 +156,7 @@ public class BasicPhaseILPPDM {
 		opt.setKKTSolver(new UpperDiagonalHKKTSolver(originalDim));
 		opt.setOptimizationRequest(or);
 		opt.optimizePresolvedStandardLP();
-		LPOptimizationResponse response = opt.getLPOptimizationResponse();
+		OptimizationResponse response = opt.getLPOptimizationResponse();
 		DoubleMatrix1D sol = F1.make(response.getSolution());
 		DoubleMatrix1D ret = sol.viewPart(0, originalDim);
 		DoubleMatrix1D ineq = originalProblem.getFi(ret);

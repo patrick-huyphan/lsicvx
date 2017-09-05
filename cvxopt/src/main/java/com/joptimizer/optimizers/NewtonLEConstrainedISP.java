@@ -33,7 +33,7 @@ import com.joptimizer.functions.IBarrierFunction;
  * @TODO: switch linear search to a the feasible one, once primal feasibility
  *        has reached (see p. 535).
  */
-public class NewtonLEConstrainedISP extends IOptimizationRequestHandler {
+public class NewtonLEConstrainedISP extends OptimizationRequestHandler {
 
 	private KKTSolver kktSolver;
 	private static Log log = LogFactory.getLog(NewtonLEConstrainedISP.class.getName());

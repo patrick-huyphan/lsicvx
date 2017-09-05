@@ -40,7 +40,7 @@ public class JOptimizer {
 	
 	public void optimize() throws JOptimizerException {
 		//start with the first step in the chain.
-		IOptimizationRequestHandler handler = new NewtonUnconstrained(true);
+		OptimizationRequestHandler handler = new NewtonUnconstrained(true);
 		handler.setOptimizationRequest(request);
 		handler.optimize();
 		this.response = handler.getOptimizationResponse();

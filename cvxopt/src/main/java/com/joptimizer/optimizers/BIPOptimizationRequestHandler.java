@@ -15,7 +15,7 @@ import com.joptimizer.exception.JOptimizerException;
 import cern.colt.matrix.AbstractMatrix1D;
 import cern.colt.matrix.AbstractMatrix2D;
 
-public abstract class IBIPOptimizationRequestHandler {
+public abstract class BIPOptimizationRequestHandler {
 	
 	protected BIPOptimizationRequest request;
 	protected BIPOptimizationResponse response;

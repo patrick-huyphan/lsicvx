@@ -34,7 +34,7 @@ import cern.colt.matrix.tint.IntMatrix2D;
  * x in {0,1}
  * 
  */
-public class BIPBfMethod extends IBIPOptimizationRequestHandler{
+public class BIPBfMethod extends BIPOptimizationRequestHandler{
 	
 	private static Log log = LogFactory.getLog(BIPBfMethod.class.getName());
 	
