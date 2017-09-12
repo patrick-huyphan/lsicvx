@@ -5,6 +5,7 @@
  */
 package pt.spark;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Comparator;
  * @author patrick_huy
  * Should create new class to optimize get value from edge
  */
-public class LocalEdgeNode  implements Comparator<LocalEdgeNode>{
+public class LocalEdgeNode  implements Comparator<LocalEdgeNode>,Serializable {
     int source;
     int dest;
     double[] relatedValue;
