@@ -81,6 +81,8 @@ public class main {
                 .setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
         
+        sc.setLogLevel("ERROR");
+        
         List<Tuple2<Integer,Vector>> scc = new sSCC2().run(sc, termDocData,
                 ouputdir);
 
