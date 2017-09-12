@@ -27,9 +27,6 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -52,9 +49,8 @@ public class sSCC2 {
      * @param outFilePath
      * @return
      */
-    public static List<Tuple2<Integer, List<Vector>>> run(JavaSparkContext context,
+    public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context,
             double[][] A,// term-doc
-//            String inputFilePath,
             String outFilePath) {
 
         double _rho0 = 0.8;
@@ -108,18 +104,36 @@ public class sSCC2 {
 //        }
         System.out.println("pt.spark.sSCC.run()");
 
-        Broadcast<Double> rho0 = context.broadcast(_rho0);
-        Broadcast<Double> lamda = context.broadcast(_lamda);
+//        Broadcast<Double> rho0 = context.broadcast(_rho0);
+//        Broadcast<Double> lamda = context.broadcast(_lamda);
+//        Broadcast<double[][]> _X = context.broadcast(X);
         Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
         Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
         Broadcast<int[]> _ni = context.broadcast(ni);
-        Broadcast<double[][]> _X = context.broadcast(X);
+
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
         Broadcast<double[][]> mat = context.broadcast(A);
 
+        //        LocalMatrix.printMat(X, "x init");
+//        LocalVector.printV(xAvr, "xAvr", true);
+        System.out.println("pt.spark.sSCC.run() 2 start map scc local");
+        // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
+        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
+       
+        List<Tuple2<Integer, Vector>> retList = new LinkedList<>();
+//        JavaPairRDD<Integer, List<Vector>> ret = new ;
+        List<LocalEdgeNode> U = initU(eSet, numOfFeature);
+        List<LocalEdgeNode> V = initV(eSet, A);
+        List<LocalEdgeNode> U0;
+        List<LocalEdgeNode> V0;
+        List<Tuple2<Integer, Vector>> X0 = new LinkedList<>();
+        List<Tuple2<Integer, Vector>> X1 = new LinkedList<>();
+        
+        JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
+         
         boolean stop = false;
         while(stop)
         {
@@ -134,68 +148,97 @@ public class sSCC2 {
              * - parallel checkstop, server update
              */
 //transform and broadcast data to parallel
-//        Broadcast<Double> rho0 = context.broadcast(_rho0);
-//        Broadcast<Double> lamda = context.broadcast(_lamda);
-//        Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
-//        Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
+        Broadcast<Double> rho0 = context.broadcast(_rho0);
+        Broadcast<Double> lamda = context.broadcast(_lamda);
 //        Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-//        Broadcast<double[]> _xAvr = context.broadcast(xAvr);
-//        Broadcast<int[]> _ni = context.broadcast(ni);
-//        Broadcast<double[][]> _X = context.broadcast(X);
-//        Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
-//        Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
-//        Broadcast<double[][]> mat = context.broadcast(A);
+        Broadcast<double[][]> _X = context.broadcast(X);
+        Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
+        Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
+        Broadcast<List<Tuple2<Integer, Vector>>> _x = context.broadcast(X0);
         
+        V0= V;
+        U0= U;
+        X1 = X0;
 //update X, V, U
-            updateXNode();
-            updateVNode();
-            updateUNode();
+//            updateXNode();
+            
+            JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
+                    -> {
+    //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
+                return new Tuple2<>(t1._1,
+                        updateXNode(t1,
+                                mat.value(),
+                                _numberOfVertices.value(),
+                                _numOfFeature.value(),
+                                E.value(),
+                                _X.value(),
+                                _x.value(),
+                                _V.value(),
+                                _U.value(),
+                                _ni.value(),
+                                _xAvr.value(),
+                                rho0.value(),
+                                lamda.value(),
+                                eps_abs.value(),
+                                eps_rel.value()));
+                }
+            );
+            ret.cache();
+            
+            retList = ret.collect();
+            X0 =         ret.collect();
+            JavaRDD<LocalEdgeNode> vc=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
+            @Override
+            public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
+                
+                return updateVNode();                
+            }
+            });
+            vc.cache();
+            V= vc.collect();
+            JavaRDD<LocalEdgeNode> uc=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
+            @Override
+            public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
+                return updateUNode();                
+            }
+            });
+            uc.cache();
+                    
+            U=uc.collect();
+            
 //checkstop            
-//            checkStop(A, u, U, V0, V, _rho0, _lamda, _rho0, numberOfVertices)
+            checkStop(A, X0, U, V0, V, _rho0, _lamda, _rho0, numberOfVertices);
 //update rho
             updateRho(_rho0, _rho0, _rho0);
 //update lambda
             _lamda = _lamda * 1.05;
+            
+            rho0.destroy();
+            lamda.destroy();
+            _X.destroy();
+            _x.destroy();
+            _V.destroy();
+            _U.destroy();
         }
 
-//        LocalMatrix.printMat(X, "x init");
-//        LocalVector.printV(xAvr, "xAvr", true);
-        System.out.println("pt.spark.sSCC.run() 2 start map scc local");
-        // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
-        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
-        JavaPairRDD<Integer, List<Vector>> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
-                -> {
-//            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
-            return new Tuple2<>(t1._1,
-                    solveADMM(t1,
-                            mat.value(),
-                            _numberOfVertices.value(),
-                            _numOfFeature.value(),
-                            E.value(),
-                            _X.value(),
-                            _ni.value(),
-                            _xAvr.value(),
-                            rho0.value(),
-                            lamda.value(),
-                            eps_abs.value(),
-                            eps_rel.value()));
-            }
-        );
-        ret.cache();
-//        double[][] retArray = new double[numOfFeature][numOfFeature];
-        List<Tuple2<Integer, List<Vector>>> retList = ret.collect();
 
-        ret.saveAsTextFile(outFilePath + "/scc");
+
+//        double[][] retArray = new double[numOfFeature][numOfFeature];
+
+//        List<Tuple2<Integer, List<Vector>>> retList = ret.collect();
+//        ret.saveAsTextFile(outFilePath + "/scc");
         System.out.println("pt.spark.sSCC.run() end");
         
-        rho0.destroy();
-        lamda.destroy();
+//        rho0.destroy();
+//        lamda.destroy();
+//        _X.destroy();
+
         eps_abs.destroy();
         eps_rel.destroy();
         E.destroy();
         _xAvr.destroy();
         _ni.destroy();
-        _X.destroy();
+
         _numOfFeature.destroy();
         _numberOfVertices.destroy();
         mat.destroy();
@@ -203,46 +246,6 @@ public class sSCC2 {
         return retList;
     }
 
-    private static List<Vector> solveADMM(Tuple2<Integer, Vector> curruntI,
-            double[][] _A,
-            int numberOfVertices,
-            int numOfFeature,
-            List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
-            double[][] _X,
-            int[] ni,
-            double[] xAvr,
-            //            double [] ui,
-            Double rho0,
-            Double lamda,
-            //            Double lamda2,
-            Double eps_abs,
-            Double eps_rel) throws IOException {
-        /*
-TODO: 
-        - init U,V,D,X0
-      (<r,c>,v[])
-         */
-        //System.out.println("pt.spark.sSCC.solveADMM() " + curruntI._1 + " " + numberOfVertices + "-" + numOfFeature);
-        List<Vector> ret = new LinkedList<>();
-        List<LocalEdge> _edges = new ArrayList(); //rebuild from e
-        for (int i = 0; i < e.size(); i++) {
-            _edges.add(new LocalEdge(e.get(i)._1._1, e.get(i)._1._2, e.get(i)._2));
-        }
-        
-        NodeSCC2 xNode = new NodeSCC2(curruntI._1,
-                _A,
-                _X,
-                _edges,
-                ni[curruntI._1],
-                xAvr,
-                lamda,
-                //                lamda2, 
-                rho0,
-                eps_abs, eps_rel);
-        for(int i = 0; i< numberOfVertices; i++)
-            ret.add(Vectors.dense(xNode.X[i]));
-        return ret;
-    }
 
     private static List<Tuple2<Tuple2<Integer, Integer>, Double>> buildE(LinkedList<Tuple2<Integer, Vector>> rowsList) {
         List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
@@ -376,10 +379,10 @@ TODO:
         return rho;
     }
     
-    private static boolean checkStop(double[][] A, double[] X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
+    private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
             double rho, double ea, double er, int numberOfVertices)
     {
-        double r = primalResidual(X0,V0);
+        double r = primalResidual(X0.get(0)._2.toArray(),V0);
         double s = dualResidual(V0, V, rho, numberOfVertices);
 //        System.err.println("rho "+rho);
         updateRho(r, s, rho);
@@ -470,16 +473,131 @@ TODO:
         return new LocalEdgeNode(s, d, new double[numOfFeature]);
     }   
     
-    private static void updateXNode()
+    private static List<LocalEdgeNode> initV(List<Tuple2<Tuple2<Integer, Integer>, Double>> edges, double [][] A)
     {
-        
+        List<LocalEdgeNode> ret = new ArrayList<>();
+//        System.out.println("paper.NodeSCC.initV() "+(i+1));
+        for(Tuple2<Tuple2<Integer, Integer>, Double> e:edges)
+        {
+                //ik
+                double[] value1 = LocalMatrix.getRow(A, e._1._1) ;//new double[dataLength];
+                ret.add(new LocalEdgeNode(e._1._1, e._1._2, value1));
+                //ki
+                double[] value2 = LocalMatrix.getRow(A, e._1._2) ;//new double[dataLength];
+                ret.add(new LocalEdgeNode(e._1._2, e._1._1, value2));
+        }
+        return ret;        
     }
-    private static void updateVNode()
-    {
         
+    private static List<LocalEdgeNode> initU(List<Tuple2<Tuple2<Integer, Integer>, Double>> edges, int numOfFeature)
+    {
+        List<LocalEdgeNode> ret = new ArrayList<>();
+        for(Tuple2<Tuple2<Integer, Integer>, Double> e:edges)
+        {
+//                System.out.println("paper.NodeSCC.initU() E "+e.sourcevertex+ " "+e.destinationvertex );
+                ret.add(new LocalEdgeNode(e._1._1, e._1._2, new double[numOfFeature]));
+                ret.add(new LocalEdgeNode(e._1._2, e._1._1, new double[numOfFeature]));
+
+        }
+        return ret;        
     }
-    private static void updateUNode()
-    {
+    
+    /**
+     * Update by row, each row to RDD
+     * 
+     */    
+    private static Vector updateXNode(Tuple2<Integer, Vector> curruntI,
+            double[][] _A,
+            int numberOfVertices,
+            int numOfFeature,
+            List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
+            double[][] _X,
+            List<Tuple2<Integer, Vector>> x,
+            List<LocalEdgeNode> _V,
+            List<LocalEdgeNode> _U,
+            int[] ni,
+            double[] xAvr,
+            //            double [] ui,
+            Double rho0,
+            Double lamda,
+            //            Double lamda2,
+            Double eps_abs,
+            Double eps_rel)
+    {           
         
+        double[] sumdi = new double[numOfFeature];
+        double[] sumdj = new double[numOfFeature];
+               
+        // (sum(j>i)(ui-zi)-sum(i>j)(uj-zj))
+        //TODO: review i>j and i>j???
+        /**
+         *
+        for(Key k: V.E.keySet())
+        {
+            if(i == k.src)
+            {
+                sumdi = Vector.plus(sumdi, Vector.plus(U.get(k), V.get(k)));
+            }
+            if(i == k.dst)
+            {
+                sumdj = Vector.plus(sumdj, Vector.plus(U.get(k), V.get(k)));
+            }
+        }
+//        double[] sumd = Vector.sub(sumdi, sumdj);
+//        if(i==1)    Vector.printV(sumd,"X "+i,true);        
+        //Vector.plus(A[i], Vector.scale(xAvr, numberOfVertices));
+        X[i] = Vector.scale(Vector.plus(B,sumd), 1./(1+numberOfVertices));
+         */
+        
+        double[] sumd = LocalVector.sub(sumdi, sumdj);
+        
+        return Vectors.dense(sumd);
+    }
+    /**
+     * update all node in V, each V is RDD
+     * 
+     */
+    private static LocalEdgeNode updateVNode()
+    {
+//        List<LocalEdgeNode> ret = new LinkedList<>();
+        LocalEdgeNode ret = new LocalEdgeNode(0, 0, new double[10]);
+        return ret;
+    }
+//    private List<LocalEdgeNode> updateV(List<LocalEdgeNode> V, List<LocalEdgeNode> U) throws Exception //B
+//    {
+////        System.out.println("paper.AMA.updateV()");
+//        List<LocalEdgeNode> ret = new LinkedList<>();
+//
+//        V.E.keySet().stream().forEach((v) -> {
+//            double[] bbu = Vector.sub(Vector.sub(X[v.src], X[v.dst]), U.get(v));
+//            double w = Edge.getEdgeW(edges, v.src, v.dst);
+//            bbu = Vector.proxN2_2(bbu, lambda*w);
+//            ret.put(v.src, v.dst, bbu);
+//        });//
+//        return ret;
+//    }
+
+    /**
+     * update all U, each U is RDD.
+     * 
+     */
+    private static LocalEdgeNode updateUNode()
+    {
+        LocalEdgeNode ret = new LocalEdgeNode(0, 0, new double[10]);
+        return ret;
     }  
+    
+//    private ListENode updateU(ListENode U, ListENode V) throws Exception //C
+//    {
+//        ListENode ret = new ListENode();
+//        V.E.keySet().stream().forEach((v) -> {
+////            if(v.scr == 50)  System.out.println("V D "+v.scr+" "+v.dst);
+//            double[] data = Vector.sub(V.get(v), Vector.sub(X[v.src], X[v.dst]));
+//            data = Vector.plus(U.get(v), data);
+////            if(v.src == 5 && v.dst ==90)                Vector.printV(data, "U in "+v.src+" "+v.dst, true);
+//
+//            ret.put(v.src, v.dst, Vector.scale(data,1));//, Edge.getEdgeW(edges, v.src, v.dst)));
+//        });
+//        return ret;
+//    }
 }
