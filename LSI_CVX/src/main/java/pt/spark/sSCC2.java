@@ -177,12 +177,11 @@ public class sSCC2 {
 //                                 _x0.value(),
                                 _V.value(),
                                 _U.value(),
-                                _B.value()
-//                                ,
+                                _B.value(),
 //                                _ni.value(),
 //                                _xAvr.value(),
 //                                rho0.value(),
-//                                lamda.value()
+                                lamda.value()
                         )
                 );
                 }
@@ -496,12 +495,12 @@ public class sSCC2 {
             List<LocalEdgeNode> _V,
             List<LocalEdgeNode> _U,
             double[][] _B
-//            ,
+            ,
 //            int[] ni,
 //            double[] xAvr,
             //            double [] ui,
 //            Double rho0,
-//            Double lamda
+            Double lamda
     )
     {           
         
@@ -525,7 +524,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-//        LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
+        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1 +": "+_rho0+ " - "+lamda, true);
         return Vectors.dense(X);
     }
     /**
