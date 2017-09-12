@@ -126,6 +126,8 @@ public class sSCC2 {
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
         JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
        
+        matI.saveAsTextFile(outFilePath+"/SCC");
+        
         List<Tuple2<Integer, Vector>> retList = new LinkedList<>();
 //        JavaPairRDD<Integer, List<Vector>> ret = new ;
         List<LocalEdgeNode> U = initU(eSet, numOfFeature);
@@ -536,7 +538,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1 +": "+_rho0+ " - "+lamda, true);
+//        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1 +": "+_rho0+ " - "+lamda, true);
         return Vectors.dense(X);
     }
     /**
