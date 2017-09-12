@@ -241,6 +241,7 @@ public class sSCC2 {
             _x0.destroy();
             _V.destroy();
             _U.destroy();
+            loop++;
         }
 
 
