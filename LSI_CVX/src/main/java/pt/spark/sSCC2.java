@@ -198,19 +198,23 @@ public class sSCC2 {
 //            ret.cache();
 //            X0 = ret.collect();
             retList = X0;
+//            _x0.destroy();
+            Broadcast<List<Tuple2<Integer, Vector>>> _x1 = context.broadcast(X0);
             
             V=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
             @Override
             public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
                 
-                return updateVNode(_x0.value(), v1, _U.value(), lamda.value(), E.value());                
+                return updateVNode(_x1.value(), v1, _U.value(), lamda.value(), E.value());                
             }
             }).cache().collect();
+            
+            Broadcast<List<LocalEdgeNode>> _V1 = context.broadcast(V);
             
             U=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
             @Override
             public LocalEdgeNode call(LocalEdgeNode u1) throws Exception {
-                return updateUNode(_x0.value(), _V.value(), u1 );                
+                return updateUNode(_x1.value(), _V1.value(), u1 );                
             }
             }).cache().collect();
             
