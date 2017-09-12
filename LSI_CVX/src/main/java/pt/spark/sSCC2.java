@@ -139,7 +139,7 @@ public class sSCC2 {
         
         V0= V;
         U0= U;
-        X1 = X0;
+        X1 = rowsListTermDoc;
         JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
          
 //        boolean stop = false;
