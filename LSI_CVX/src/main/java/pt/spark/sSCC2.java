@@ -28,6 +28,7 @@ import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.io.FileWriter;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -237,10 +238,21 @@ public class sSCC2 {
 
 
         List<Tuple2<Integer, Vector>> retList2 = new LinkedList<>();
+        FileWriter fw = new FileWriter(outFilePath+"/X_data.txt");
         for (Tuple2<Integer, Vector> r: retList) {
-            retList2.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(LocalVector.formV(r._2, "0.000000000"))));
+           
+            double[] tmp = LocalVector.formV(r._2, "0.000000000");
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append(tmp[j] + "\t");
+            }
+            fw.append("\n");
+            
+            retList2.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(tmp)));
+            
 //            Vector.printV(X[i], "X[i] " + i, true);
         }
+
+        fw.close();
 
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
 
@@ -256,7 +268,7 @@ public class sSCC2 {
         _numberOfVertices.destroy();
         _A.destroy();
         
-        return retList;
+        return retList2;
     }
 
 
