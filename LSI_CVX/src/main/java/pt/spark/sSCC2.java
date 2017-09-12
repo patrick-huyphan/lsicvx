@@ -28,12 +28,6 @@ import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -116,11 +110,6 @@ public class sSCC2 {
 //        }
         System.out.println("pt.spark.sSCC.run()");
 
-//        Broadcast<Double> rho0 = context.broadcast(_rho0);
-//        Broadcast<Double> lamda = context.broadcast(_lamda);
-//        Broadcast<double[][]> _X = context.broadcast(X);
-//        Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
-//        Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
         Broadcast<int[]> _ni = context.broadcast(ni);
@@ -147,9 +136,9 @@ public class sSCC2 {
         
         JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
          
-        boolean stop = false;
+//        boolean stop = false;
         int loop = 0;
-        while(loop <500)
+        while(loop <800)
         {
             /**
              * - calculator X in slaver
@@ -182,17 +171,20 @@ public class sSCC2 {
     //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
                 return new Tuple2<>(t1._1,
                         updateXNode(t1,
-                                _A.value(),
+//                                _A.value(),
                                 _numberOfVertices.value(),
                                 _numOfFeature.value(),
-                                 _x0.value(),
+//                                 _x0.value(),
                                 _V.value(),
                                 _U.value(),
-                                _B.value(),
-                                _ni.value(),
-                                _xAvr.value(),
-                                rho0.value(),
-                                lamda.value()));
+                                _B.value()
+//                                ,
+//                                _ni.value(),
+//                                _xAvr.value(),
+//                                rho0.value(),
+//                                lamda.value()
+                        )
+                );
                 }
             ).cache().collect();
 //            ret.cache();
@@ -252,12 +244,6 @@ public class sSCC2 {
 //        ret.saveAsTextFile(outFilePath + "/scc");
         System.out.println("pt.spark.sSCC.run() end");
         
-//        rho0.destroy();
-//        lamda.destroy();
-//        _X.destroy();
-
-//        eps_abs.destroy();
-//        eps_rel.destroy();
         E.destroy();
         _xAvr.destroy();
         _ni.destroy();
@@ -379,7 +365,7 @@ public class sSCC2 {
 //    	cluster.add(intdex);
 //Test    
 
-/*        System.out.println("paper.SCC.getCluster() " + cluster.size());
+        System.out.println("paper.SCC.getCluster() " + cluster.size());
         for (int i = 0; i < cluster.size(); i++) {
             List<Integer> sub = cluster.get(i);
             System.out.print("Cluster " + i + ":\t");
@@ -388,7 +374,7 @@ public class sSCC2 {
             }
             System.out.println("");
         }
-*/
+
         return cluster;
     }
     
@@ -432,56 +418,7 @@ public class sSCC2 {
             return true;
 //        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
         return (r<=ep) && (s<=ed);
-    }
-    
-     
-    private static double primalResidual(double[] X0, List<LocalEdgeNode> V0)
-    {
-        double ret = 0;
-        for(LocalEdgeNode n: V0)
-        {
-            double normR = LocalVector.norm(LocalVector.plus(X0, n.value));
-            ret = (ret>normR)?ret:normR;
-        }
-        return ret;
-    }
-    private static double primalResidual(double[][] X0, List<LocalEdgeNode> V0, int i)
-    {
-        double ret = 0;
-        double[] x= LocalMatrix.getRow(X0, i);
-        for(LocalEdgeNode n: V0)
-        {
-            double normR = LocalVector.norm(LocalVector.plus(x, n.value));
-            ret = (ret>normR)?ret:normR;
-        }
-        return ret;
-    }
-        
-    private static double dualResidual(List<LocalEdgeNode> Vp, List<LocalEdgeNode> V,  double rho, int numOfFeature)
-    {
-        double ret = 0;
-        for(LocalEdgeNode n: V)
-        {
-            double[] bikp = getUVData(V, n.src, n.dst, numOfFeature).value;// Vp.get(V.indexOf(n)).value;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
-            double normS = LocalVector.norm(ai);
-            ret = (ret>normS)?ret:normS;
-        }
-        return ret;
-    }
-    private static double dualResidual(List<LocalEdgeNode> Vp, List<LocalEdgeNode> V, int i,  double rho, int numOfFeature)
-    {
-        double ret = 0;
-        
-        for(LocalEdgeNode n: V)
-        {
-            double[] bikp = getUVData(V, n.src, n.dst, numOfFeature).value;// Vp.get(V.indexOf(n)).value;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
-            double normS = LocalVector.norm(ai);
-            ret = (ret>normS)?ret:normS;
-        }
-        return ret;
-    }    
+    } 
 
     private static double primalResidual(List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> V0) {
 //        double ret = 0;
@@ -512,18 +449,6 @@ public class sSCC2 {
         }
         return LocalVector.norm(x);
     }
-    private static LocalEdgeNode getUVData(List<LocalEdgeNode> A, int s, int d, int numOfFeature)
-    {
-//        double[] ret = new double[numOfFeature];
-        
-        for(LocalEdgeNode e: A)
-            if(e.src == s && e.dst ==d)
-            {
-                return e;//.value;
-            }
-//        System.out.println("paper.NodeSCC.getUVData() nul "+s+" "+d);
-        return new LocalEdgeNode(s, d, new double[numOfFeature]);
-    }   
     
     private static List<LocalEdgeNode> initV(List<Tuple2<Tuple2<Integer, Integer>, Double>> edges, double [][] A)
     {
@@ -559,18 +484,20 @@ public class sSCC2 {
      * 
      */    
     private static Vector updateXNode(Tuple2<Integer, Vector> curruntI,
-            double[][] _A,
+//            double[][] _A,
             int numberOfVertices,
             int numOfFeature,
-            List<Tuple2<Integer, Vector>> x,
+//            List<Tuple2<Integer, Vector>> x,
             List<LocalEdgeNode> _V,
             List<LocalEdgeNode> _U,
-            double[][] _B,
-            int[] ni,
-            double[] xAvr,
+            double[][] _B
+//            ,
+//            int[] ni,
+//            double[] xAvr,
             //            double [] ui,
-            Double rho0,
-            Double lamda)
+//            Double rho0,
+//            Double lamda
+    )
     {           
         
 //        System.out.println("pt.spark.sSCC2.updateXNode() " +curruntI._1);
@@ -606,7 +533,7 @@ public class sSCC2 {
 //        List<LocalEdgeNode> ret = new LinkedList<>();
         double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.src), getRow(X, V.dst)), getuv(U, V.src, V.dst));
         double w = getEdgeW(edges, V.src, V.dst);
-        bbu = LocalVector.proxN2(bbu, lambda*w);
+        bbu = LocalVector.proxN2_2(bbu, lambda*w);
 //        LocalVector.printV(bbu, "pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst, true);
         LocalEdgeNode ret = new LocalEdgeNode(V.src, V.dst, bbu);
         return ret;

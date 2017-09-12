@@ -290,6 +290,23 @@ public class LocalVector  implements Cloneable, java.io.Serializable {
         return ret;
     }
 
+    public static double[] proxN2_2(double[] a, double sic) {
+//        double[] ret = copy(a);
+
+        double norm = LocalVector.norm(a);
+        if(norm == 0)
+        {
+            System.out.println("pt.paper.Vector.proxN2_2() zero");
+            return a;
+        }
+//        else
+        {
+            double rate = 1. - sic/norm;
+//            System.out.println("proxN2_2() " +norm +" "+rate);
+            return (rate>0) ? LocalVector.scale(a, rate): LocalVector.scale(a, 0);
+        }
+    }
+    
     /**
      *
      * @param A
