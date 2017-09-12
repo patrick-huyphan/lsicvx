@@ -137,6 +137,9 @@ public class sSCC2 {
         List<Tuple2<Integer, Vector>> X0 = new LinkedList<>();
         List<Tuple2<Integer, Vector>> X1 = new LinkedList<>();
         
+        V0= V;
+        U0= U;
+        X1 = X0;
         JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
          
 //        boolean stop = false;
@@ -163,9 +166,7 @@ public class sSCC2 {
             Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
             Broadcast<List<Tuple2<Integer, Vector>>> _x0 = context.broadcast(X0);
 
-            V0= V;
-            U0= U;
-            X1 = X0;
+
 //update X, V, U
 //            updateXNode();
             
@@ -214,7 +215,7 @@ public class sSCC2 {
             
             
 //checkstop            
-            if(checkStop(A, X0, U, V0, V, _eps_abs, _eps_rel, numberOfVertices) && loop>1)
+            if(checkStop(A, X1, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices) && loop>1)
             {
                 rho0.destroy();
                 lamda.destroy();
@@ -222,6 +223,8 @@ public class sSCC2 {
                 _x0.destroy();
                 _V.destroy();
                 _U.destroy();
+                _x1.destroy();
+                _V1.destroy();
                 break;
             }
 //update rho
@@ -229,12 +232,18 @@ public class sSCC2 {
 //update lambda
             _lamda = _lamda * 1.005;
             
+            V0= V;
+            U0= U;
+            X1 = X0;
+            
             rho0.destroy();
             lamda.destroy();
 //            _X.destroy();
             _x0.destroy();
             _V.destroy();
             _U.destroy();
+            _x1.destroy();
+            _V1.destroy();
             loop++;
         }
 
