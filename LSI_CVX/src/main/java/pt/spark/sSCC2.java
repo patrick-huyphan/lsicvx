@@ -556,14 +556,11 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateVNode(List<Tuple2<Integer, Vector>> X, LocalEdgeNode V, List<LocalEdgeNode> U , double lambda, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges)
     {
-//        System.out.println("pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst);
-//        List<LocalEdgeNode> ret = new LinkedList<>();
         double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.src), getRow(X, V.dst)), getuv(U, V.src, V.dst));
         double w = getEdgeW(edges, V.src, V.dst);
         bbu = LocalVector.proxN2_2(bbu, lambda*w);
 //        LocalVector.printV(bbu, "pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst, true);
-        LocalEdgeNode ret = new LocalEdgeNode(V.src, V.dst, bbu);
-        return ret;
+        return new LocalEdgeNode(V.src, V.dst, bbu);
     }
 
 
@@ -573,13 +570,11 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, LocalEdgeNode U)
     {
-//        System.out.println();
         double[] data = LocalVector.sub(getuv(V, U.src, U.dst), LocalVector.sub(getRow(X, U.src), getRow(X, U.dst)));
         data = LocalVector.plus(U.value, data);
             
 //        LocalVector.printV(data, "pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst, true);
-        LocalEdgeNode ret = new LocalEdgeNode(U.src, U.dst, LocalVector.scale(data,1));    
-        return ret;
+        return new LocalEdgeNode(U.src, U.dst, LocalVector.scale(data,1));    
     }  
     
    
@@ -590,6 +585,7 @@ public class sSCC2 {
             if((e._1._1 == s &&  e._1._2 == d)||(e._1._2 == s &&  e._1._1 == d))
                 return e._2;
         }
+        System.out.println("pt.spark.sSCC2.getEdgeW() :" + s+"-"+d+" not availble");
         return 0;
     }
     private static double[] getuv(List<LocalEdgeNode> uv, int s, int d)
@@ -608,7 +604,7 @@ public class sSCC2 {
         for(Tuple2<Integer, Vector> r :X)
             if(r._1 == i)
                 return r._2.toArray();
-        
+        System.out.println("pt.spark.sSCC2.getRow() :" + i+" not availble");
         return new double[X.get(0)._2.toArray().length];
     }
 }
