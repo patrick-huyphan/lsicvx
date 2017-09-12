@@ -9,6 +9,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 import org.apache.spark.ml.linalg.Vectors;
 import org.apache.spark.mllib.linalg.DenseVector;
+import org.apache.spark.mllib.linalg.Vector;
+import scala.Tuple2;
 /**
  *
  * @author patrick_huy
@@ -561,5 +563,15 @@ public class LocalVector  implements Cloneable, java.io.Serializable {
                 X[r] = (Double.isNaN(X[r]))?0:Double.valueOf(twoDForml.format(X[r]));
             }
             return X;
+        }
+        public static double[] formV(Vector X, String f)
+        {
+            double[] ret = new double[X.size()];
+            DecimalFormat twoDForml = new DecimalFormat(f);//"0.00000000");
+            for(int r = 0; r < X.size(); r++)
+            {
+                ret[r] = (Double.isNaN(X.toArray()[r]))?0:Double.valueOf(twoDForml.format(X.toArray()[r]));
+            }
+            return ret;
         }
 }

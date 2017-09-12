@@ -50,17 +50,17 @@ public class sSCC2 {
      * @param outFilePath
      * @return
      */
-    static double _rho0 = 0.8;
+    static double _rho0 = 0.01;
     
     public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context,
             double[][] A,// term-doc
             String outFilePath) throws Exception {
 
         
-        double _lamda = 0.6;
+        double _lamda = 1.75;
         double _lamda2 = 0.01;
-        double _eps_abs = 1e-6;
-        double _eps_rel = 1e-6;
+        double _eps_abs = 1e-5;
+        double _eps_rel = 1e-5;
         int numberOfVertices = A.length;
         int numOfFeature = A[0].length;
 
@@ -138,7 +138,7 @@ public class sSCC2 {
          
 //        boolean stop = false;
         int loop = 0;
-        while(loop <800)
+        while(loop <900)
         {
             /**
              * - calculator X in slaver
@@ -225,7 +225,7 @@ public class sSCC2 {
 //update rho
 //            updateRho(_rho0, _rho0, _rho0);
 //update lambda
-            _lamda = _lamda * 1.05;
+            _lamda = _lamda * 1.005;
             
             rho0.destroy();
             lamda.destroy();
@@ -237,6 +237,11 @@ public class sSCC2 {
         }
 
 
+        List<Tuple2<Integer, Vector>> retList2 = new LinkedList<>();
+        for (Tuple2<Integer, Vector> r: retList) {
+            retList2.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(LocalVector.formV(r._2, "0.000000000"))));
+//            Vector.printV(X[i], "X[i] " + i, true);
+        }
 
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
 
@@ -381,9 +386,9 @@ public class sSCC2 {
     
     private static double updateRho(double r, double s)
     {
-        if(r>8*s)
+        if(r>10*s)
             _rho0 =  Double.valueOf((_rho0* 0.5));//(r/s);//2*rho;
-        if(s>8*r)
+        if(s>10*r)
             _rho0 =  Double.valueOf((_rho0* 2));//(r/s);//rho/2;
         return _rho0;
     }
