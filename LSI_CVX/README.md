@@ -44,6 +44,6 @@ loop:
 reduce
 
 # Submit job:
-submit --class pt.spark.main <.jar file name> <input file> <output file> <num of query> <loop for ADMM> <orthogonal> <HL vector>  
+submit --class pt.spark.main <.jar file name> <input file> <output file> <num of query> <loop for ADMM> <orthogonal = 1/0> <HL vector  = 1/0>  
 
 

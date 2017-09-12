@@ -592,7 +592,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-        LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
+//        LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
         return Vectors.dense(X);
     }
     /**
@@ -606,7 +606,7 @@ public class sSCC2 {
         double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.src), getRow(X, V.dst)), getuv(U, V.src, V.dst));
         double w = getEdgeW(edges, V.src, V.dst);
         bbu = LocalVector.proxN2(bbu, lambda*w);
-        LocalVector.printV(bbu, "pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst, true);
+//        LocalVector.printV(bbu, "pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst, true);
         LocalEdgeNode ret = new LocalEdgeNode(V.src, V.dst, bbu);
         return ret;
     }
@@ -622,7 +622,7 @@ public class sSCC2 {
         double[] data = LocalVector.sub(getuv(V, U.src, U.dst), LocalVector.sub(getRow(X, U.src), getRow(X, U.dst)));
         data = LocalVector.plus(U.value, data);
             
-        LocalVector.printV(data, "pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst, true);
+//        LocalVector.printV(data, "pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst, true);
         LocalEdgeNode ret = new LocalEdgeNode(U.src, U.dst, LocalVector.scale(data,1));    
         return ret;
     }  
