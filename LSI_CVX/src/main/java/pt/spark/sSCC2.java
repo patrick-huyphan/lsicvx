@@ -49,11 +49,13 @@ public class sSCC2 {
      * @param outFilePath
      * @return
      */
+    static double _rho0 = 0.8;
+    
     public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context,
             double[][] A,// term-doc
-            String outFilePath) {
+            String outFilePath) throws Exception {
 
-        double _rho0 = 0.8;
+        
         double _lamda = 0.6;
         double _lamda2 = 0.01;
         double _eps_abs = 1e-6;
@@ -98,6 +100,9 @@ public class sSCC2 {
             }
         }
 
+        double B[][] = new double[numberOfVertices][numOfFeature];
+        for(int i = 0; i< numberOfVertices; i++)
+            B[i]= LocalVector.plus(A[i], LocalVector.scale(xAvr, numberOfVertices));
 //        for(Tuple2<Integer, Vector> mi: rowsList)
 //        {
 //            System.out.println("pt.spark.sSCC.run() "+mi._1+"\t "+ mi._2.toString());
@@ -107,8 +112,8 @@ public class sSCC2 {
 //        Broadcast<Double> rho0 = context.broadcast(_rho0);
 //        Broadcast<Double> lamda = context.broadcast(_lamda);
 //        Broadcast<double[][]> _X = context.broadcast(X);
-        Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
-        Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
+//        Broadcast<Double> eps_abs = context.broadcast(_eps_abs);
+//        Broadcast<Double> eps_rel = context.broadcast(_eps_rel);
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
         Broadcast<double[]> _xAvr = context.broadcast(xAvr);
         Broadcast<int[]> _ni = context.broadcast(ni);
@@ -116,6 +121,7 @@ public class sSCC2 {
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
         Broadcast<double[][]> mat = context.broadcast(A);
+        Broadcast<double[][]> _B = context.broadcast(B);
 
         //        LocalMatrix.printMat(X, "x init");
 //        LocalVector.printV(xAvr, "xAvr", true);
@@ -148,21 +154,21 @@ public class sSCC2 {
              * - parallel checkstop, server update
              */
 //transform and broadcast data to parallel
-        Broadcast<Double> rho0 = context.broadcast(_rho0);
-        Broadcast<Double> lamda = context.broadcast(_lamda);
-//        Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-        Broadcast<double[][]> _X = context.broadcast(X);
-        Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
-        Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
-        Broadcast<List<Tuple2<Integer, Vector>>> _x = context.broadcast(X0);
-        
-        V0= V;
-        U0= U;
-        X1 = X0;
+//            double tmprho = _rho0;
+            Broadcast<Double> rho0 = context.broadcast(_rho0);
+            Broadcast<Double> lamda = context.broadcast(_lamda);
+            Broadcast<double[][]> _X = context.broadcast(X);
+            Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
+            Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
+            Broadcast<List<Tuple2<Integer, Vector>>> _x0 = context.broadcast(X0);
+
+            V0= V;
+            U0= U;
+            X1 = X0;
 //update X, V, U
 //            updateXNode();
             
-            JavaPairRDD<Integer, Vector> ret = matI.mapToPair((Tuple2<Integer, Vector> t1)
+            X0 = matI.mapToPair((Tuple2<Integer, Vector> t1)
                     -> {
     //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
                 return new Tuple2<>(t1._1,
@@ -170,53 +176,47 @@ public class sSCC2 {
                                 mat.value(),
                                 _numberOfVertices.value(),
                                 _numOfFeature.value(),
-                                E.value(),
-                                _X.value(),
-                                _x.value(),
+                                 _x0.value(),
                                 _V.value(),
                                 _U.value(),
+                                _B.value(),
                                 _ni.value(),
                                 _xAvr.value(),
                                 rho0.value(),
-                                lamda.value(),
-                                eps_abs.value(),
-                                eps_rel.value()));
+                                lamda.value()));
                 }
-            );
-            ret.cache();
+            ).cache().collect();
+//            ret.cache();
+//            X0 = ret.collect();
+            retList = X0;
             
-            retList = ret.collect();
-            X0 =         ret.collect();
-            JavaRDD<LocalEdgeNode> vc=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
+            V=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
             @Override
             public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
                 
-                return updateVNode();                
+                return updateVNode(_x0.value(), v1, _U.value(), lamda.value(), E.value());                
             }
-            });
-            vc.cache();
-            V= vc.collect();
-            JavaRDD<LocalEdgeNode> uc=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
+            }).cache().collect();
+            
+            U=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
             @Override
-            public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
-                return updateUNode();                
+            public LocalEdgeNode call(LocalEdgeNode u1) throws Exception {
+                return updateUNode(_x0.value(), _V.value(), u1 );                
             }
-            });
-            uc.cache();
-                    
-            U=uc.collect();
+            }).cache().collect();
+            
             
 //checkstop            
-            checkStop(A, X0, U, V0, V, _rho0, _lamda, _rho0, numberOfVertices);
+            checkStop(A, X0, U, V0, V, _eps_abs, _eps_rel, numberOfVertices);
 //update rho
-            updateRho(_rho0, _rho0, _rho0);
+//            updateRho(_rho0, _rho0, _rho0);
 //update lambda
             _lamda = _lamda * 1.05;
             
             rho0.destroy();
             lamda.destroy();
             _X.destroy();
-            _x.destroy();
+            _x0.destroy();
             _V.destroy();
             _U.destroy();
         }
@@ -233,8 +233,8 @@ public class sSCC2 {
 //        lamda.destroy();
 //        _X.destroy();
 
-        eps_abs.destroy();
-        eps_rel.destroy();
+//        eps_abs.destroy();
+//        eps_rel.destroy();
         E.destroy();
         _xAvr.destroy();
         _ni.destroy();
@@ -370,22 +370,22 @@ public class sSCC2 {
     }
     
     
-    private static double updateRho(double r, double s, double rho)
+    private static double updateRho(double r, double s)
     {
         if(r>8*s)
-            rho =  Double.valueOf((rho* 0.5));//(r/s);//2*rho;
+            _rho0 =  Double.valueOf((_rho0* 0.5));//(r/s);//2*rho;
         if(s>8*r)
-            rho =  Double.valueOf((rho* 2));//(r/s);//rho/2;
-        return rho;
+            _rho0 =  Double.valueOf((_rho0* 2));//(r/s);//rho/2;
+        return _rho0;
     }
     
     private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
-            double rho, double ea, double er, int numberOfVertices)
+            double ea, double er, int numberOfVertices) throws Exception
     {
-        double r = primalResidual(X0.get(0)._2.toArray(),V0);
-        double s = dualResidual(V0, V, rho, numberOfVertices);
+        double r = primalResidual(X0,V0);
+        double s = dualResidual(V0, V, _rho0);
 //        System.err.println("rho "+rho);
-        updateRho(r, s, rho);
+        updateRho(r, s);
         
         double maxAB= 0;
         for(LocalEdgeNode b:V)
@@ -405,7 +405,7 @@ public class sSCC2 {
         double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
         double ed = ea+er*maxC;//Cik?
         
-        if(rho ==0)
+        if(_rho0 ==0)
             return true;
 //        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
         return (r<=ep) && (s<=ed);
@@ -460,6 +460,35 @@ public class sSCC2 {
         return ret;
     }    
 
+    private static double primalResidual(List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> V0) {
+//        double ret = 0;
+        double []x = new double[V0.get(0).relatedValue.length];
+        int i =0;
+        for (LocalEdgeNode k : V0) {
+//            double normR 
+            x[i] = LocalVector.norm(LocalVector.sub(getRow(X0, k.source), k.relatedValue));
+//            ret = (ret > normR) ? ret : normR;
+            i++;
+        }
+        
+        return LocalVector.norm(x);
+    }
+
+    
+    private static double dualResidual(List<LocalEdgeNode> Vp, List<LocalEdgeNode> V, double rho) throws Exception {
+//        double ret = 0;
+        double []x = new double[V.get(0).relatedValue.length];
+        int i =0;
+        for (LocalEdgeNode k : V) {
+            double[] bikp = getuv(Vp, k.source, k.dest);// Vp.get(V.indexOf(n)).relatedValue;
+            double[] ai = LocalVector.scale(LocalVector.sub(bikp, k.relatedValue), rho);
+//            double normS = Vector.norm(ai);
+//            ret = (ret > normS) ? ret : normS;
+            x[i] = LocalVector.norm(ai);
+            i++;    
+        }
+        return LocalVector.norm(x);
+    }
     private static LocalEdgeNode getUVData(List<LocalEdgeNode> A, int s, int d, int numOfFeature)
     {
 //        double[] ret = new double[numOfFeature];
@@ -510,94 +539,92 @@ public class sSCC2 {
             double[][] _A,
             int numberOfVertices,
             int numOfFeature,
-            List<Tuple2<Tuple2<Integer, Integer>, Double>> e,
-            double[][] _X,
             List<Tuple2<Integer, Vector>> x,
             List<LocalEdgeNode> _V,
             List<LocalEdgeNode> _U,
+            double[][] _B,
             int[] ni,
             double[] xAvr,
             //            double [] ui,
             Double rho0,
-            Double lamda,
-            //            Double lamda2,
-            Double eps_abs,
-            Double eps_rel)
+            Double lamda)
     {           
         
         double[] sumdi = new double[numOfFeature];
         double[] sumdj = new double[numOfFeature];
                
         // (sum(j>i)(ui-zi)-sum(i>j)(uj-zj))
-        //TODO: review i>j and i>j???
-        /**
-         *
-        for(Key k: V.E.keySet())
+        //TODO: review i>j and i>j???         
+        for(LocalEdgeNode k: _V)
         {
-            if(i == k.src)
+            if(curruntI._1 == k.source)
             {
-                sumdi = Vector.plus(sumdi, Vector.plus(U.get(k), V.get(k)));
+                sumdi = LocalVector.plus(sumdi, LocalVector.plus(getuv(_U, k.source, k.dest) , k.relatedValue));
             }
-            if(i == k.dst)
+            if(curruntI._1 == k.dest)
             {
-                sumdj = Vector.plus(sumdj, Vector.plus(U.get(k), V.get(k)));
+                sumdj = LocalVector.plus(sumdj, LocalVector.plus(getuv(_U, k.source, k.dest) , k.relatedValue));
             }
-        }
-//        double[] sumd = Vector.sub(sumdi, sumdj);
-//        if(i==1)    Vector.printV(sumd,"X "+i,true);        
-        //Vector.plus(A[i], Vector.scale(xAvr, numberOfVertices));
-        X[i] = Vector.scale(Vector.plus(B,sumd), 1./(1+numberOfVertices));
-         */
+        }     
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
-        
-        return Vectors.dense(sumd);
+        double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
+        return Vectors.dense(X);
     }
     /**
      * update all node in V, each V is RDD
      * 
      */
-    private static LocalEdgeNode updateVNode()
+    private static LocalEdgeNode updateVNode(List<Tuple2<Integer, Vector>> X, LocalEdgeNode V, List<LocalEdgeNode> U , double lambda, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges)
     {
 //        List<LocalEdgeNode> ret = new LinkedList<>();
-        LocalEdgeNode ret = new LocalEdgeNode(0, 0, new double[10]);
+        double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.source), getRow(X, V.dest)), getuv(U, V.source, V.dest));
+        double w = getEdgeW(edges, V.source, V.dest);
+        bbu = LocalVector.proxN2(bbu, lambda*w);
+        LocalEdgeNode ret = new LocalEdgeNode(V.source, V.dest, bbu);
         return ret;
     }
-//    private List<LocalEdgeNode> updateV(List<LocalEdgeNode> V, List<LocalEdgeNode> U) throws Exception //B
-//    {
-////        System.out.println("paper.AMA.updateV()");
-//        List<LocalEdgeNode> ret = new LinkedList<>();
-//
-//        V.E.keySet().stream().forEach((v) -> {
-//            double[] bbu = Vector.sub(Vector.sub(X[v.src], X[v.dst]), U.get(v));
-//            double w = Edge.getEdgeW(edges, v.src, v.dst);
-//            bbu = Vector.proxN2_2(bbu, lambda*w);
-//            ret.put(v.src, v.dst, bbu);
-//        });//
-//        return ret;
-//    }
+
 
     /**
      * update all U, each U is RDD.
      * 
      */
-    private static LocalEdgeNode updateUNode()
+    private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, LocalEdgeNode U)
     {
-        LocalEdgeNode ret = new LocalEdgeNode(0, 0, new double[10]);
+        double[] data = LocalVector.sub(getuv(V, U.source, U.dest), LocalVector.sub(getRow(X, U.source), getRow(X, U.dest)));
+        data = LocalVector.plus(U.relatedValue, data);
+            
+        LocalEdgeNode ret = new LocalEdgeNode(U.source, U.dest, LocalVector.scale(data,1));    
         return ret;
     }  
     
-//    private ListENode updateU(ListENode U, ListENode V) throws Exception //C
-//    {
-//        ListENode ret = new ListENode();
-//        V.E.keySet().stream().forEach((v) -> {
-////            if(v.scr == 50)  System.out.println("V D "+v.scr+" "+v.dst);
-//            double[] data = Vector.sub(V.get(v), Vector.sub(X[v.src], X[v.dst]));
-//            data = Vector.plus(U.get(v), data);
-////            if(v.src == 5 && v.dst ==90)                Vector.printV(data, "U in "+v.src+" "+v.dst, true);
-//
-//            ret.put(v.src, v.dst, Vector.scale(data,1));//, Edge.getEdgeW(edges, v.src, v.dst)));
-//        });
-//        return ret;
-//    }
+   
+    private static double getEdgeW(List<Tuple2<Tuple2<Integer, Integer>, Double>> E, int s, int d)
+    {
+        for(Tuple2<Tuple2<Integer, Integer>, Double> e: E)
+        {
+            if((e._1._1 == s &&  e._1._2 == d)||(e._1._2 == s &&  e._1._1 == d))
+                return e._2;
+        }
+        return 0;
+    }
+    private static double[] getuv(List<LocalEdgeNode> uv, int s, int d)
+    {
+        for(LocalEdgeNode n: uv)
+        {
+            if(n.source == s && n.dest == d)
+                return n.relatedValue;
+        }
+        System.out.println("pt.spark.sSCC2.getuv() :" + s+"-"+d+" not availble");
+        return new double[uv.get(0).relatedValue.length];
+    }
+    private static double[] getRow(List<Tuple2<Integer, Vector>> X, int i)
+    {
+        for(Tuple2<Integer, Vector> r :X)
+            if(r._1 == i)
+                return r._2.toArray();
+        
+        return new double[X.get(0)._2.size()];
+    }
 }
