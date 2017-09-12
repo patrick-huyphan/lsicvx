@@ -37,7 +37,7 @@ public class main {
      * TODO:
      * - SCC and ADMM give diff result with single mode????
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, Exception {
 //        checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
 
         
@@ -77,14 +77,14 @@ public class main {
         
         // read output from echelon:         
         SparkConf conf = new SparkConf()
-                .setAppName(sSCC.class.getName())
+                .setAppName(" hk-LSA")
                 .setMaster(master);
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        List<Tuple2<Integer,Vector>> scc = new sSCC().run(sc, termDocData,
+        List<Tuple2<Integer,Vector>> scc = new sSCC2().run(sc, termDocData,
                 ouputdir);
 
-        double[][] rowsListDocTermRd = sSCC.getPresentMat(scc, echelon, HL);//new double[docTermData.length][docTermData[0].length];
+        double[][] rowsListDocTermRd = sSCC2.getPresentMat(scc, echelon, HL);//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
             
         List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, orthognomal, loop, 
