@@ -120,7 +120,7 @@ public class sSCC2 {
 
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
-        Broadcast<double[][]> mat = context.broadcast(A);
+        Broadcast<double[][]> _A = context.broadcast(A);
         Broadcast<double[][]> _B = context.broadcast(B);
 
         //        LocalMatrix.printMat(X, "x init");
@@ -141,7 +141,8 @@ public class sSCC2 {
         JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
          
         boolean stop = false;
-        while(stop)
+        int loop = 0;
+        while(loop <500)
         {
             /**
              * - calculator X in slaver
@@ -153,11 +154,12 @@ public class sSCC2 {
              * - parallel V, server update V
              * - parallel checkstop, server update
              */
+            System.out.println("pt.spark.sSCC2.run()  "+loop);
 //transform and broadcast data to parallel
 //            double tmprho = _rho0;
             Broadcast<Double> rho0 = context.broadcast(_rho0);
             Broadcast<Double> lamda = context.broadcast(_lamda);
-            Broadcast<double[][]> _X = context.broadcast(X);
+//            Broadcast<double[][]> _X = context.broadcast(X);
             Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
             Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
             Broadcast<List<Tuple2<Integer, Vector>>> _x0 = context.broadcast(X0);
@@ -173,7 +175,7 @@ public class sSCC2 {
     //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
                 return new Tuple2<>(t1._1,
                         updateXNode(t1,
-                                mat.value(),
+                                _A.value(),
                                 _numberOfVertices.value(),
                                 _numOfFeature.value(),
                                  _x0.value(),
@@ -207,7 +209,16 @@ public class sSCC2 {
             
             
 //checkstop            
-            checkStop(A, X0, U, V0, V, _eps_abs, _eps_rel, numberOfVertices);
+            if(checkStop(A, X0, U, V0, V, _eps_abs, _eps_rel, numberOfVertices) && loop>1)
+            {
+                rho0.destroy();
+                lamda.destroy();
+//                _X.destroy();
+                _x0.destroy();
+                _V.destroy();
+                _U.destroy();
+                break;
+            }
 //update rho
 //            updateRho(_rho0, _rho0, _rho0);
 //update lambda
@@ -215,7 +226,7 @@ public class sSCC2 {
             
             rho0.destroy();
             lamda.destroy();
-            _X.destroy();
+//            _X.destroy();
             _x0.destroy();
             _V.destroy();
             _U.destroy();
@@ -241,7 +252,7 @@ public class sSCC2 {
 
         _numOfFeature.destroy();
         _numberOfVertices.destroy();
-        mat.destroy();
+        _A.destroy();
         
         return retList;
     }
@@ -550,6 +561,7 @@ public class sSCC2 {
             Double lamda)
     {           
         
+        System.out.println("pt.spark.sSCC2.updateXNode() " +curruntI._1);
         double[] sumdi = new double[numOfFeature];
         double[] sumdj = new double[numOfFeature];
                
@@ -577,6 +589,7 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateVNode(List<Tuple2<Integer, Vector>> X, LocalEdgeNode V, List<LocalEdgeNode> U , double lambda, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges)
     {
+        System.out.println("pt.spark.sSCC2.updateVNode()");
 //        List<LocalEdgeNode> ret = new LinkedList<>();
         double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.source), getRow(X, V.dest)), getuv(U, V.source, V.dest));
         double w = getEdgeW(edges, V.source, V.dest);
@@ -592,6 +605,7 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, LocalEdgeNode U)
     {
+        System.out.println("pt.spark.sSCC2.updateUNode()");
         double[] data = LocalVector.sub(getuv(V, U.source, U.dest), LocalVector.sub(getRow(X, U.source), getRow(X, U.dest)));
         data = LocalVector.plus(U.relatedValue, data);
             
