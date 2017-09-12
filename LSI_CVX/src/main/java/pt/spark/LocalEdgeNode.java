@@ -14,14 +14,14 @@ import java.util.Comparator;
  * Should create new class to optimize get value from edge
  */
 public class LocalEdgeNode  implements Comparator<LocalEdgeNode>,Serializable {
-    int source;
-    int dest;
-    double[] relatedValue;
+    int src;
+    int dst;
+    double[] value;
     public LocalEdgeNode(int _s, int _d, double [] data)
     {
-        source = _s;
-        dest = _d;
-        relatedValue = data; 
+        src = _s;
+        dst = _d;
+        value = data; 
     }   
 
     @Override

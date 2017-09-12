@@ -27,6 +27,13 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -401,8 +408,8 @@ public class sSCC2 {
         double maxAB= 0;
         for(LocalEdgeNode b:V)
         {
-            double be = LocalVector.norm(b.relatedValue);
-            double a = LocalVector.norm(A[b.source]);
+            double be = LocalVector.norm(b.value);
+            double a = LocalVector.norm(A[b.src]);
             double ab = (a>be)? a:be;
             maxAB = (ab>maxAB)? ab:maxAB;
         }
@@ -410,7 +417,7 @@ public class sSCC2 {
         double maxC = 0;
         for(LocalEdgeNode c:U)
         {
-            double value = LocalVector.norm(c.relatedValue);
+            double value = LocalVector.norm(c.value);
             maxC = (value>maxC)? value:maxC;
         }
         double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
@@ -428,7 +435,7 @@ public class sSCC2 {
         double ret = 0;
         for(LocalEdgeNode n: V0)
         {
-            double normR = LocalVector.norm(LocalVector.plus(X0, n.relatedValue));
+            double normR = LocalVector.norm(LocalVector.plus(X0, n.value));
             ret = (ret>normR)?ret:normR;
         }
         return ret;
@@ -439,7 +446,7 @@ public class sSCC2 {
         double[] x= LocalMatrix.getRow(X0, i);
         for(LocalEdgeNode n: V0)
         {
-            double normR = LocalVector.norm(LocalVector.plus(x, n.relatedValue));
+            double normR = LocalVector.norm(LocalVector.plus(x, n.value));
             ret = (ret>normR)?ret:normR;
         }
         return ret;
@@ -450,8 +457,8 @@ public class sSCC2 {
         double ret = 0;
         for(LocalEdgeNode n: V)
         {
-            double[] bikp = getUVData(V, n.source, n.dest, numOfFeature).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.relatedValue, -1)),rho);
+            double[] bikp = getUVData(V, n.src, n.dst, numOfFeature).value;// Vp.get(V.indexOf(n)).value;
+            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
             double normS = LocalVector.norm(ai);
             ret = (ret>normS)?ret:normS;
         }
@@ -463,8 +470,8 @@ public class sSCC2 {
         
         for(LocalEdgeNode n: V)
         {
-            double[] bikp = getUVData(V, n.source, n.dest, numOfFeature).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.relatedValue, -1)),rho);
+            double[] bikp = getUVData(V, n.src, n.dst, numOfFeature).value;// Vp.get(V.indexOf(n)).value;
+            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
             double normS = LocalVector.norm(ai);
             ret = (ret>normS)?ret:normS;
         }
@@ -473,11 +480,11 @@ public class sSCC2 {
 
     private static double primalResidual(List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> V0) {
 //        double ret = 0;
-        double []x = new double[V0.get(0).relatedValue.length];
+        double []x = new double[V0.get(0).value.length];
         int i =0;
         for (LocalEdgeNode k : V0) {
 //            double normR 
-            x[i] = LocalVector.norm(LocalVector.sub(getRow(X0, k.source), k.relatedValue));
+            x[i] = LocalVector.norm(LocalVector.sub(getRow(X0, k.src), k.value));
 //            ret = (ret > normR) ? ret : normR;
             i++;
         }
@@ -488,11 +495,11 @@ public class sSCC2 {
     
     private static double dualResidual(List<LocalEdgeNode> Vp, List<LocalEdgeNode> V, double rho) throws Exception {
 //        double ret = 0;
-        double []x = new double[V.get(0).relatedValue.length];
+        double []x = new double[V.get(0).value.length];
         int i =0;
         for (LocalEdgeNode k : V) {
-            double[] bikp = getuv(Vp, k.source, k.dest);// Vp.get(V.indexOf(n)).relatedValue;
-            double[] ai = LocalVector.scale(LocalVector.sub(bikp, k.relatedValue), rho);
+            double[] bikp = getuv(Vp, k.src, k.dst);// Vp.get(V.indexOf(n)).value;
+            double[] ai = LocalVector.scale(LocalVector.sub(bikp, k.value), rho);
 //            double normS = Vector.norm(ai);
 //            ret = (ret > normS) ? ret : normS;
             x[i] = LocalVector.norm(ai);
@@ -505,9 +512,9 @@ public class sSCC2 {
 //        double[] ret = new double[numOfFeature];
         
         for(LocalEdgeNode e: A)
-            if(e.source == s && e.dest ==d)
+            if(e.src == s && e.dst ==d)
             {
-                return e;//.relatedValue;
+                return e;//.value;
             }
 //        System.out.println("paper.NodeSCC.getUVData() nul "+s+" "+d);
         return new LocalEdgeNode(s, d, new double[numOfFeature]);
@@ -569,13 +576,13 @@ public class sSCC2 {
         //TODO: review i>j and i>j???         
         for(LocalEdgeNode k: _V)
         {
-            if(curruntI._1 == k.source)
+            if(curruntI._1 == k.src)
             {
-                sumdi = LocalVector.plus(sumdi, LocalVector.plus(getuv(_U, k.source, k.dest) , k.relatedValue));
+                sumdi = LocalVector.plus(sumdi, LocalVector.plus(getuv(_U, k.src, k.dst) , k.value));
             }
-            if(curruntI._1 == k.dest)
+            if(curruntI._1 == k.dst)
             {
-                sumdj = LocalVector.plus(sumdj, LocalVector.plus(getuv(_U, k.source, k.dest) , k.relatedValue));
+                sumdj = LocalVector.plus(sumdj, LocalVector.plus(getuv(_U, k.src, k.dst) , k.value));
             }
         }     
         
@@ -589,12 +596,12 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateVNode(List<Tuple2<Integer, Vector>> X, LocalEdgeNode V, List<LocalEdgeNode> U , double lambda, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges)
     {
-        System.out.println("pt.spark.sSCC2.updateVNode()");
+        System.out.println("pt.spark.sSCC2.updateVNode() "+ V.src+" - "+V.dst);
 //        List<LocalEdgeNode> ret = new LinkedList<>();
-        double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.source), getRow(X, V.dest)), getuv(U, V.source, V.dest));
-        double w = getEdgeW(edges, V.source, V.dest);
+        double[] bbu = LocalVector.sub(LocalVector.sub(getRow(X, V.src), getRow(X, V.dst)), getuv(U, V.src, V.dst));
+        double w = getEdgeW(edges, V.src, V.dst);
         bbu = LocalVector.proxN2(bbu, lambda*w);
-        LocalEdgeNode ret = new LocalEdgeNode(V.source, V.dest, bbu);
+        LocalEdgeNode ret = new LocalEdgeNode(V.src, V.dst, bbu);
         return ret;
     }
 
@@ -605,11 +612,11 @@ public class sSCC2 {
      */
     private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, LocalEdgeNode U)
     {
-        System.out.println("pt.spark.sSCC2.updateUNode()");
-        double[] data = LocalVector.sub(getuv(V, U.source, U.dest), LocalVector.sub(getRow(X, U.source), getRow(X, U.dest)));
-        data = LocalVector.plus(U.relatedValue, data);
+        System.out.println("pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst);
+        double[] data = LocalVector.sub(getuv(V, U.src, U.dst), LocalVector.sub(getRow(X, U.src), getRow(X, U.dst)));
+        data = LocalVector.plus(U.value, data);
             
-        LocalEdgeNode ret = new LocalEdgeNode(U.source, U.dest, LocalVector.scale(data,1));    
+        LocalEdgeNode ret = new LocalEdgeNode(U.src, U.dst, LocalVector.scale(data,1));    
         return ret;
     }  
     
@@ -627,18 +634,19 @@ public class sSCC2 {
     {
         for(LocalEdgeNode n: uv)
         {
-            if(n.source == s && n.dest == d)
-                return n.relatedValue;
+            if(n.src == s && n.dst == d)
+                return n.value;
         }
         System.out.println("pt.spark.sSCC2.getuv() :" + s+"-"+d+" not availble");
-        return new double[uv.get(0).relatedValue.length];
+        return new double[uv.get(0).value.length];
     }
     private static double[] getRow(List<Tuple2<Integer, Vector>> X, int i)
     {
+        System.out.println("pt.spark.sSCC2.getRow() " +i);
         for(Tuple2<Integer, Vector> r :X)
             if(r._1 == i)
                 return r._2.toArray();
         
-        return new double[X.get(0)._2.size()];
+        return new double[X.get(0)._2.toArray().length];
     }
 }

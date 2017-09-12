@@ -122,9 +122,9 @@ TODO: review to update related V and U, increase related node, expand cluster of
             
             for(LocalEdgeNode d:D)
             {
-                if(d.source == i)
+                if(d.src == i)
                 {
-                    sumd= LocalVector.plus(sumd,d.relatedValue);
+                    sumd= LocalVector.plus(sumd,d.value);
                 }
             }
             sumd = LocalVector.scale(sumd, rho/n);
@@ -160,15 +160,15 @@ TODO: review to update related V and U, increase related node, expand cluster of
         for(int k = 0; k< V.size(); k++)
         {
             LocalEdgeNode v = V.get(k);
-            if(v.source == i)
+            if(v.src == i)
             {
 //            System.out.println("paper.NodeSCC.calcD()");
-                LocalEdgeNode u = getUVData(U, v.source, v.dest);// U.get(k);
+                LocalEdgeNode u = getUVData(U, v.src, v.dst);// U.get(k);
 
-                double[] d = LocalVector.plus(X0, LocalVector.scale(v.relatedValue,-1));
-                d =         LocalVector.plus(d, u.relatedValue);
-    //            d = Vector.plus(Matrix.getRow(X0, e.source), Vector.scale(e.relatedValue,-1));
-                D.add(new LocalEdgeNode(v.source, v.dest, d));
+                double[] d = LocalVector.plus(X0, LocalVector.scale(v.value,-1));
+                d =         LocalVector.plus(d, u.value);
+    //            d = Vector.plus(Matrix.getRow(X0, e.src), Vector.scale(e.value,-1));
+                D.add(new LocalEdgeNode(v.src, v.dst, d));
             }
         }
         return D;
@@ -181,15 +181,15 @@ TODO: review to update related V and U, increase related node, expand cluster of
         List<LocalEdgeNode> ret = new ArrayList<>();
         for(LocalEdgeNode e: U)
         {
-            LocalEdgeNode ve= getUVData(V, e.source, e.dest);// V.get(U.indexOf(e));
-            if((e.source != ve.source) || (e.dest != ve.dest))
-                System.out.println("paper.SCC.updateU()wrong ve "+e.source+ " "+e.dest+" "+ve.source+" "+ve.dest);
+            LocalEdgeNode ve= getUVData(V, e.src, e.dst);// V.get(U.indexOf(e));
+            if((e.src != ve.src) || (e.dst != ve.dst))
+                System.out.println("paper.SCC.updateU()wrong ve "+e.src+ " "+e.dst+" "+ve.src+" "+ve.dst);
             //Ai - Be
-            double[] data = LocalVector.plus(X,LocalVector.scale(ve.relatedValue, -1));
+            double[] data = LocalVector.plus(X,LocalVector.scale(ve.value, -1));
             //data = Vector.scale(data, rho);
-            data = LocalVector.plus(e.relatedValue, data);
-            LocalEdgeNode updateU = new LocalEdgeNode(e.source, e.dest, data);
-//            Vector.printV(updateU.relatedValue, "updateU:"+e.source+""+e.dest, true);
+            data = LocalVector.plus(e.value, data);
+            LocalEdgeNode updateU = new LocalEdgeNode(e.src, e.dst, data);
+//            Vector.printV(updateU.value, "updateU:"+e.src+""+e.dst, true);
             ret.add(updateU);
         }
         return ret;        
@@ -209,7 +209,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
             }
         }
 //        for(LocalEdgeNode e: ret)
-//            System.out.println("paper.NodeSCC.initU() "+e.source+ " "+e.dest );
+//            System.out.println("paper.NodeSCC.initU() "+e.src+ " "+e.dst );
 //        System.out.println("paper.NodeSCC.initU() "+ret.size());
         return ret;        
     }
@@ -231,20 +231,20 @@ TODO: review to update related V and U, increase related node, expand cluster of
     //            System.out.println(e.sourcevertex+" "+e.destinationvertex);
                 for(LocalEdgeNode B:V)
                 {
-                    LocalEdgeNode C = getUVData(U, B.source, B.dest);// U.get(V.indexOf(B));
-                    if((B.source != C.source) || (B.dest != C.dest))
-                        System.out.println("paper.SCC.updateV()wrong ve "+B.source+ " "+B.dest+" "+C.source+" "+C.dest);
+                    LocalEdgeNode C = getUVData(U, B.src, B.dst);// U.get(V.indexOf(B));
+                    if((B.src != C.src) || (B.dst != C.dst))
+                        System.out.println("paper.SCC.updateV()wrong ve "+B.src+ " "+B.dst+" "+C.src+" "+C.dst);
 
-                    if(B.source == e.sourcevertex && B.dest == e.destinationvertex)
+                    if(B.src == e.sourcevertex && B.dst == e.destinationvertex)
                     {
-                        Bi = B.relatedValue;
-                        Ci = C.relatedValue;
+                        Bi = B.value;
+                        Ci = C.value;
                         get++;
                     }
-                    if(B.source == e.destinationvertex && B.dest == e.sourcevertex)
+                    if(B.src == e.destinationvertex && B.dst == e.sourcevertex)
                     {
-                        Bk = B.relatedValue; 
-                        Ck = C.relatedValue; 
+                        Bk = B.value; 
+                        Ck = C.value; 
                         get++;
                     }
 
@@ -296,7 +296,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
             }
         }
 //        for(LocalEdgeNode e: ret)
-//            System.out.println("paper.NodeSCC.initV() "+e.source+ " "+e.dest );
+//            System.out.println("paper.NodeSCC.initV() "+e.src+ " "+e.dst );
 //        System.out.println("paper.NodeSCC.initV() " +ret.size());
         return ret;        
     }
@@ -321,8 +321,8 @@ TODO: review to update related V and U, increase related node, expand cluster of
         double maxAB= 0;
         for(LocalEdgeNode b:V)
         {
-            double be = LocalVector.norm(b.relatedValue);
-            double a = LocalVector.norm(A[b.source]);
+            double be = LocalVector.norm(b.value);
+            double a = LocalVector.norm(A[b.src]);
             double ab = (a>be)? a:be;
             maxAB = (ab>maxAB)? ab:maxAB;
         }
@@ -330,7 +330,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         double maxC = 0;
         for(LocalEdgeNode c:U)
         {
-            double value = LocalVector.norm(c.relatedValue);
+            double value = LocalVector.norm(c.value);
             maxC = (value>maxC)? value:maxC;
         }
         double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
@@ -348,7 +348,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         double ret = 0;
         for(LocalEdgeNode n: V0)
         {
-            double normR = LocalVector.norm(LocalVector.plus(X0, n.relatedValue));
+            double normR = LocalVector.norm(LocalVector.plus(X0, n.value));
             ret = (ret>normR)?ret:normR;
         }
         return ret;
@@ -359,7 +359,7 @@ TODO: review to update related V and U, increase related node, expand cluster of
         double[] x= LocalMatrix.getRow(X0, i);
         for(LocalEdgeNode n: V0)
         {
-            double normR = LocalVector.norm(LocalVector.plus(x, n.relatedValue));
+            double normR = LocalVector.norm(LocalVector.plus(x, n.value));
             ret = (ret>normR)?ret:normR;
         }
         return ret;
@@ -370,8 +370,8 @@ TODO: review to update related V and U, increase related node, expand cluster of
         double ret = 0;
         for(LocalEdgeNode n: V)
         {
-            double[] bikp = getUVData(V, n.source, n.dest).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.relatedValue, -1)),rho);
+            double[] bikp = getUVData(V, n.src, n.dst).value;// Vp.get(V.indexOf(n)).value;
+            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
             double normS = LocalVector.norm(ai);
             ret = (ret>normS)?ret:normS;
         }
@@ -383,8 +383,8 @@ TODO: review to update related V and U, increase related node, expand cluster of
         
         for(LocalEdgeNode n: V)
         {
-            double[] bikp = getUVData(V, n.source, n.dest).relatedValue;// Vp.get(V.indexOf(n)).relatedValue;
-            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.relatedValue, -1)),rho);
+            double[] bikp = getUVData(V, n.src, n.dst).value;// Vp.get(V.indexOf(n)).value;
+            double[] ai = LocalVector.scale(LocalVector.plus(bikp, LocalVector.scale(n.value, -1)),rho);
             double normS = LocalVector.norm(ai);
             ret = (ret>normS)?ret:normS;
         }
@@ -429,9 +429,9 @@ TODO: review to update related V and U, increase related node, expand cluster of
 //        double[] ret = new double[numOfFeature];
         
         for(LocalEdgeNode e: A)
-            if(e.source == s && e.dest ==d)
+            if(e.src == s && e.dst ==d)
             {
-                return e;//.relatedValue;
+                return e;//.value;
             }
 //        System.out.println("paper.NodeSCC.getUVData() nul "+s+" "+d);
         return new LocalEdgeNode(s, d, new double[numOfFeature]);
