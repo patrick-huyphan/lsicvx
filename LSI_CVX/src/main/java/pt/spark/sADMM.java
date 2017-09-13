@@ -74,17 +74,18 @@ public class sADMM {
 /**
  * TODO: use spark suport matrix to process those array
  */
-        if(orthonormal ==false)
-{
+        if(orthonormal ==true)
+        {
             System.out.println("pt.spark.sADMM.run() with orthonormal");
             B = LocalMatrix.orthonormal(B);
-}
+        }
         double[][] Bt = LocalMatrix.Transpose(B); //[nk]->[kn]
         double[][] BtB = LocalMatrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = LocalMatrix.Transpose(BtB);
         double[][] Bm = LocalMatrix.scale(Am, -1);
         double[][] AtB = LocalMatrix.mul(Am, Bm);
-
+        double[][] BtD= LocalMatrix.mul(Bt, D); //[nk]*[n] = k
+        
         //LocalMatrix.printMat(Bt, false,"Bt");
         //LocalMatrix.printMat(BtB, "BtB");
         //LocalMatrix.printMat(Am, "At");
@@ -97,6 +98,7 @@ public class sADMM {
         Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
+        Broadcast<double[][]> _BtD = sc.broadcast(BtD);
         Broadcast<Integer> loopb = sc.broadcast(loop);
         System.out.println("pt.spark.sADMM.run()");
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
@@ -104,12 +106,11 @@ public class sADMM {
 //            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
             return new Tuple2<Integer, Vector>(t._1,
                     solveADMM(t,
-                            _n.value(),
-                            _m.value(),
-                            _k.value(),
-                            _Bt.value(),
+                            _n.value(), _m.value(), _k.value(),
+//                            _Bt.value(),
                             _BtB.value(),
                             _AtB.value(),
+                            _BtD.value(),
                             loopb.value())
             );
         }
@@ -143,9 +144,11 @@ public class sADMM {
     private static Vector solveADMM(
             Tuple2<Integer, Vector> _Ddata,
             int _n, int _m, int _k,
-            double[][] Bt,
+//            double[][] Bt,
             double[][] BtB,
-            double[][] AtB,int loop) {
+            double[][] AtB,
+            double[][] BtD,
+            int loop) {
         
         // lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
         double _rho = 0.04;
@@ -156,7 +159,7 @@ public class sADMM {
         NodeADMM xNode = new NodeADMM(
                 _Ddata,
                 _n, _m, _k,
-                Bt,
+                BtD[_Ddata._1],
                 BtB,
                 AtB,
                  _rho, _lamda,
