@@ -53,8 +53,8 @@ public class sSCC2 {
      * @return
      */
     static double _rho0 = 0.01;
-//    static double[][] presentMat; List<Tuple2<Integer, Vector>>
-    public static double[][] run(JavaSparkContext context,
+    public double[][] presentMat; //List<Tuple2<Integer, Vector>>
+    public sSCC2(JavaSparkContext context,
             double[][] A,// term-doc
             boolean hl,
             String outFilePath) throws Exception {
@@ -157,7 +157,7 @@ public class sSCC2 {
              * - parallel V, server update V
              * - parallel checkstop, server update
              */
-            System.out.println("pt.spark.sSCC2.run()  "+loop +": " + _rho0 + " - "+_lamda);
+//            System.out.println("pt.spark.sSCC2.run()  "+loop +": " + _rho0 + " - "+_lamda);
 
             Broadcast<Double> rho0 = context.broadcast(_rho0);
             Broadcast<Double> lamda = context.broadcast(_lamda);
@@ -243,9 +243,9 @@ public class sSCC2 {
         _A.destroy();
         _B.destroy();
         
-//        presentMat = getPresentMat2(retList, A, eSet, hl);
+        presentMat = getPresentMat(retList, A, eSet, hl);
         
-        return getPresentMat(retList, A, eSet, hl);
+//        return getPresentMat(retList, A, eSet, hl);
     }
 
 

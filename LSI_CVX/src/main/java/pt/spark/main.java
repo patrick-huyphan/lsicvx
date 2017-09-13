@@ -84,14 +84,16 @@ public class main {
         sc.setLogLevel("ERROR");
         
 //        List<Tuple2<Integer,Vector>> scc = 
-        double[][] rowsListDocTermRd= new sSCC2().run(sc, termDocData, HL,
-                ouputdir);
+        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir);
 
-//        double[][] rowsListDocTermRd = sSCC2.presentMat;//new double[docTermData.length][docTermData[0].length];
+//        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
-            
-        List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, orthognomal, loop, 
+        
+        sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, loop, 
                 ouputdir);
+//        List<Tuple2<Integer,Vector>> reduceData = admm.retMat;
+//                new sADMM().run(sc, docTermData, sscc.presentMat, orthognomal, loop, 
+//                ouputdir);
         
 
         // read output from parse+ sADMM 
@@ -106,7 +108,7 @@ public class main {
 
         query(docTermData, 
                 query,
-                reduceData);
+                admm.retMat);
     }
 
     private static void query(double[][] D,   //n*m

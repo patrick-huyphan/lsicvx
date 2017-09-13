@@ -46,7 +46,7 @@ public class NodeADMM {
      * @param loopt 
      */
 
-    public NodeADMM(Tuple2<Integer, Vector> _Ddata, 
+    public NodeADMM(int id, 
             int _n,
             int _m,
             int _k,
@@ -106,11 +106,9 @@ public class NodeADMM {
             //LocalVector.printV(u, "u:"+ _Ddata._1+"-"+loop, true);
             //LocalVector.printV(X, "x:"+ _Ddata._1+"-"+loop, true);
 //            }
-            if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, _Ddata._1, loop) && loop>1)
+            if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, id, loop) && loop>1)
             {
-                //stop = checkStop(z, x0, u0, z0,e1,e2,k,m, AtB);
                 //System.err.println(_Ddata._1+" update rho "+ loop+": "+rho);
-                //System.err.println(_Ddata._1+" Stop at "+loop);
                 break;            
             }
 

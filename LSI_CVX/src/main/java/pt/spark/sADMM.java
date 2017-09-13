@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * sADMM class, we will call this class to find projection matrix, user to
  * convert matrix to latent space - map data to master - each executer call
  * column matrix by: read matrix, update x,u,v
- *
+ * return list of column of projection matrix
  */
 public class sADMM {
 
@@ -49,7 +49,8 @@ public class sADMM {
      * @param outFilePath
      * @return X= k*m
      */
-    public static List<Tuple2<Integer, Vector>> run(JavaSparkContext sc,
+    public List<Tuple2<Integer, Vector>> retMat;
+    public sADMM(JavaSparkContext sc,
             double[][] D,
             double[][] B,//rowsListDocTermB, 
 //            String inputFilePath,
@@ -95,7 +96,7 @@ public class sADMM {
         Broadcast<Integer> _n = sc.broadcast(n);
         Broadcast<Integer> _m = sc.broadcast(m);
         Broadcast<Integer> _k = sc.broadcast(k);
-        Broadcast<double[][]> _Bt = sc.broadcast(Bt);
+//        Broadcast<double[][]> _Bt = sc.broadcast(Bt);
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
         Broadcast<double[][]> _BtD = sc.broadcast(BtD);
@@ -105,9 +106,8 @@ public class sADMM {
         JavaPairRDD<Integer, Vector> retPair = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
 //            System.out.println("pt.spark.sADMM.run() driver " + t._1 + "\t " + t._2.toString());
             return new Tuple2<Integer, Vector>(t._1,
-                    solveADMM(t,
+                    solveADMM(t._1,
                             _n.value(), _m.value(), _k.value(),
-//                            _Bt.value(),
                             _BtB.value(),
                             _AtB.value(),
                             _BtD.value(),
@@ -117,16 +117,19 @@ public class sADMM {
         );
         retPair.cache();
 //        System.out.println("pt.spark.sADMM.run() end "+ retPair.count());
-        List<Tuple2<Integer, Vector>> retList= retPair.collect();
+//        List<Tuple2<Integer, Vector>> retList= retPair.collect();
+        retMat = retPair.collect();    
         retPair.saveAsTextFile(outFilePath + "/ADMM");
-        System.out.println("pt.spark.sADMM.run() detroy and return "+retList.size());
+        System.out.println("pt.spark.sADMM.run() detroy and return "+retMat.size());
         
         _n.destroy();
         _m.destroy();
         _k.destroy();
-        _Bt.destroy();
+//        _Bt.destroy();
         _BtB.destroy();
         _AtB.destroy();
+        _BtD.destroy();
+        loopb.destroy();
          
 /*
         double[][] B3 = new double[m][k];
@@ -138,11 +141,12 @@ public class sADMM {
 
         LocalMatrix.printMat(B3, "B3"); 
 */
-        return retList;
+//        retMat = retList;
+//        return retList;
     }
     
     private static Vector solveADMM(
-            Tuple2<Integer, Vector> _Ddata,
+            int id,
             int _n, int _m, int _k,
 //            double[][] Bt,
             double[][] BtB,
@@ -155,9 +159,9 @@ public class sADMM {
         double _lamda = 0.8;
         double e1 = 0.005; 
         double e2 = 0.0001; 
-        double [] Btd = LocalMatrix.getCol(BtD, _Ddata._1);
+        double [] Btd = LocalMatrix.getCol(BtD, id);
         NodeADMM xNode = new NodeADMM(
-                _Ddata,
+                id,
                 _n, _m, _k,
                 Btd,
                 BtB,

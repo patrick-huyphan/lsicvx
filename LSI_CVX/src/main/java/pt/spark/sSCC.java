@@ -52,7 +52,9 @@ public class sSCC {
      * @param outFilePath
      * @return
      */
-    public static double[][] run(JavaSparkContext context,
+    
+    public double[][] presentMat; //List<Tuple2<Integer, Vector>>
+    public sSCC(JavaSparkContext context,
             double[][] A,// term-doc
             boolean hl,
 //            String inputFilePath,
@@ -164,7 +166,7 @@ public class sSCC {
         _numberOfVertices.destroy();
         mat.destroy();
         
-        return getPresentMat(retList, A, hl);
+        presentMat = getPresentMat(retList, A, hl);
 //        return retList;
     }
 
