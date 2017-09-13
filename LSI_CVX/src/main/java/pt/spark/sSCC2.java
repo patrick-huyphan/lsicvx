@@ -274,52 +274,52 @@ public class sSCC2 {
         return ret;
     }
 
-    public static double[][] getPresentMat(List<Tuple2<Integer, Vector>> scc, double[][] A, boolean HL) {
-        List<List<Integer>> cluster = getCluster(scc);
-        double[][] presentMat = new double[A.length][cluster.size()];//[numberOfVertices];
-//        double[][] ret = new double[data[0].length][index.size()];
-//        System.out.println("paper.MSTClustering.getPresentMath()");
-
-        //LocalMatrix.printMat(A, false,"At");    
-        for (int j = 0; j < cluster.size(); j++) {
-            List<Integer> edgesL = cluster.get(j);
-            if (edgesL.isEmpty()) {
-//                System.out.println("paper.Clustering.getPresentMat() empty "+j);
-                continue;
-            }
-            int shotestCol = edgesL.get(0);
-            if(HL==false)
-            {
-                System.out.println("getPresentMat L");
-                double min = 100;
-                for (Integer node : edgesL) {
-                    double norm = LocalVector.norm(A[node - 1]);
-                    if (norm < min) {
-                        min = norm;
-                        shotestCol = node - 1;
-                    }
-                }
-            }
-            else
-            {
-                System.out.println("getPresentMat H");
-                double max = -100;
-                for (Integer node : edgesL) {
-                    double norm = LocalVector.norm(A[node - 1]);
-                    if (norm > max) {
-                        max = norm;
-                        shotestCol = node - 1;
-                    }
-                }
-            }
-            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
-
-            for (int i = 0; i < A.length; i++) {
-                presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
-            }
-        }
-        return presentMat;
-    }
+//    public static double[][] getPresentMat(List<Tuple2<Integer, Vector>> scc, double[][] A, boolean HL) {
+//        List<List<Integer>> cluster = getCluster(scc);
+//        double[][] presentMat = new double[A.length][cluster.size()];//[numberOfVertices];
+////        double[][] ret = new double[data[0].length][index.size()];
+////        System.out.println("paper.MSTClustering.getPresentMath()");
+//
+//        //LocalMatrix.printMat(A, false,"At");    
+//        for (int j = 0; j < cluster.size(); j++) {
+//            List<Integer> edgesL = cluster.get(j);
+//            if (edgesL.isEmpty()) {
+////                System.out.println("paper.Clustering.getPresentMat() empty "+j);
+//                continue;
+//            }
+//            int shotestCol = edgesL.get(0);
+//            if(HL==false)
+//            {
+//                System.out.println("getPresentMat L");
+//                double min = 100;
+//                for (Integer node : edgesL) {
+//                    double norm = LocalVector.norm(A[node - 1]);
+//                    if (norm < min) {
+//                        min = norm;
+//                        shotestCol = node - 1;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                System.out.println("getPresentMat H");
+//                double max = -100;
+//                for (Integer node : edgesL) {
+//                    double norm = LocalVector.norm(A[node - 1]);
+//                    if (norm > max) {
+//                        max = norm;
+//                        shotestCol = node - 1;
+//                    }
+//                }
+//            }
+//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+//
+//            for (int i = 0; i < A.length; i++) {
+//                presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
+//            }
+//        }
+//        return presentMat;
+//    }
 
     private static double[][] getPresentMat(List<Tuple2<Integer, Vector>> scc, double[][] A, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges, boolean HL)
     {
@@ -360,7 +360,7 @@ public class sSCC2 {
             }
 //            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
             
-            for(int i = 0; i<A[0].length  ; i++)
+            for(int i = 0; i<A.length  ; i++)
             {
                 presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
             }
