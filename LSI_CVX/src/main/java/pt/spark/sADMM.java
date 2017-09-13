@@ -155,11 +155,11 @@ public class sADMM {
         double _lamda = 0.8;
         double e1 = 0.005; 
         double e2 = 0.0001; 
-            
+        double [] Btd = LocalMatrix.getCol(BtD, _Ddata._1);
         NodeADMM xNode = new NodeADMM(
                 _Ddata,
                 _n, _m, _k,
-                BtD[_Ddata._1],
+                Btd,
                 BtB,
                 AtB,
                  _rho, _lamda,
