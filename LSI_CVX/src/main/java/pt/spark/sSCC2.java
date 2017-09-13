@@ -552,7 +552,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-//        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
+        if(curruntI._1 == 5) LocalVector.printV(sumd, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
         return Vectors.dense(X);
     }
     /**
