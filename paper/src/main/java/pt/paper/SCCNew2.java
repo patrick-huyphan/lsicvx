@@ -316,7 +316,7 @@ public class SCCNew2 extends Clustering {
             data = Vector.plus(U.get(v), data);
 //            if(v.src == 5 && v.dst ==90)                Vector.printV(data, "U in "+v.src+" "+v.dst, true);
 
-            ret.put(v.src, v.dst, Vector.scale(data,1));//, Edge.getEdgeW(edges, v.src, v.dst)));
+            ret.put(v.src, v.dst, data);//, Edge.getEdgeW(edges, v.src, v.dst)));
         });
         return ret;
     }
