@@ -396,7 +396,7 @@ public class sSCC2 {
             List<Integer> sub = new ArrayList<>();
             for (int j = i; j < scc.size(); j++) {
                 if (xxx.get(j) == i) {
-                    sub.add(j + 1);
+                    sub.add(j);
                 }
             }
             if (!sub.isEmpty()) {
