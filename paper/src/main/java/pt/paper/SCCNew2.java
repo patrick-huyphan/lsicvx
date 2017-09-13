@@ -91,7 +91,7 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[i], "X "+i, stop);
         X=A;
         int loop = 0; 
-        while (loop < 950) {
+        while (loop < 900) {
 
 //                if(loop==4)
 //                {

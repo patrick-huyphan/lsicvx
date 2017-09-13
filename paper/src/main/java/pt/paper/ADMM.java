@@ -96,7 +96,6 @@ public class ADMM extends LSI{
                 double[][] iBtB_rho_Im = Matrix.invert(Matrix.plus(BtB, IMtxRho)); //[kk]
         
                 x= updateX(u, z,iBtB_rho_Im,Btd);
-//                double lamPRho = ;
                 z= updateZ(x, u, lambda/rho);                
                 u= updateU(x, u, z);
 //            if(i==0)
