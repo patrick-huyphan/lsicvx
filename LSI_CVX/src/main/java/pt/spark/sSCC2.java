@@ -29,6 +29,7 @@ import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import scala.Function1;
 import static com.google.common.base.Preconditions.checkArgument;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 
 /**
  * sSCC class, we will call this class to clustering data, return the row in
@@ -421,45 +422,102 @@ public class sSCC2 {
     
     private static double updateRho(double r, double s)
     {
-        if(r>10*s)
-            _rho0 =  Double.valueOf((_rho0* 0.5));//(r/s);//2*rho;
-        if(s>10*r)
-            _rho0 =  Double.valueOf((_rho0* 2));//(r/s);//rho/2;
+        DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
+        if (r > 10 * s) {
+            _rho0 = Double.valueOf(twoDForm.format(_rho0 * 0.5));//(r/s);//2*rho;
+        }
+        if (s > 10 * r) {
+            _rho0 = Double.valueOf(twoDForm.format(_rho0 * 2));//(r/s);//rho/2;
+        }
+//        if(r>10*s)
+//            _rho0 =  Double.valueOf((_rho0* 0.5));//(r/s);//2*rho;
+//        if(s>10*r)
+//            _rho0 =  Double.valueOf((_rho0* 2));//(r/s);//rho/2;
         return _rho0;
     }
     
-    private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
-            double ea, double er, int numberOfVertices) throws Exception
-    {
-        double r = primalResidual(X0,V0);
+//    private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
+//            double ea, double er, int numberOfVertices) throws Exception
+//    {
+//        double r = primalResidual(X0,V0);
+//        double s = dualResidual(V0, V, _rho0);
+////        System.err.println("rho "+rho);
+//        updateRho(r, s);
+//        
+//        double maxAB= 0;
+//        for(LocalEdgeNode b:V)
+//        {
+//            double be = LocalVector.norm(b.value);
+//            double a = LocalVector.norm(A[b.src]);
+//            double ab = (a>be)? a:be;
+//            maxAB = (ab>maxAB)? ab:maxAB;
+//        }
+//        
+//        double maxC = 0;
+//        for(LocalEdgeNode c:U)
+//        {
+//            double value = LocalVector.norm(c.value);
+//            maxC = (value>maxC)? value:maxC;
+//        }
+//        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
+//        double ed = ea+er*maxC;//Cik?
+//        
+//        if(_rho0 ==0)
+//            return true;
+////        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
+//        return (r<=ep) && (s<=ed);
+//    } 
+
+        private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
+            double ea, double er, int numberOfVertices) throws Exception {
+        double r = primalResidual(X0, V0);
         double s = dualResidual(V0, V, _rho0);
 //        System.err.println("rho "+rho);
-        updateRho(r, s);
-        
-        double maxAB= 0;
-        for(LocalEdgeNode b:V)
-        {
+
+        double maxAB[] = new double[V.size()];
+        int i = 0;
+        for (LocalEdgeNode b : V) {
             double be = LocalVector.norm(b.value);
             double a = LocalVector.norm(A[b.src]);
-            double ab = (a>be)? a:be;
-            maxAB = (ab>maxAB)? ab:maxAB;
+            maxAB[i] = (a > be) ? a : be;
+            i++;
+//          maxAB   = (ab > maxAB) ? ab : maxAB;
         }
-        
-        double maxC = 0;
-        for(LocalEdgeNode c:U)
-        {
-            double value = LocalVector.norm(c.value);
-            maxC = (value>maxC)? value:maxC;
-        }
-        double ep = ea*Math.sqrt(numberOfVertices)+er*maxAB; //Bik?
-        double ed = ea+er*maxC;//Cik?
-        
-        if(_rho0 ==0)
-            return true;
-//        System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed);
-        return (r<=ep) && (s<=ed);
-    } 
 
+        double maxC[] = new double[U.size()];
+        i=0;
+        for (LocalEdgeNode c : U) {
+            maxC[i] = LocalVector.norm(c.value);
+            i++;
+//            maxC = (value > maxC) ? value : maxC;
+        }
+//        double nz = Vector.norm(maxAB);
+        double ed = ea + er * LocalVector.norm(maxC);//Cik?
+        double ep = ea * Math.sqrt(numberOfVertices) + er * LocalVector.norm(maxAB); //Bik?
+
+        updateRho(r, s);
+//        double nz[] = new double[V.size()];
+//        i= 0;
+//        for (LocalEdgeNode b : V) {
+//            nz[i] = LocalVector.norm(b.value);
+//        }
+        
+//        if (rho == 0) {
+//            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
+//            return true;
+//        }
+//        double noZ = LocalVector.norm(nz);
+        
+//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+//        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
+//        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
+        
+//        if(noZ == 0.)
+//            return true;
+        
+        return (r <= ep) && (s <= ed);
+    }
+            
     private static double primalResidual(List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> V0) {
 //        double ret = 0;
         double []x = new double[V0.size()];
