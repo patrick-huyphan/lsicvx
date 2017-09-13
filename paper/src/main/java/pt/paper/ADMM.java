@@ -168,12 +168,12 @@ public class ADMM extends LSI{
     
     private double dualResidual(double[] Zp, double[] Z)
     {
-        return Vector.norm(Vector.scale(Vector.plus(Zp, Vector.scale(Z, -1)),rho));
+        return Vector.norm(Vector.scale(Vector.sub(Zp, Z),rho));
     }
     
     private double primalResidual(double[] X0, double[] Z0)
     {
-        return Vector.norm(Vector.plus(X0, Vector.scale(Z0,-1)));
+        return Vector.norm(Vector.sub(X0, Z0));
     }
     
     

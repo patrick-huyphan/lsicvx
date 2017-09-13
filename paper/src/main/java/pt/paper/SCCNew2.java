@@ -36,7 +36,7 @@ import static pt.paper.Clustering.MAX_LOOP;
 public class SCCNew2 extends Clustering {
 
     double rho;
-    double rho2;
+//    double rho2;
     double lambda2;
     double ea, er;
     public double[][] X;
@@ -67,7 +67,7 @@ public class SCCNew2 extends Clustering {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
-        rho = rho2 = _rho;
+        rho = _rho;
         ea = _e1;
         er = _e2;
 
