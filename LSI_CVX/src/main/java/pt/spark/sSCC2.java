@@ -253,7 +253,7 @@ public class sSCC2 {
         for (int i = 0; i < A.length; i++) {
             for (int j = i + 1; j < A.length; j++) {
                 double value = LocalVector.cosSim(A[i], A[j]);
-                if(value>0)
+                if(value>0.13)
                 {
                     ret.add(new Tuple2<>(new Tuple2<>(i, j), value));
 //                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
@@ -552,7 +552,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-        if(curruntI._1 == 5) LocalVector.printV(sumd, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
+//        if(curruntI._1 == 5) LocalVector.printV(sumd, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
         return Vectors.dense(X);
     }
     /**
@@ -579,7 +579,7 @@ public class sSCC2 {
         data = LocalVector.plus(U.value, data);
             
 //        LocalVector.printV(data, "pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst, true);
-        return new LocalEdgeNode(U.src, U.dst, LocalVector.scale(data,1));    
+        return new LocalEdgeNode(U.src, U.dst, data);    
     }  
     
    
