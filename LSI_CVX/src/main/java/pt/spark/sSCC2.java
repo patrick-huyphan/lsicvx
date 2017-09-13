@@ -52,9 +52,10 @@ public class sSCC2 {
      * @return
      */
     static double _rho0 = 0.01;
-    
-    public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context,
+//    static double[][] presentMat; List<Tuple2<Integer, Vector>>
+    public static double[][] run(JavaSparkContext context,
             double[][] A,// term-doc
+            boolean hl,
             String outFilePath) throws Exception {
 
         
@@ -71,36 +72,36 @@ public class sSCC2 {
             rowsListTermDoc.add(new Tuple2<>(i, row));
         }
 
-        List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(rowsListTermDoc);
+        List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(A);
 ////TODO: init global data : X, u, xAvr        
         int[] ni = retSize(numberOfVertices, eSet);
 ////        Matrix.printMat(A, "centered");
 //        //Init
-        double[][] X = new double[numberOfVertices][numOfFeature];
-        for (int i = 0; i < numOfFeature; i++) {
-            double x = 1 - ((_lamda2) / LocalVector.norm(LocalMatrix.getCol(A, i)));
-            x = (x > 0) ? x : 0;
-            //update by column i
-            for (int j = 0; j < numberOfVertices; j++) {
-                X[j][i] = x * A[j][i];
-            }
-        }
+//        double[][] X = new double[numberOfVertices][numOfFeature];
+//        for (int i = 0; i < numOfFeature; i++) {
+//            double x = 1 - ((_lamda2) / LocalVector.norm(LocalMatrix.getCol(A, i)));
+//            x = (x > 0) ? x : 0;
+//            //update by column i
+//            for (int j = 0; j < numberOfVertices; j++) {
+//                X[j][i] = x * A[j][i];
+//            }
+//        }
 //        
         double[] u = new double[numOfFeature];
         double[] xAvr = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
-            u[i] = LocalVector.norm(LocalMatrix.getCol(X, i));
+            u[i] = LocalVector.norm(LocalMatrix.getCol(A, i));
             xAvr[i] = LocalVector.avr(LocalMatrix.getCol(A, i));
         }
         u = LocalVector.scale(u, _lamda2);
         
-        for (int i = 0; i < numOfFeature; i++) {
-            double x = 1 - (u[i] / LocalVector.norm(LocalMatrix.getCol(A, i)));
-            x = (x > 0) ? x : 0;
-            for (int j = 0; j < numberOfVertices; j++) {
-                X[j][i] = x * A[j][i];
-            }
-        }
+//        for (int i = 0; i < numOfFeature; i++) {
+//            double x = 1 - (u[i] / LocalVector.norm(LocalMatrix.getCol(A, i)));
+//            x = (x > 0) ? x : 0;
+//            for (int j = 0; j < numberOfVertices; j++) {
+//                X[j][i] = x * A[j][i];
+//            }
+//        }
 
         double B[][] = new double[numberOfVertices][numOfFeature];
         for(int i = 0; i< numberOfVertices; i++)
@@ -112,8 +113,8 @@ public class sSCC2 {
         System.out.println("pt.spark.sSCC.run()");
 
         Broadcast<List<Tuple2<Tuple2<Integer, Integer>, Double>>> E = context.broadcast(eSet);
-        Broadcast<double[]> _xAvr = context.broadcast(xAvr);
-        Broadcast<int[]> _ni = context.broadcast(ni);
+//        Broadcast<double[]> _xAvr = context.broadcast(xAvr);
+//        Broadcast<int[]> _ni = context.broadcast(ni);
 
         Broadcast<Integer> _numOfFeature = context.broadcast(numOfFeature);
         Broadcast<Integer> _numberOfVertices = context.broadcast(numberOfVertices);
@@ -124,24 +125,23 @@ public class sSCC2 {
 //        LocalVector.printV(xAvr, "xAvr", true);
         System.out.println("pt.spark.sSCC.run() 2 start map scc local");
         // each solveADMM process for 1 column of input matrix -> input is rdd<vector>
-        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);
-       
-        matI.saveAsTextFile(outFilePath+"/SCC");
         
         List<Tuple2<Integer, Vector>> retList = new LinkedList<>();
-//        JavaPairRDD<Integer, List<Vector>> ret = new ;
+        
         List<LocalEdgeNode> U = initU(eSet, numOfFeature);
         List<LocalEdgeNode> V = initV(eSet, A);
         List<LocalEdgeNode> U0;
         List<LocalEdgeNode> V0;
-        List<Tuple2<Integer, Vector>> X0 = new LinkedList<>();
-        List<Tuple2<Integer, Vector>> X1 = new LinkedList<>();
+        List<Tuple2<Integer, Vector>> X0 = rowsListTermDoc;
+        List<Tuple2<Integer, Vector>> X1 = rowsListTermDoc;
         
         V0= V;
         U0= U;
-        X1 = rowsListTermDoc;
+        
+        JavaRDD<Tuple2<Integer, Vector>> matI = context.parallelize(rowsListTermDoc);    
         JavaRDD<LocalEdgeNode> uv = context.parallelize(U);
-         
+        matI.saveAsTextFile(outFilePath+"/SCC");
+        
 //        boolean stop = false;
         int loop = 0;
         while(loop <900)
@@ -156,50 +156,40 @@ public class sSCC2 {
              * - parallel V, server update V
              * - parallel checkstop, server update
              */
-            System.out.println("pt.spark.sSCC2.run()  "+loop);
+            System.out.println("pt.spark.sSCC2.run()  "+loop +": " + _rho0 + " - "+_lamda);
 //transform and broadcast data to parallel
 //            double tmprho = _rho0;
             Broadcast<Double> rho0 = context.broadcast(_rho0);
             Broadcast<Double> lamda = context.broadcast(_lamda);
-//            Broadcast<double[][]> _X = context.broadcast(X);
+
             Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
             Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
-            Broadcast<List<Tuple2<Integer, Vector>>> _x0 = context.broadcast(X0);
+//            Broadcast<double[][]> _X = context.broadcast(X);
+//            Broadcast<List<Tuple2<Integer, Vector>>> _x0 = context.broadcast(X0);
 
 
 //update X, V, U
 //            updateXNode();
             
-            X0 = matI.mapToPair((Tuple2<Integer, Vector> t1)
-                    -> {
+            X0 = matI.mapToPair((Tuple2<Integer, Vector> t1) -> {
     //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
                 return new Tuple2<>(t1._1,
                         updateXNode(t1,
-//                                _A.value(),
                                 _numberOfVertices.value(),
                                 _numOfFeature.value(),
-//                                 _x0.value(),
                                 _V.value(),
                                 _U.value(),
-                                _B.value(),
-//                                _ni.value(),
-//                                _xAvr.value(),
-//                                rho0.value(),
-                                lamda.value()
+                                _B.value()
                         )
                 );
-                }
-            ).cache().collect();
-//            ret.cache();
-//            X0 = ret.collect();
-            retList = X0;
-//            _x0.destroy();
+                }).cache().collect();
+//            retList = X0;
+
             Broadcast<List<Tuple2<Integer, Vector>>> _x1 = context.broadcast(X0);
             
             V=  uv.map(new Function<LocalEdgeNode, LocalEdgeNode>() {
             @Override
             public LocalEdgeNode call(LocalEdgeNode v1) throws Exception {
-                
                 return updateVNode(_x1.value(), v1, _U.value(), lamda.value(), E.value());                
             }
             }).cache().collect();
@@ -219,38 +209,32 @@ public class sSCC2 {
             {
                 rho0.destroy();
                 lamda.destroy();
-//                _X.destroy();
-                _x0.destroy();
                 _V.destroy();
                 _U.destroy();
                 _x1.destroy();
                 _V1.destroy();
                 break;
             }
-//update rho
-//            updateRho(_rho0, _rho0, _rho0);
-//update lambda
-            _lamda = _lamda * 1.005;
-            
+//update for next process
+            _lamda = _lamda * 1.005;           
             V0= V;
             U0= U;
             X1 = X0;
             
             rho0.destroy();
             lamda.destroy();
-//            _X.destroy();
-            _x0.destroy();
             _V.destroy();
+            _V1.destroy();
             _U.destroy();
             _x1.destroy();
-            _V1.destroy();
+
             loop++;
         }
 
 
-        List<Tuple2<Integer, Vector>> retList2 = new LinkedList<>();
+//        List<Tuple2<Integer, Vector>> retList2 = new LinkedList<>();
         FileWriter fw = new FileWriter(outFilePath+"/X_data.txt");
-        for (Tuple2<Integer, Vector> r: retList) {
+        for (Tuple2<Integer, Vector> r: X0) {
            
             double[] tmp = LocalVector.formV(r._2, "0.000000000");
             for (int j = 0; j < numOfFeature; j++) {
@@ -258,9 +242,7 @@ public class sSCC2 {
             }
             fw.append("\n");
             
-            retList2.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(tmp)));
-            
-//            Vector.printV(X[i], "X[i] " + i, true);
+            retList.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(tmp)));
         }
 
         fw.close();
@@ -272,25 +254,25 @@ public class sSCC2 {
         System.out.println("pt.spark.sSCC.run() end");
         
         E.destroy();
-        _xAvr.destroy();
-        _ni.destroy();
-
         _numOfFeature.destroy();
         _numberOfVertices.destroy();
         _A.destroy();
+        _B.destroy();
         
-        return retList2;
+//        presentMat = getPresentMat2(retList, A, eSet, hl);
+        
+        return getPresentMat2(retList, A, eSet, hl);
     }
 
 
-    private static List<Tuple2<Tuple2<Integer, Integer>, Double>> buildE(LinkedList<Tuple2<Integer, Vector>> rowsList) {
+    private static List<Tuple2<Tuple2<Integer, Integer>, Double>> buildE(double [][] A) {
         List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
-        for (int i = 0; i < rowsList.size(); i++) {
-            for (int j = i + 1; j < rowsList.size(); j++) {
-                double value = LocalVector.cosSim(rowsList.get(i)._2.toArray(), rowsList.get(j)._2.toArray());
+        for (int i = 0; i < A.length; i++) {
+            for (int j = i + 1; j < A.length; j++) {
+                double value = LocalVector.cosSim(A[i], A[j]);
                 if(value>0)
                 {
-                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(i)._1, rowsList.get(j)._1), value));
+                    ret.add(new Tuple2<>(new Tuple2<>(i, j), value));
 //                    ret.add(new Tuple2<>(new Tuple2<>(rowsList.get(j)._1, rowsList.get(i)._1), value));
                 }
             }
@@ -356,6 +338,54 @@ public class sSCC2 {
         return presentMat;
     }
 
+    private static double[][] getPresentMat2(List<Tuple2<Integer, Vector>> scc, double[][] A, List<Tuple2<Tuple2<Integer, Integer>, Double>> edges, boolean HL)
+    {
+        List<List<Integer>> cluster = getCluster(scc);
+        double[][] presentMat = new double[A.length][cluster.size()];//[numberOfVertices];
+//        List<Tuple2<Tuple2<Integer, Integer>, Double>> edges = buildE(A);
+//        double[][] ret = new double[data[0].length][index.size()];
+//        System.out.println("paper.MSTClustering.getPresentMath()");
+//        Matrix.printMat(A, false, "A");
+        for(int j = 0; j< cluster.size(); j++)
+        {
+            List<Integer> edgesL = cluster.get(j);
+            if(edgesL.isEmpty())
+            {
+//                System.out.println("paper.Clustering.getPresentMat() empty "+j);
+                continue;
+            }
+            int shotestCol= edgesL.get(0);
+            if(edgesL.size() > 1)
+            {        
+//                double min = 100;
+                double maxS = -1;
+                for(Integer node: edgesL)
+                {
+                    for(Tuple2<Tuple2<Integer, Integer>, Double> e : edges)
+                    {
+                        if((e._1._2 == node || e._1._1 == node) && (edgesL.contains(e._1._2) && edgesL.contains(e._1._1)))
+                        {
+                            if(e._2>maxS)
+                            {
+                                maxS = e._2;
+//                                System.out.println("getPresentMat() "+ e.dst+" "+e.scr+": "+e.weight);
+                                shotestCol = (LocalVector.norm(A[e._1._2])>LocalVector.norm(A[e._1._1]))?e._1._2:e._1._1;
+                            }
+                        }
+                    }
+                }
+            }
+//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+            
+            for(int i = 0; i<A[0].length  ; i++)
+            {
+                presentMat[i][j] = A[shotestCol][i]; //new Random().nextDouble(); // 
+            }
+        }
+        
+        return presentMat;
+    }
+        
     private static List<List<Integer>> getCluster(List<Tuple2<Integer, Vector>> scc) {
 //        int  ret[] = new int[scc.size()];
         HashMap<Integer, Integer> xxx = new HashMap<>();
@@ -518,12 +548,12 @@ public class sSCC2 {
             List<LocalEdgeNode> _V,
             List<LocalEdgeNode> _U,
             double[][] _B
-            ,
+//            ,
 //            int[] ni,
 //            double[] xAvr,
             //            double [] ui,
 //            Double rho0,
-            Double lamda
+//            Double lamda
     )
     {           
         
@@ -547,7 +577,7 @@ public class sSCC2 {
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
         double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
-//        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1 +": "+_rho0+ " - "+lamda, true);
+//        if(curruntI._1 == 5) LocalVector.printV(X, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
         return Vectors.dense(X);
     }
     /**

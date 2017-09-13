@@ -52,8 +52,9 @@ public class sSCC {
      * @param outFilePath
      * @return
      */
-    public static List<Tuple2<Integer, Vector>> run(JavaSparkContext context,
+    public static double[][] run(JavaSparkContext context,
             double[][] A,// term-doc
+            boolean hl,
 //            String inputFilePath,
             String outFilePath) {
 
@@ -163,7 +164,8 @@ public class sSCC {
         _numberOfVertices.destroy();
         mat.destroy();
         
-        return retList;
+        return getPresentMat(retList, A, hl);
+//        return retList;
     }
 
     private static Vector solveADMM(Tuple2<Integer, Vector> curruntI,

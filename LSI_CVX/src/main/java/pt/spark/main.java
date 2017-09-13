@@ -83,10 +83,11 @@ public class main {
         
         sc.setLogLevel("ERROR");
         
-        List<Tuple2<Integer,Vector>> scc = new sSCC2().run(sc, termDocData,
+//        List<Tuple2<Integer,Vector>> scc = 
+        double[][] rowsListDocTermRd= new sSCC2().run(sc, termDocData, HL,
                 ouputdir);
 
-        double[][] rowsListDocTermRd = sSCC2.getPresentMat(scc, echelon, HL);//new double[docTermData.length][docTermData[0].length];
+//        double[][] rowsListDocTermRd = sSCC2.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
             
         List<Tuple2<Integer,Vector>> reduceData = new sADMM().run(sc, docTermData, rowsListDocTermRd, orthognomal, loop, 
