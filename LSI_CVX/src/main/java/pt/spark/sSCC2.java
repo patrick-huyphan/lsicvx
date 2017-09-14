@@ -188,7 +188,7 @@ public class sSCC2 {
             
             
 //checkstop            
-            if(checkStop(A, X1, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices) && loop>1)
+            if(checkStop(A, X1, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
             {
                 rho0.destroy();
                 lamda.destroy();
@@ -505,7 +505,7 @@ public class sSCC2 {
 //    } 
 
         private static boolean checkStop(double[][] A, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V0, List<LocalEdgeNode> V,  
-            double ea, double er, int numberOfVertices) throws Exception {
+            double ea, double er, int numberOfVertices, int loop) throws Exception {
         double r = primalResidual(X0, V0);
         double s = dualResidual(V0, V, _rho0);
 //        System.err.println("rho "+rho);
@@ -534,17 +534,19 @@ public class sSCC2 {
         updateRho(r, s);
         double nz[] = new double[V.size()];
         i= 0;
+        if(loop == 0)
         for (LocalEdgeNode b : V) {
             nz[i] = LocalVector.norm(b.value);
+            System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
         }
         
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
-        double noZ = LocalVector.norm(nz);
+//        double noZ = LocalVector.norm(nz);
         
-        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
