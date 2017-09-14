@@ -175,7 +175,7 @@ public class sADMM {
                 AtB,
                  _rho, _lamda,
                 e1, e2, loop);
-        LocalVector.printV(xNode.X, " solve "+id, true);
+//        LocalVector.printV(xNode.X, " solve "+id, true);
         return Vectors.dense(xNode.X);
     }
     
