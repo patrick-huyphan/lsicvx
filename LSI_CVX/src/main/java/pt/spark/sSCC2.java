@@ -205,7 +205,7 @@ public class sSCC2 {
                 if(v.src == 5 && v.dst == 15)
                 {
                     double[] v0 = getuv(V0, v);
-                    if(v.value[3] != v0[3])
+//                    if(v.value[3] != v0[3])
                     {
                         System.out.println(loop+" pt.spark.sSCC2.<init>() v(4-10)[3]"+ v.value[3]+" - " +v0[3]);
                     }
