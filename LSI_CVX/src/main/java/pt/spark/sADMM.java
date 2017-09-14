@@ -22,6 +22,7 @@ import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.mllib.linalg.DenseMatrix;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.io.FileWriter;
 //import org.apache.spark.mllib.optimization.tfocs.SolverL1RLS
 
 /**
@@ -122,6 +123,12 @@ public class sADMM {
         retPair.saveAsTextFile(outFilePath + "/ADMM");
         System.out.println("pt.spark.sADMM.run() detroy and return "+retMat.size());
         
+        
+        for (Tuple2<Integer, Vector> r: retMat) {
+            double[] tmp = r._2.toArray();
+            LocalVector. printV(tmp, " "+r._1, true);
+        }
+            
         _n.destroy();
         _m.destroy();
         _k.destroy();
