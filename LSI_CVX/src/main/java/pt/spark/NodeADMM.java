@@ -106,7 +106,7 @@ public class NodeADMM {
             //LocalVector.printV(u, "u:"+ _Ddata._1+"-"+loop, true);
             //LocalVector.printV(X, "x:"+ _Ddata._1+"-"+loop, true);
 //            }
-            if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, id, loop) && loop>1)
+            if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB) && loop>1)
             {
                 System.out.println(id+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
                 break;            
@@ -180,7 +180,7 @@ public class NodeADMM {
     }
     
     
-    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A, int i, int loop)
+    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A)
     {
 //        if(this.rho ==0)
 //            return true;

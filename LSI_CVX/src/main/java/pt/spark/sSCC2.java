@@ -166,7 +166,6 @@ public class sSCC2 {
 
 //update X, V, U           
             X0 = matI.mapToPair((Tuple2<Integer, Vector> t1) -> {
-    //            System.out.println("pt.spark.sSCC.run() driver "+t1._1+"\t "+ t1._2.toString());
                 return new Tuple2<>(t1._1,
                         updateXNode(t1,
                                 _numberOfVertices.value(),
@@ -200,7 +199,30 @@ public class sSCC2 {
                 break;
             }
 //update for next process
-            _lamda = _lamda * 1.005;           
+            _lamda = _lamda * 1.005; 
+            for(LocalEdgeNode v: V)
+            {
+                if(v.src == 4 && v.dst == 10)
+                {
+                    double[] v0 = getuv(V0, v);
+                    if(v.value[3] != v0[3])
+                    {
+                        System.out.println(loop+" pt.spark.sSCC2.<init>() v(4-10)[3]"+ v.value[3]+" - " +v0[3]);
+                    }
+                }
+            }
+            for(LocalEdgeNode u: U)
+            {
+                if(u.src == 4 && u.dst == 10)
+                {
+                    double[] v0 = getuv(U0, u);
+                    if(u.value[3] != v0[3])
+                    {
+                        System.out.println(loop+" pt.spark.sSCC2.<init>() u(4-10)[3]"+ u.value[3]+" - " +v0[3]);
+                    }
+                }
+            }
+            
             V0= V;
             U0= U;
             X1 = X0;
