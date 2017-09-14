@@ -534,12 +534,14 @@ public class sSCC2 {
         updateRho(r, s);
         double nz[] = new double[V.size()];
         i= 0;
-        if(loop == 0)
+        
         for (LocalEdgeNode b : V) {
             nz[i] = LocalVector.norm(b.value);
             if(nz[i]>0){
-                System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
-            i++;}
+                if(loop == 0)
+                    System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
+                i++;
+            }
         }
         
 //        if (rho == 0) {
