@@ -38,7 +38,7 @@ public abstract class Clustering{
         FileWriter fw = new FileWriter("sim.txt");
         for (int source = 0; source < numberOfVertices; source++) {
             for (int destination = source + 1; destination < numberOfVertices; destination++) {
-                double sim = Vector.cosSim(Matrix.getRow(_Matrix, source), Matrix.getRow(_Matrix, destination));
+                double sim = Vector.cosSim(_Matrix[source], _Matrix[destination]);
                 if (sim > 0.13) 
                 {
                     Edge edge = new Edge(source, destination, sim );
