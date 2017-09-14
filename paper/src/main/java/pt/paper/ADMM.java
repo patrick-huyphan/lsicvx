@@ -75,7 +75,6 @@ public class ADMM extends LSI{
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
             double[] z= Vector.rVector(k, 0.4);
             double[] u = Vector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
-//            double[] d=  Matrix.getCol(D, i); //[n]*m
             double[] Btd= Matrix.getCol(BtD, i);//Matrix.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
@@ -88,6 +87,8 @@ public class ADMM extends LSI{
             double[] x0 = new double[k];
             double[] z0 = new double[k];//Matrix.getCol(BtB, i%k);  // [k]; new double[k];
             double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
+            
+            double s, r;
             
             int loop = 0;
             while(loop<146)//1489) 143 // long = short+1
@@ -105,8 +106,16 @@ public class ADMM extends LSI{
 //            Vector.printV(x0, "x:"+ i+"-"+loop, true);
 //            }
                 if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop)){
+                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
                     break;
-//                    System.err.println("update rho "+ loop+": "+rho);
+                }
+                s = Vector.norm(Vector.sub(x, z));
+                r = Vector.norm(Vector.sub(z, z0));
+//                System.out.println(i+ " pt.paper.ADMM.admmProcess() "+loop+": "+ s+" - "+r);
+                if(r<0 && s <0)
+                {
+                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 2  at "+ loop);
+                    break;
                 }
                 x0=Vector.copy(x);
                 u0=Vector.copy(u);
@@ -121,7 +130,9 @@ public class ADMM extends LSI{
     }
     //x^{k+1} = 2(A^TA + \rho I_m)^-1 [ A^Tb - \rho (z^k - u^k)]
     // H= (AtA/n+I)^-1
-    // X = HAtb +H(z-u) = (AtA/n+I)^-1 Atb + (AtA/n+I)^-1(z-u)
+    // X = HAtb +H(z-u) 
+    //   = (AtA/n+I)^-1 Atb + (AtA/n+I)^-1(z-u)
+    //   = (AtA/n+I)^-1 (Atb + z-u)
     private double[] updateX(double[] u, double[] z,double[][] AtA_rho_Im, double[] Atb)
     {
         //- rho (z^k - u^k)[k]-[k]

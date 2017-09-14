@@ -427,9 +427,8 @@ public class SCCNew2 extends Clustering {
         double noZ = Vector.norm(nz);
         
         System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
-        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
-        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
-        
+//        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
+//        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
 //            return true;
         
@@ -442,9 +441,7 @@ public class SCCNew2 extends Clustering {
         double []x = new double[V0.E.size()];
         int i =0;
         for (Key k : V0.E.keySet()) {
-//            double normR 
             x[i] = Vector.norm(Vector.sub(Matrix.getRow(X0, k.src), V0.get(k)));
-//            ret = (ret > normR) ? ret : normR;
             i++;
         }
         
@@ -459,8 +456,6 @@ public class SCCNew2 extends Clustering {
         for (Key k : V.E.keySet()) {
             double[] bikp = Vp.get(k);// Vp.get(V.indexOf(n)).relatedValue;
             double[] ai = Vector.scale(Vector.sub(bikp, V.get(k)), rho);
-//            double normS = Vector.norm(ai);
-//            ret = (ret > normS) ? ret : normS;
             x[i] = Vector.norm(ai);
             i++;    
         }
