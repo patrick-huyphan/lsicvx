@@ -202,7 +202,7 @@ public class sSCC2 {
             _lamda = _lamda * 1.005; 
             for(LocalEdgeNode v: V)
             {
-                if(v.src == 4 && v.dst == 10)
+                if(v.src == 5 && v.dst == 15)
                 {
                     double[] v0 = getuv(V0, v);
                     if(v.value[3] != v0[3])
@@ -213,7 +213,7 @@ public class sSCC2 {
             }
             for(LocalEdgeNode u: U)
             {
-                if(u.src == 4 && u.dst == 10)
+                if(u.src == 5 && u.dst == 11)
                 {
                     double[] v0 = getuv(U0, u);
                     if(u.value[3] != v0[3])
