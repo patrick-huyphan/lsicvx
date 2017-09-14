@@ -533,8 +533,7 @@ public class sSCC2 {
 
         updateRho(r, s);
         double nz[] = new double[V.size()];
-        i= 0;
-        
+        i= 0;        
         for (LocalEdgeNode b : V) {
             nz[i] = LocalVector.norm(b.value);
             if(nz[i]>0){
@@ -543,14 +542,21 @@ public class sSCC2 {
                 i++;
             }
         }
-        
+        double nx[] = new double[X0.size()];
+        i = 0;
+        for(Tuple2<Integer, Vector> x: X0)
+        {
+            nx[i] = LocalVector.norm(x._2.toArray());
+            i++;
+        }
+            
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
         double noZ = LocalVector.norm(nz);
         
-        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ +" - "+LocalVector.norm(nx));
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
