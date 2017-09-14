@@ -200,16 +200,18 @@ public class sSCC2 {
             }
 //update for next process
             _lamda = _lamda * 1.005; 
+            if(loop == 0)
             for(LocalEdgeNode v: V)
             {
-                if(v.src == 5 && v.dst == 11)
-                {
-                    double[] v0 = getuv(V0, v);
+                LocalVector.printV(v.value, " "+v.dst+" "+v.src, true);
+//                if(v.src == 5 && v.dst == 11)
+//                {
+//                    double[] v0 = getuv(V0, v);
 //                    if(v.value[3] != v0[3])
-                    {
-                        System.out.println(loop+" pt.spark.sSCC2.<init>() v(5-11)[3]"+ v.value[3]+" - " +v0[3]);
-                    }
-                }
+//                    {
+//                        System.out.println(loop+" pt.spark.sSCC2.<init>() v(5-11)[3]"+ v.value[3]+" - " +v0[3]);
+//                    }
+//                }
             }
             for(LocalEdgeNode u: U)
             {
