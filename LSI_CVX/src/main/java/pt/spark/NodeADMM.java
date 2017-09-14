@@ -108,7 +108,7 @@ public class NodeADMM {
 //            }
             if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, id, loop) && loop>1)
             {
-                //System.err.println(_Ddata._1+" update rho "+ loop+": "+rho);
+                System.out.println(id+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
                 break;            
             }
 
