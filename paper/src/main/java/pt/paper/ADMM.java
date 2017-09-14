@@ -63,7 +63,7 @@ public class ADMM extends LSI{
         {           
             X = Matrix.updateCol(X, admmProcess(i, _rho,BtB, BtD, AtB, e1, e2),i);
         }
-//        Matrix.printMat(X, "return");
+        Matrix.printMat(X, "return");
     }
     
     private double[] admmProcess(int i, double _rho, double[][] BtB, double[][] BtD, double[][] AtB, double e1, double e2)
