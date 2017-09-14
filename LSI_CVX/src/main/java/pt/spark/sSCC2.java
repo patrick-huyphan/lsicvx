@@ -538,8 +538,8 @@ public class sSCC2 {
         for (LocalEdgeNode b : V) {
             nz[i] = LocalVector.norm(b.value);
             if(nz[i]>0){
-                if(loop == 0)
-                    System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
+//                if(loop == 0)
+//                    System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
                 i++;
             }
         }
