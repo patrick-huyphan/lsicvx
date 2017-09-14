@@ -75,7 +75,7 @@ public class sSCC2 {
 
         List<Tuple2<Tuple2<Integer, Integer>, Double>> eSet = buildE(A);
 ////TODO: init global data : X, u, xAvr        
-        int[] ni = retSize(numberOfVertices, eSet);
+//        int[] ni = retSize(numberOfVertices, eSet);
 ////        Matrix.printMat(A, "centered");
 //        //Init
 //        double[][] X = new double[numberOfVertices][numOfFeature];
@@ -88,13 +88,13 @@ public class sSCC2 {
 //            }
 //        }
 //        
-        double[] u = new double[numOfFeature];
+//        double[] u = new double[numOfFeature];
         double[] xAvr = new double[numOfFeature];
         for (int i = 0; i < numOfFeature; i++) {
-            u[i] = LocalVector.norm(LocalMatrix.getCol(A, i));
+//            u[i] = LocalVector.norm(LocalMatrix.getCol(A, i));
             xAvr[i] = LocalVector.avr(LocalMatrix.getCol(A, i));
         }
-        u = LocalVector.scale(u, _lamda2);
+//        u = LocalVector.scale(u, _lamda2);
         
 //        for (int i = 0; i < numOfFeature; i++) {
 //            double x = 1 - (u[i] / LocalVector.norm(LocalMatrix.getCol(A, i)));
@@ -496,22 +496,21 @@ public class sSCC2 {
         double ep = ea * Math.sqrt(numberOfVertices) + er * LocalVector.norm(maxAB); //Bik?
 
         updateRho(r, s);
-//        double nz[] = new double[V.size()];
-//        i= 0;
-//        for (LocalEdgeNode b : V) {
-//            nz[i] = LocalVector.norm(b.value);
-//        }
+        double nz[] = new double[V.size()];
+        i= 0;
+        for (LocalEdgeNode b : V) {
+            nz[i] = LocalVector.norm(b.value);
+        }
         
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
-//        double noZ = LocalVector.norm(nz);
+        double noZ = LocalVector.norm(nz);
         
-//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
-        
 //        if(noZ == 0.)
 //            return true;
         
@@ -572,7 +571,6 @@ public class sSCC2 {
 //                System.out.println("paper.NodeSCC.initU() E "+e.sourcevertex+ " "+e.destinationvertex );
                 ret.add(new LocalEdgeNode(e._1._1, e._1._2, new double[numOfFeature]));
                 ret.add(new LocalEdgeNode(e._1._2, e._1._1, new double[numOfFeature]));
-
         }
         return ret;        
     }
