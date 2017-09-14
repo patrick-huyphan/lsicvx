@@ -297,7 +297,7 @@ public class sSCC2 {
         }
         fw.close();
 
-        fw = new FileWriter("tmp/"+loop+"_z_data.txt");
+        fw = new FileWriter(outFilePath+"/"+loop+"_z_data.txt");
         for(LocalEdgeNode k: V)
         {
             fw.append("\n" + k.src+"-"+k.dst+"\t");
