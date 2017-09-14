@@ -542,6 +542,16 @@ public class sSCC2 {
                 i++;
             }
         }
+
+        double nu[] = new double[U.size()];
+        i= 0;        
+        for (LocalEdgeNode b : U) {
+            nu[i] = LocalVector.norm(b.value);
+            if(nu[i]>0){
+                i++;
+            }
+        }        
+        
         double nx[] = new double[X0.size()];
         i = 0;
         for(Tuple2<Integer, Vector> x: X0)
@@ -556,7 +566,7 @@ public class sSCC2 {
 //        }
         double noZ = LocalVector.norm(nz);
         
-        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ +" - "+LocalVector.norm(nx));
+        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ +" - "+LocalVector.norm(nx)+" - "+LocalVector.norm(nu));
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
