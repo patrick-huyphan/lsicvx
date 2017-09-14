@@ -165,30 +165,30 @@ public class sSCC2 {
             Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
 
 //update X, V, U           
-            X0 = matI.mapToPair((Tuple2<Integer, Vector> t1) -> {
+            X1 = matI.mapToPair((Tuple2<Integer, Vector> t1) -> {
                 return new Tuple2<>(t1._1,
                         updateXNode(t1,
                                 _numberOfVertices.value(),
                                 _numOfFeature.value(),
                                 _V.value(),
                                 _U.value(),
-                                _B.value()
+                                _B.value()[t1._1]
                         )
                 );
                 }).cache().collect();
 //            retList = X0;
 
-            Broadcast<List<Tuple2<Integer, Vector>>> _x1 = context.broadcast(X0);
+            Broadcast<List<Tuple2<Integer, Vector>>> _x1 = context.broadcast(X1);
             
             V=  uv.map((LocalEdgeNode v1) -> updateVNode(_x1.value(), v1, _U.value(), lamda.value(), E.value())).cache().collect();
             
             Broadcast<List<LocalEdgeNode>> _V1 = context.broadcast(V);
             
             U=  uv.map((LocalEdgeNode u1) -> updateUNode(_x1.value(), _V1.value(), u1 )).cache().collect();
-            
-            
+            FileWriter fw = null;
+            logData(loop, fw, outFilePath, X1, U, V, numOfFeature);
 //checkstop            
-            if(checkStop(A, X1, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
+            if(checkStop(A, X0, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
             {
                 rho0.destroy();
                 lamda.destroy();
@@ -227,7 +227,7 @@ public class sSCC2 {
             
             V0= V;
             U0= U;
-            X1 = X0;
+            X0 = X1;
 
             
             FileWriter fwt = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
@@ -284,6 +284,43 @@ public class sSCC2 {
 //        return getPresentMat(retList, A, eSet, hl);
     }
 
+        private void logData(int loop, FileWriter fw, String outFilePath, List<Tuple2<Integer, Vector>> X0, List<LocalEdgeNode> U, List<LocalEdgeNode> V, int numOfFeature) throws IOException
+    {
+        fw = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
+
+        for (Tuple2<Integer, Vector> r: X0) {
+            double[] tmp = r._2.toArray();
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append( tmp[j]+ "\t");
+            }
+            fw.append("\n");
+        }
+        fw.close();
+
+        fw = new FileWriter("tmp/"+loop+"_z_data.txt");
+        for(LocalEdgeNode k: V)
+        {
+            fw.append("\n" + k.src+"-"+k.dst+"\t");
+            double [] tmp = k.value;
+            for (int j = 0; j < numOfFeature; j++) {
+                fw.append(tmp[j] + "\t");
+            }
+            fw.append("\n");
+        }
+        fw.close();
+
+//        fw = new FileWriter("tmp/"+loop+"_u_data.txt");
+//        for(LocalEdgeNode k: U)
+//        {
+//            fw.append("\n" + k.src+"-"+k.dst+"\t");
+//            double [] tmp = k.value;
+//            for (int j = 0; j < numOfFeature; j++) {
+//                fw.append(tmp[j] + "\t");
+//            }
+//            fw.append("\n");
+//        }
+        fw.close();
+    }
 
     private static List<Tuple2<Tuple2<Integer, Integer>, Double>> buildE(double [][] A) {
         List<Tuple2<Tuple2<Integer, Integer>, Double>> ret = new ArrayList<>();
@@ -642,7 +679,7 @@ public class sSCC2 {
             int numOfFeature,
             List<LocalEdgeNode> _V,
             List<LocalEdgeNode> _U,
-            double[][] _B
+            double[] _B
     )
     {           
         
@@ -665,7 +702,7 @@ public class sSCC2 {
         }     
         
         double[] sumd = LocalVector.sub(sumdi, sumdj);
-        double[] X = LocalVector.scale(LocalVector.plus(_B[curruntI._1],sumd), 1./(1+numberOfVertices));        
+        double[] X = LocalVector.scale(LocalVector.plus(_B,sumd), 1./(1+numberOfVertices));        
 //        if(curruntI._1 == 5) LocalVector.printV(sumd, "pt.spark.sSCC2.updateXNode() " +curruntI._1, true);
         return Vectors.dense(X);
     }
