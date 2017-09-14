@@ -226,6 +226,18 @@ public class sSCC2 {
             V0= V;
             U0= U;
             X1 = X0;
+
+            
+            FileWriter fwt = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
+            for (Tuple2<Integer, Vector> r: X0) {
+
+                double[] tmp = r._2.toArray();
+                for (int j = 0; j < numOfFeature; j++) {
+                    fwt.append(tmp[j] + "\t");
+                }
+                fwt.append("\n");
+            }
+            fwt.close();
             
             rho0.destroy();
             lamda.destroy();
