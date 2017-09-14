@@ -36,7 +36,7 @@ public class CDNew extends LSI{
         // init k row-m column value of A
         for (int i = 0; i < k; i++) {
             for (int j = 0; j < m; j++) {
-                X[i][j] = new Random().nextDouble();
+                X[i][j] = _D[i][j];//new Random().nextDouble();
             }
         }
         Matrix.printMat(X, "init X");
@@ -82,7 +82,7 @@ public class CDNew extends LSI{
                             tmp=0;
     //                        index++;
                             indexS[j]=1;
-                            System.out.println(loop+"\t"+ i+"-"+j+":\ta: "+X[j][i]+ "\tb:"+b+"\tx:"+ x+ "\tstop:"+tmp+"\t");
+//                            System.out.println(loop+"\t"+ i+"-"+j+":\ta: "+X[j][i]+ "\tb:"+b+"\tx:"+ x+ "\tstop:"+tmp+"\t");
                         }
                         else// (tmp != 0)
                             stop = false;

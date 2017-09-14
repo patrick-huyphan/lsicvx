@@ -36,7 +36,7 @@ public class CD extends LSI{
         // init k row-m column value of A
         for (int i = 0; i < k; i++) {
             for (int j = 0; j < m; j++) {
-                X[i][j] = new Random().nextDouble();
+                X[i][j] = _D[i][j];//new Random().nextDouble();
             }
         }
         Matrix.printMat(X, "init X");
