@@ -548,9 +548,9 @@ public class sSCC2 {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
-//        double noZ = LocalVector.norm(nz);
+        double noZ = LocalVector.norm(nz);
         
-//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
