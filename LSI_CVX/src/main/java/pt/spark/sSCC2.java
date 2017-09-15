@@ -186,6 +186,7 @@ public class sSCC2 {
             
             U=  uv.map((LocalEdgeNode u1) -> updateUNode(_x1.value(), _V1.value(), u1 )).cache().collect();
             FileWriter fw = null;
+            if(loop<5)
             logData(loop, fw, outFilePath, X1, U, V, numOfFeature);
 //checkstop            
             if(checkStop(A, X0, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
@@ -200,35 +201,10 @@ public class sSCC2 {
             }
 //update for next process
             _lamda = _lamda * 1.005; 
-//            if(loop == 0)
-//            for(LocalEdgeNode v: V)
-//            {
-//                LocalVector.printV(v.value, " "+v.src+" "+v.dst, true);
-//                if(v.src == 5 && v.dst == 11)
-//                {
-//                    double[] v0 = getuv(V0, v);
-//                    if(v.value[3] != v0[3])
-//                    {
-//                        System.out.println(loop+" pt.spark.sSCC2.<init>() v(5-11)[3]"+ v.value[3]+" - " +v0[3]);
-//                    }
-//                }
-//            }
-//            for(LocalEdgeNode u: U)
-//            {
-//                if(u.src == 5 && u.dst == 11)
-//                {
-//                    double[] v0 = getuv(U0, u);
-//                    if(u.value[3] != v0[3])
-//                    {
-//                        System.out.println(loop+" pt.spark.sSCC2.<init>() u(5-11)[3]"+ u.value[3]+" - " +v0[3]);
-//                    }
-//                }
-//            }
             
             V0= V;
             U0= U;
             X0 = X1;
-
             
             FileWriter fwt = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
             for (Tuple2<Integer, Vector> r: X0) {
@@ -594,6 +570,8 @@ public class sSCC2 {
         for(Tuple2<Integer, Vector> x: X0)
         {
             nx[i] = LocalVector.norm(x._2.toArray());
+            if(loop == 1)
+                System.out.println("pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
             i++;
         }
             
