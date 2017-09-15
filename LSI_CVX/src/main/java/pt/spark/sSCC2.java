@@ -571,7 +571,7 @@ public class sSCC2 {
         {
             nx[i] = LocalVector.norm(x._2.toArray());
             if(loop == 1)
-                System.out.println("pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
+                System.out.println(x._1 + " pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
             i++;
         }
             
