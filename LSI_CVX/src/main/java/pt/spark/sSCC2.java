@@ -184,7 +184,7 @@ public class sSCC2 {
             
             Broadcast<List<LocalEdgeNode>> _V1 = context.broadcast(V);
             
-            U=  uv.map((LocalEdgeNode u1) -> updateUNode(_x1.value(), _V1.value(), u1 )).cache().collect();
+            U=  uv.map((LocalEdgeNode u1) -> updateUNode(_x1.value(), _V1.value(), _U.value(), u1 )).cache().collect();
             FileWriter fw = null;
             if(loop<5)
             logData(loop, fw, outFilePath, X1, U, V, numOfFeature);
@@ -702,13 +702,13 @@ public class sSCC2 {
      * update all U, each U is RDD.
      * 
      */
-    private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, LocalEdgeNode U)
+    private static LocalEdgeNode updateUNode(List<Tuple2<Integer, Vector>> X, List<LocalEdgeNode> V, List<LocalEdgeNode> U, LocalEdgeNode u)
     {
-        double[] data = LocalVector.sub(getuv(V, U), LocalVector.sub(getRow(X, U.src), getRow(X, U.dst)));
-        data = LocalVector.plus(U.value, data);
+        double[] data = LocalVector.sub(getuv(V, u), LocalVector.sub(getRow(X, u.src), getRow(X, u.dst)));
+        data = LocalVector.plus(getuv(U, u), data);
             
 //        LocalVector.printV(data, "pt.spark.sSCC2.updateUNode() "+ U.src+" - "+U.dst, true);
-        return new LocalEdgeNode(U.src, U.dst, data);    
+        return new LocalEdgeNode(u.src, u.dst, data);    
     }  
     
    
