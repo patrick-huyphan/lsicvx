@@ -127,8 +127,6 @@ public class main {
         for(int i =0; i< B.size(); i++)
         {
             B2[i] = B.get(i)._2.toArray();
-//            for(int j =0; j< mX.numCols(); j++)
-//                B2[j][i] = mX.apply(i, j);
         }
 
         //double [][] B3 = LocalMatrix.Transpose(B2);

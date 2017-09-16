@@ -124,10 +124,10 @@ public class sADMM {
         System.out.println("pt.spark.sADMM.run() detroy and return "+retMat.size());
         
         
-        for (Tuple2<Integer, Vector> r: retMat) {
-            double[] tmp = r._2.toArray();
-            LocalVector. printV(tmp, " "+r._1, true);
-        }
+//        for (Tuple2<Integer, Vector> r: retMat) {
+//            double[] tmp = r._2.toArray();
+//            LocalVector. printV(tmp, " "+r._1, true);
+//        }
             
         _n.destroy();
         _m.destroy();
