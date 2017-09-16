@@ -75,16 +75,28 @@ public class Paper {
         lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
 
         double[][] X2= Matrix.Transpose(lsi.X);
+
+        for(int i = 0; i< X2.length; i++)
+        {
+            System.out.println(i+ ": "+ Vector.norm(X2[i]));
+        }        
+
 //        CSVFile.saveMatrixData("ADMM", X2, "X2");
 //        Matrix.printMat(X2, "Projection");
         double[][] A2 = Matrix.mul(D, X2); //kn = km x mn
 //        CSVFile.saveMatrixData("LATEN", A2, "A2");
 //        Matrix.printMat(A2, "New mat");
         double[][] Q22 = Matrix.mul(Q, X2);
+               
 //        Matrix.printMat(Q22, "New mat");
         double[][] ret2 = Matrix.Transpose(Matrix.sim(A2, Q22));
 //        Matrix.printMat(ret2, "query result");
 
+        for(int i = 0; i< Q22.length; i++)
+        {
+            System.out.println(i+ ": "+ Vector.norm(X2[i])+" - "+Vector.norm(A2[i])+" - "+Vector.norm(Q22[i])+" - "+Vector.norm(ret2[i]));
+        }
+        
         List<List<Edge>> res = new ArrayList<>();
         
         for(int i = 0; i< ret2[0].length; i++)

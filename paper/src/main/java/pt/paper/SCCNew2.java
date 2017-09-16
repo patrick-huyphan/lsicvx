@@ -100,15 +100,47 @@ public class SCCNew2 extends Clustering {
 //                }
 
 //            System.out.println("pt.paper.SCCNew.<loop>() " + loop +" lambda: "+lambda);
+//            double [] nx = new double[numberOfVertices];
             for (int i = 0; i < numberOfVertices; i++) {             
-                updateX(i, V, U, B[i]);
+                updateX(i, V, U, B[i], loop);
+//                nx[i] = Vector.norm(X[i]);
             }
+//            if(loop ==0)
+//                System.out.println("pt.paper.SCCNew2.<init>()   x0 "+ Vector.norm(nx));
             
             V = updateV(V, U); //
-            U = updateU(U, V); //u-x+v
+            U = updateU(U, V, loop); //u-x+v
 //            Matrix.printMat(X, "SCC x "+loop);
-//            if(loop>20)  logData(loop, fw, U, V);
+            if(loop<5)  
+            logData(loop, fw, U, V);
+//            if(loop>0)
+//                X0 = X;
             
+            if(loop<3)
+            {
+//                for(int i = 0; i<numberOfVertices; i++)
+//                {
+//                    System.out.println(i+ " X0 : "+ Vector.norm(X0[i]));
+//                }
+                /*
+                for(Key k: V.E.keySet())
+                {
+                    double n = Vector.norm(V.get(k));
+                    if(n>0)
+                    System.out.println(loop+" V   "+ k.src+" - "+k.dst+": "+  n);
+                }
+                for(Key k: U.E.keySet())
+                {
+                    double n = Vector.norm(U.get(k));
+                    if(n>0)
+                    System.out.println(loop+" U   "+ k.src+" - "+k.dst+": "+  n);
+                }
+                */
+//                for(int i = 0; i<numberOfVertices; i++)
+//                {
+//                    System.out.println(i+ " X: "+ Vector.norm(X[i]));
+//                }
+            }
             if (checkStop(X0, U0, V0, V, loop) && (loop > 1))// || (stop == true)))
             {
                 System.out.println(" SCC 2 STOP at " + loop);
@@ -142,7 +174,7 @@ public class SCCNew2 extends Clustering {
 //                    }
 //                }
 //            }
-            X0 = X;            
+            X0 = Matrix.Copy(X);            
             V0 = V;
             U0 = U;
             loop++;
@@ -291,7 +323,7 @@ public class SCCNew2 extends Clustering {
      * @return
      * -> follow Eric Chi paper
      */
-    private void updateX(int i, ListENode V, ListENode U, double B[]) {
+    private void updateX(int i, ListENode V, ListENode U, double B[], int loop) {
         double[] sumdi = new double[numOfFeature];
         double[] sumdj = new double[numOfFeature];
                
@@ -312,6 +344,10 @@ public class SCCNew2 extends Clustering {
 //        if(i==1)    Vector.printV(sumd,"X "+i,true);        
         //Vector.plus(A[i], Vector.scale(xAvr, numberOfVertices));
         X[i] = Vector.scale(Vector.plus(B,sumd), 1./(1+numberOfVertices));
+//        if(loop <3)
+//        {
+//            System.out.println(i+ ": "+ Vector.norm(sumdi)+ " - "+Vector.norm(sumdj)+" - " +Vector.norm(X[i]));
+//        }
     }
         
     private ListENode initU() {
@@ -334,7 +370,7 @@ public class SCCNew2 extends Clustering {
      * @throws Exception 
      */
 
-    private ListENode updateU(ListENode U, ListENode V) throws Exception //C
+    private ListENode updateU(ListENode U, ListENode V, int loop) throws Exception //C
     {
         ListENode ret = new ListENode();
         V.E.keySet().stream().forEach((v) -> {
@@ -342,7 +378,8 @@ public class SCCNew2 extends Clustering {
             double[] data = Vector.sub(V.get(v), Vector.sub(X[v.src], X[v.dst]));
             data = Vector.plus(U.get(v), data);
 //            if(v.src == 5 && v.dst ==90)                Vector.printV(data, "U in "+v.src+" "+v.dst, true);
-
+//            if(loop ==0)
+//            System.out.println(v.src+" - "+v.dst+": "+ Vector.norm(data)+" - "+ Vector.norm(V.get(v))+" - "+ Vector.norm(U.get(v))+" - "+ Vector.norm(X[v.src])+" - "+ Vector.norm(X[v.dst]));
             ret.put(v.src, v.dst, data);//, Edge.getEdgeW(edges, v.src, v.dst)));
         });
         return ret;
@@ -443,7 +480,6 @@ public class SCCNew2 extends Clustering {
         updateRho(r, s);
         double nz[] = new double[V.E.size()];
         i= 0;
-        
         for (Key b : V.E.keySet()) {
             nz[i] = Vector.norm(V.get(b));
             if(nz[i]>0)
@@ -453,14 +489,32 @@ public class SCCNew2 extends Clustering {
                 i++;
             }
         }
+        double nu[] = new double[U.E.size()];
+        i= 0;
+        for (Key b : U.E.keySet()) {
+            nu[i] = Vector.norm(U.get(b));
+            if(nu[i]>0)
+            {
+                i++;
+            }
+        }
         
+        double nx[] = new double[X0.length];
+        i = 0;
+        for(double[] x: X0)
+        {
+            nx[i] = Vector.norm(x);
+//            if(loop ==1)
+//                System.out.println("pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
+            i++;
+        }
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
-        double noZ = Vector.norm(nz);
-        
-        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
+//        double noZ = Vector.norm(nz);
+//        if(loop<50)
+//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ+" - "+ Vector.norm(nx) +" - "+ Vector.norm(nu));
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)

@@ -73,8 +73,8 @@ public class ADMM extends LSI{
             
             //init x, u ,v
             double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
-            double[] z= Vector.rVector(k, 0.4);
-            double[] u = Vector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
+            double[] z=  new double[k]; //Vector.rVector(k, 0.4);
+            double[] u = new double[k]; //Vector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
             double[] Btd= Matrix.getCol(BtD, i);//Matrix.mul(Bt, d); //[nk]*[n] = k
             
 //            Vector.printV(z, "init z "+i, true);
@@ -88,14 +88,19 @@ public class ADMM extends LSI{
             double[] z0 = new double[k];//Matrix.getCol(BtB, i%k);  // [k]; new double[k];
             double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
             
-            double s, r;
+//            double s, r;
             
             int loop = 0;
             while(loop<146)//1489) 143 // long = short+1
             {
                 double[][] IMtxRho = Matrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = Matrix.invert(Matrix.plus(BtB, IMtxRho)); //[kk]
-        
+
+//                if(i == 0 && loop<5)
+//                {
+//                    System.out.println(loop+":   "+Vector.norm(x)+" - "+Vector.norm(z)+" - "+Vector.norm(u) + "  -  "+rho);
+//                }
+//                
                 x= updateX(u, z,iBtB_rho_Im,Btd);
                 z= updateZ(x, u, lambda/rho);                
                 u= updateU(x, u, z);
@@ -105,18 +110,23 @@ public class ADMM extends LSI{
 //            Vector.printV(u, "u:"+ i+"-"+loop, true);
 //            Vector.printV(x0, "x:"+ i+"-"+loop, true);
 //            }
-                if(loop>1 && checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop)){
+                if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop, i) && loop>1){
                     System.out.println(i+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
                     break;
                 }
-                s = Vector.norm(Vector.sub(x, z));
-                r = Vector.norm(Vector.sub(z, z0));
-//                System.out.println(i+ " pt.paper.ADMM.admmProcess() "+loop+": "+ s+" - "+r);
-                if(r<0 && s <0)
-                {
-                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 2  at "+ loop);
-                    break;
-                }
+//                s = Vector.norm(Vector.sub(x, z));
+//                r = Vector.norm(Vector.sub(z, z0));
+////                System.out.println(i+ " pt.paper.ADMM.admmProcess() "+loop+": "+ s+" - "+r);
+//                if(r<0 && s <0)
+//                {
+//                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 2  at "+ loop);
+//                    break;
+//                }
+
+//                if(i == 0 && loop<5)
+//                {
+//                    System.out.println(loop+":   "+Vector.norm(x)+" - "+Vector.norm(z)+" - "+Vector.norm(u));
+//                }
                 x0=Vector.copy(x);
                 u0=Vector.copy(u);
                 z0=Vector.copy(z);
@@ -142,7 +152,7 @@ public class ADMM extends LSI{
         {
             ret[i] = (ret[i]>0)?ret[i]:0; // sastify A>0
         }
-        return Vector.scale(ret,2);
+        return ret;//Vector.scale(ret,2);
     }
     
     /*
@@ -168,11 +178,11 @@ public class ADMM extends LSI{
     private double updateRho(double r, double s)
     {
         if(r>10*s)
-            rho =  Double.valueOf(twoDForm.format(rho* 1.5));//(r/s);//2*rho;
+            rho =  Double.valueOf(twoDForm.format(rho* 2));//(r/s);//2*rho;
         if(s>10*r)
         {
 //            System.err.println("s>r");
-            rho =  Double.valueOf(twoDForm.format(rho* 0.75));//(r/s);//rho/2;
+            rho =  Double.valueOf(twoDForm.format(rho* 0.5));//(r/s);//rho/2;
         }
         return rho;
     }
@@ -188,7 +198,7 @@ public class ADMM extends LSI{
     }
     
     
-    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A,int time)
+    private boolean checkStop(double[] z, double[] x0, double[] u0, double[] z0, double epsilonA, double epsilonR, int n, int m, double [][] A,int time, int id)
     {
 //        if(this.rho ==0)
 //            return true;
@@ -198,7 +208,7 @@ public class ADMM extends LSI{
         double eP = epsilonA * Math.sqrt(n) + epsilonR*((Vector.norm(x0)>Vector.norm(z0))?Vector.norm(x0): Vector.norm(z0));
         double eD = epsilonA * Math.sqrt(m) + epsilonR*(Vector.norm(Matrix.mul(A,Vector.scale(u0,rho))));
 
-//        System.err.println(time+ "new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
+
         if((r<= eP) && (s<=eD))
         {
 //            System.err.println(" Stop at "+time+ " new rho "+rho+": \t"+r+" - "+s +"\t"+eP+":"+eD);
@@ -206,6 +216,8 @@ public class ADMM extends LSI{
         }
 
         updateRho(r, s);
+        if(time<5 && id ==0)
+            System.err.println(time+ "new rho "+rho+": \t"+r+" - "+s);
         return false;
     }
 }
