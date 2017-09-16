@@ -206,16 +206,16 @@ public class sSCC2 {
             U0= U;
             X0 = X1;
             
-            FileWriter fwt = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
-            for (Tuple2<Integer, Vector> r: X0) {
-
-                double[] tmp = r._2.toArray();
-                for (int j = 0; j < numOfFeature; j++) {
-                    fwt.append(tmp[j] + "\t");
-                }
-                fwt.append("\n");
-            }
-            fwt.close();
+//            FileWriter fwt = new FileWriter(outFilePath+"/"+loop+"_X_data.txt");
+//            for (Tuple2<Integer, Vector> r: X0) {
+//
+//                double[] tmp = r._2.toArray();
+//                for (int j = 0; j < numOfFeature; j++) {
+//                    fwt.append(tmp[j] + "\t");
+//                }
+//                fwt.append("\n");
+//            }
+//            fwt.close();
             
             rho0.destroy();
             lamda.destroy();
@@ -570,8 +570,8 @@ public class sSCC2 {
         for(Tuple2<Integer, Vector> x: X0)
         {
             nx[i] = LocalVector.norm(x._2.toArray());
-            if(loop == 1)
-                System.out.println(x._1 + " pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
+//            if(loop == 1)
+//                System.out.println(x._1 + " pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
             i++;
         }
             
@@ -579,9 +579,9 @@ public class sSCC2 {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
 //        }
-        double noZ = LocalVector.norm(nz);
+//        double noZ = LocalVector.norm(nz);
         
-        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ +" - "+LocalVector.norm(nx)+" - "+LocalVector.norm(nu));
+//        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ +" - "+LocalVector.norm(nx)+" - "+LocalVector.norm(nu));
 //        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)

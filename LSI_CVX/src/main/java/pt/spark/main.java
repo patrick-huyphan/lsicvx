@@ -121,13 +121,14 @@ public class main {
          * -> i*k sim(D',Q')
          */
         System.out.println("pt.spark.sQuery.run()");
-        Matrix mX = sCommonFunc.loadDenseMatrix(B).transpose(); //m,k
+//        Matrix mX = sCommonFunc.loadDenseMatrix(B);//.transpose(); //m,k
                 
-        double [][] B2 = new double[mX.numRows()][mX.numCols()];
-        for(int i =0; i< mX.numRows(); i++)
+        double [][] B2 = new double[B.size()][B.get(0)._2.size()];
+        for(int i =0; i< B.size(); i++)
         {
-            for(int j =0; j< mX.numCols(); j++)
-                B2[i][j] = mX.apply(i, j);
+            B2[i] = B.get(i)._2.toArray();
+//            for(int j =0; j< mX.numCols(); j++)
+//                B2[j][i] = mX.apply(i, j);
         }
 
         //double [][] B3 = LocalMatrix.Transpose(B2);
