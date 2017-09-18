@@ -22,7 +22,7 @@ import scala.Tuple2;
 public class NodeADMM {
     double []X;
     double lambda;
-    static final int MAX_LOOP = 100;
+    static final int MAX_LOOP = 500;
     int k;// k row in A
     int m;// m column in A
     int n;// n row in D
@@ -54,7 +54,7 @@ public class NodeADMM {
             double[][] BtB,
             double[][] AtB,
             double _rho,double _lambda, 
-            double e1, double e2, int loopt) {
+            double e1, double e2) {
 
         n = _n;// n row in D
         m = _m;// m column in A
@@ -92,7 +92,7 @@ public class NodeADMM {
         double[] u0 = new double[k];//Vector.scale(z, 0.5);   // [k]; new double[k];
 
         int loop = 0;
-        while(loop<loopt)//1489) 143 // long = short+1
+        while(loop<MAX_LOOP)//1489) 143 // long = short+1
         {
             double[][] IMtxRho = LocalMatrix.scale(BtB, rho);
             double[][] iBtB_rho_Im = LocalMatrix.invert(LocalMatrix.plus(BtB, IMtxRho)); //[kk]

@@ -56,7 +56,7 @@ public class sADMM {
             double[][] B,//rowsListDocTermB, 
 //            String inputFilePath,
             boolean orthonormal,
-            int loop,
+//            int loop,
             String outFilePath) {
         /**
          * TODO
@@ -101,7 +101,7 @@ public class sADMM {
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
         Broadcast<double[][]> _BtD = sc.broadcast(BtD);
-        Broadcast<Integer> loopb = sc.broadcast(loop);
+//        Broadcast<Integer> loopb = sc.broadcast(loop);
         System.out.println("pt.spark.sADMM.run()");
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
         JavaPairRDD<Integer, Vector> retPair = matI.mapToPair((Tuple2<Integer, Vector> t) -> {
@@ -111,8 +111,8 @@ public class sADMM {
                             _n.value(), _m.value(), _k.value(),
                             _BtB.value(),
                             _AtB.value(),
-                            _BtD.value(),
-                            loopb.value())
+                            _BtD.value()
+                    )
             );
         }
         );
@@ -136,7 +136,7 @@ public class sADMM {
         _BtB.destroy();
         _AtB.destroy();
         _BtD.destroy();
-        loopb.destroy();
+
          
 /*
         double[][] B3 = new double[m][k];
@@ -158,8 +158,8 @@ public class sADMM {
 //            double[][] Bt,
             double[][] BtB,
             double[][] AtB,
-            double[][] BtD,
-            int loop) {
+            double[][] BtD
+    ) {
         
         // lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
         double _rho = 0.04;
@@ -174,7 +174,7 @@ public class sADMM {
                 BtB,
                 AtB,
                  _rho, _lamda,
-                e1, e2, loop);
+                e1, e2);
 //        LocalVector.printV(xNode.X, " solve "+id, true);
         return Vectors.dense(xNode.X);
     }
