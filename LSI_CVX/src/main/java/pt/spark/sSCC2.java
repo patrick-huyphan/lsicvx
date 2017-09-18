@@ -273,17 +273,17 @@ public class sSCC2 {
         }
         fw.close();
 
-        fw = new FileWriter(outFilePath+"/"+loop+"_z_data.txt");
-        for(LocalEdgeNode k: V)
-        {
-            fw.append("\n" + k.src+"-"+k.dst+"\t");
-            double [] tmp = k.value;
-            for (int j = 0; j < numOfFeature; j++) {
-                fw.append(tmp[j] + "\t");
-            }
-            fw.append("\n");
-        }
-        fw.close();
+//        fw = new FileWriter(outFilePath+"/"+loop+"_z_data.txt");
+//        for(LocalEdgeNode k: V)
+//        {
+//            fw.append("\n" + k.src+"-"+k.dst+"\t");
+//            double [] tmp = k.value;
+//            for (int j = 0; j < numOfFeature; j++) {
+//                fw.append(tmp[j] + "\t");
+//            }
+//            fw.append("\n");
+//        }
+//        fw.close();
 
 //        fw = new FileWriter("tmp/"+loop+"_u_data.txt");
 //        for(LocalEdgeNode k: U)
