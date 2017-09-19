@@ -555,25 +555,25 @@ public class sSCC2 {
                 i++;
             }
         }
-
-        double nu[] = new double[U.size()];
-        i= 0;        
-        for (LocalEdgeNode b : U) {
-            nu[i] = LocalVector.norm(b.value);
-            if(nu[i]>0){
-                i++;
-            }
-        }        
-        
-        double nx[] = new double[X0.size()];
-        i = 0;
-        for(Tuple2<Integer, Vector> x: X0)
-        {
-            nx[i] = LocalVector.norm(x._2.toArray());
-//            if(loop == 1)
-//                System.out.println(x._1 + " pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
-            i++;
-        }
+//
+//        double nu[] = new double[U.size()];
+//        i= 0;        
+//        for (LocalEdgeNode b : U) {
+//            nu[i] = LocalVector.norm(b.value);
+//            if(nu[i]>0){
+//                i++;
+//            }
+//        }        
+//        
+//        double nx[] = new double[X0.size()];
+//        i = 0;
+//        for(Tuple2<Integer, Vector> x: X0)
+//        {
+//            nx[i] = LocalVector.norm(x._2.toArray());
+////            if(loop == 1)
+////                System.out.println(x._1 + " pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
+//            i++;
+//        }
             
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
