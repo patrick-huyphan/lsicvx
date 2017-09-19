@@ -47,7 +47,7 @@ public class main {
         double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         String ouputdir = args[1]+"/"+System.currentTimeMillis();
         int numofQ = Integer.parseInt(args[2]);
-        int loop = 0;//Integer.parseInt(args[3]);
+//        int loop = 0;//Integer.parseInt(args[3]);
         boolean HL = (Integer.parseInt(args[3]) ==1)?true: false;
         boolean orthognomal = (Integer.parseInt(args[4]) ==1)?true: false;
         // currently, not support: matrix data should be prepared before

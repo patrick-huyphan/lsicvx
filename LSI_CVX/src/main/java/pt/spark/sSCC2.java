@@ -52,7 +52,7 @@ public class sSCC2 {
      * @param outFilePath
      * @return
      */
-    static double _rho0 = 0.01;
+    static double _rho0 = 0.05;
     public double[][] presentMat; //List<Tuple2<Integer, Vector>>
     public sSCC2(JavaSparkContext context,
             double[][] A,// term-doc
@@ -60,7 +60,7 @@ public class sSCC2 {
             String outFilePath) throws Exception {
 
         
-        double _lamda = 1.75;
+        double _lamda = 1.05;
         double _lamda2 = 0.01;
         double _eps_abs = 1e-5;
         double _eps_rel = 1e-5;
@@ -145,7 +145,7 @@ public class sSCC2 {
         
 //        boolean stop = false;
         int loop = 0;
-        while(loop <900)
+        while(loop <19000)
         {
             /**
              * - calculator X in slaver
