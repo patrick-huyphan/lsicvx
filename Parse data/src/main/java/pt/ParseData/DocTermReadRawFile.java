@@ -59,6 +59,7 @@ public class DocTermReadRawFile {
         StopWordList swl = new StopWordList();
 
         BufferedWriter bwAll = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "doc_Data.txt"),"UTF-8"));
+        BufferedWriter bwlog = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "log_Data.txt"),"UTF-8"));
 //        int a = listOfFiles.length;
 //        int docID[] = new int[listOfFiles.length];
 // Create list of word, should save create matrix of work, to reduce read file 
@@ -124,11 +125,19 @@ public class DocTermReadRawFile {
                         bwAll.write(doc);
 //                    	System.err.println(doc);
 //                    	docID[numOfDoc] = i;
+                        bwlog.write(listOfFiles[i].getName()+ "\t ID: "+numOfDoc);
+                        bwlog.newLine();
                         numOfDoc++;
                         bwAll.newLine();
                     }
+                    else
+                    {
+                        bwlog.write(listOfFiles[i].getName()+ "\t REMOVE: not enough length");
+                        bwlog.newLine();
+                    }
                 }
             }
+            bwlog.close();
             bwAll.close();
         } else {
             return null;
@@ -252,6 +261,7 @@ public class DocTermReadRawFile {
         StopWordList swl = new StopWordList();
         FileOutputStream fos = new FileOutputStream(output + "doc_Data.txt");
         BufferedWriter bwAll = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));//(new FileWriter(output + "doc_Data.txt"));
+        BufferedWriter bwlog = new BufferedWriter(new FileWriter(output + "log_Data.txt"));
 //        int a = listOfFiles.length;
 //        int docID[] = new int[listOfFiles.length];
 // Create list of word, should save create matrix of work, to reduce read file 
@@ -307,6 +317,8 @@ public class DocTermReadRawFile {
                     
                     if (termPdoc > ntermPdoc) {
                         bwAll.write(doc);
+                        bwlog.write(nFile.getName()+"\t ID: "+numOfDoc);
+                        bwlog.newLine();
 //                    	System.err.println(doc);
 //                    	docID[numOfDoc] = i;
                         numOfDoc++;
@@ -316,6 +328,8 @@ public class DocTermReadRawFile {
                     {
                         //move this file
 //                        nFile.renameTo(new File("data\\outR\\"+nFile.getName()));
+                        bwlog.write(nFile.getName()+"\t REMOVE ");
+                        bwlog.newLine();
                         if(nFile.renameTo(new File("data\\outR\\"+nFile.getName())))
                             System.out.println("move file "+nFile.getName());
                     }
@@ -324,9 +338,11 @@ public class DocTermReadRawFile {
             
         } else {
             bwAll.close();
+            bwlog.close();
             return null;
         }
         bwAll.close();
+        bwlog.close();
         fos.close();
         
         Collections.sort(keywordList, String.CASE_INSENSITIVE_ORDER);
@@ -449,6 +465,16 @@ public class DocTermReadRawFile {
     }// main closing 
 
     // read doc list and key list, re-produce doc-term matrix. map term in doc with key in key list
+    /**
+     * TODO: save file info: file read, file delete, index in matrix
+     * 
+     * @param input
+     * @param output
+     * @param ntermPdoc
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public int[][] calCountMat(String input, String output, int ntermPdoc) throws FileNotFoundException, IOException {
 
         String s, temp;
@@ -512,6 +538,7 @@ public class DocTermReadRawFile {
         rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "not_use.txt"),"UTF-8"));
         BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "use.txt"),"UTF-8"));
+        BufferedWriter bwlog = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "loguse.txt"),"UTF-8"));
         
         while ((s = rd.readLine()) != null) {
             st = new StringTokenizer(s, " |", false);
@@ -550,6 +577,7 @@ public class DocTermReadRawFile {
             if(termpd>2)
             {
                 bw2.append(s+"\n");
+                bwlog.append(j+"\t"+i+"\t"+termpd+"\t"+s+"\n");
                 i++;
             }
             else
@@ -559,6 +587,7 @@ public class DocTermReadRawFile {
         rd.close();
         bw.close();
         bw2.close();
+        bwlog.close();
         
         BufferedWriter bw3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "keyNoU.txt"),"UTF-8"));
         for(String sk: keywordList1.keySet())    
