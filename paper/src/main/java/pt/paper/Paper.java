@@ -76,10 +76,10 @@ public class Paper {
 
         double[][] X2= Matrix.Transpose(lsi.X);
 
-        for(int i = 0; i< X2.length; i++)
-        {
-            System.out.println(i+ ": "+ Vector.norm(X2[i]));
-        }        
+//        for(int i = 0; i< X2.length; i++)
+//        {
+//            System.out.println(i+ ": "+ Vector.norm(X2[i]));
+//        }        
 
 //        CSVFile.saveMatrixData("ADMM", X2, "X2");
 //        Matrix.printMat(X2, "Projection");
@@ -92,10 +92,10 @@ public class Paper {
         double[][] ret2 = Matrix.Transpose(Matrix.sim(A2, Q22));
 //        Matrix.printMat(ret2, "query result");
 
-        for(int i = 0; i< Q22.length; i++)
-        {
-            System.out.println(i+ ": "+ Vector.norm(X2[i])+" - "+Vector.norm(A2[i])+" - "+Vector.norm(Q22[i])+" - "+Vector.norm(ret2[i]));
-        }
+//        for(int i = 0; i< Q22.length; i++)
+//        {
+//            System.out.println(i+ ": "+ Vector.norm(X2[i])+" - "+Vector.norm(A2[i])+" - "+Vector.norm(Q22[i])+" - "+Vector.norm(ret2[i]));
+//        }
         
         List<List<Edge>> res = new ArrayList<>();
         

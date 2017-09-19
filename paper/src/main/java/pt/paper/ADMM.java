@@ -63,7 +63,7 @@ public class ADMM extends LSI{
         {           
             X = Matrix.updateCol(X, admmProcess(i, _rho,BtB, BtD, AtB, e1, e2),i);
         }
-        Matrix.printMat(X, "return");
+//        Matrix.printMat(X, "return");
     }
     
     private double[] admmProcess(int i, double _rho, double[][] BtB, double[][] BtD, double[][] AtB, double e1, double e2)
@@ -216,8 +216,8 @@ public class ADMM extends LSI{
         }
 
         updateRho(r, s);
-        if(time<5 && id ==0)
-            System.err.println(time+ "new rho "+rho+": \t"+r+" - "+s);
+//        if(time<5 && id ==0)
+//            System.err.println(time+ "new rho "+rho+": \t"+r+" - "+s);
         return false;
     }
 }

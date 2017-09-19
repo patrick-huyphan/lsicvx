@@ -46,17 +46,18 @@ public class main {
     public static void main(String[] args) throws IOException, JOptimizerException, Exception {
         // TODO code application logic here
 
-        jopLP();
-        jopQP();
-        jopQQP();
-        jopGP();
-        jopSP();
-        jopSCP();
-        jopBIP();
+//        jopLP();
+//        jopQP();
+//        jopQQP();
+//        jopGP();
+//        jopSP();
+//        jopSCP();
+//        jopBIP();
         
-        double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
+        double[][] DQ = CSVFile.readMatrixData("../data/data_696_1109.csv"); //data_697_3187
+//        double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
         int n = DQ.length;
-        int q = 5;
+        int q = 10;
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
 
         double[][] D = Matrix.subMat(DQ, 0, n - q, 0, DQ[0].length);

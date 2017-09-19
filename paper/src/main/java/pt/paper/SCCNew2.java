@@ -242,18 +242,18 @@ public class SCCNew2 extends Clustering {
         }
         fw.close();
 
-        fw = new FileWriter("tmp/"+loop+"_z_data.txt");
-        for(Key k: V.E.keySet())
-        {
-            fw.append("\n" + k.src+"-"+k.dst+"\t");
-            double [] tmp = V.get(k);
-            for (int j = 0; j < numOfFeature; j++) {
-                fw.append(tmp[j] + "\t");
-            }
-            fw.append("\n");
-        }
-        fw.close();
-
+//        fw = new FileWriter("tmp/"+loop+"_z_data.txt");
+//        for(Key k: V.E.keySet())
+//        {
+//            fw.append("\n" + k.src+"-"+k.dst+"\t");
+//            double [] tmp = V.get(k);
+//            for (int j = 0; j < numOfFeature; j++) {
+//                fw.append(tmp[j] + "\t");
+//            }
+//            fw.append("\n");
+//        }
+//        fw.close();
+//
 //        fw = new FileWriter("tmp/"+loop+"_u_data.txt");
 //        for(Key k: U.E.keySet())
 //        {
