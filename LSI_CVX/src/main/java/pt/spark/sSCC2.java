@@ -57,7 +57,7 @@ public class sSCC2 {
     public sSCC2(JavaSparkContext context,
             double[][] A,// term-doc
             boolean hl,
-            String outFilePath) throws Exception {
+            String outFilePath, int maxloop) throws Exception {
 
         
         double _lamda = 1.05;
@@ -145,7 +145,7 @@ public class sSCC2 {
         
 //        boolean stop = false;
         int loop = 0;
-        while(loop <19000)
+        while(loop <maxloop)
         {
             /**
              * - calculator X in slaver
