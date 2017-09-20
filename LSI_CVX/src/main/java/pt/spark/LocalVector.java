@@ -298,7 +298,7 @@ public class LocalVector  implements Cloneable, java.io.Serializable {
         double norm = LocalVector.norm(a);
         if(norm == 0)
         {
-            System.out.println("pt.paper.Vector.proxN2_2() zero");
+//            System.out.println("pt.paper.Vector.proxN2_2() zero");
             return a;
         }
 //        else
