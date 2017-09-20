@@ -159,6 +159,8 @@ public class sSCC2 {
              */
 //            System.out.println("pt.spark.sSCC2.run()  "+loop +": " + _rho0 + " - "+_lamda);
             System.out.print(".");
+            if(loop%300 ==0)
+                System.out.println(".");
             Broadcast<Double> rho0 = context.broadcast(_rho0);
             Broadcast<Double> lamda = context.broadcast(_lamda);
             Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
