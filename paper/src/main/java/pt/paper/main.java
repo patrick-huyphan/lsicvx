@@ -57,7 +57,7 @@ public class main {
         double[][] DQ = CSVFile.readMatrixData("../data/data_696_1109.csv"); //data_697_3187
 //        double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
         int n = DQ.length;
-        int q = 10;
+        int q = 5;
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
 
         double[][] D = Matrix.subMat(DQ, 0, n - q, 0, DQ[0].length);

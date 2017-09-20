@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import static pt.paper.Clustering.MAX_LOOP;
 
 /**
@@ -63,7 +64,7 @@ public class SCCNew2 extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2) throws IOException, Exception {
+    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
@@ -91,13 +92,7 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[i], "X "+i, stop);
 //        X=A;
         int loop = 0; 
-        while (loop < 900) {
-
-//                if(loop==4)
-//                {
-//                    double[] v = Matrix.getRow(X, i);
-//                    Vector.printV(v, "v"+"-"+loop, stop);
-//                }
+        while (loop < maxloop) {
 
 //            System.out.println("pt.paper.SCCNew.<loop>() " + loop +" lambda: "+lambda);
 //            double [] nx = new double[numberOfVertices];
@@ -112,68 +107,17 @@ public class SCCNew2 extends Clustering {
             U = updateU(U, V, loop); //u-x+v
 //            Matrix.printMat(X, "SCC x "+loop);
             if(loop<5)  
-            logData(loop, fw, U, V);
-//            if(loop>0)
-//                X0 = X;
-            
-            if(loop<3)
-            {
-//                for(int i = 0; i<numberOfVertices; i++)
-//                {
-//                    System.out.println(i+ " X0 : "+ Vector.norm(X0[i]));
-//                }
-                /*
-                for(Key k: V.E.keySet())
-                {
-                    double n = Vector.norm(V.get(k));
-                    if(n>0)
-                    System.out.println(loop+" V   "+ k.src+" - "+k.dst+": "+  n);
-                }
-                for(Key k: U.E.keySet())
-                {
-                    double n = Vector.norm(U.get(k));
-                    if(n>0)
-                    System.out.println(loop+" U   "+ k.src+" - "+k.dst+": "+  n);
-                }
-                */
-//                for(int i = 0; i<numberOfVertices; i++)
-//                {
-//                    System.out.println(i+ " X: "+ Vector.norm(X[i]));
-//                }
-            }
-            if (checkStop(X0, U0, V0, V, loop) && (loop > 1))// || (stop == true)))
+            logData(loop, fw, U, V);          
+
+            if (checkStop(X0, U0, V0, V, loop) && (loop > 1))
             {
                 System.out.println(" SCC 2 STOP at " + loop);
+//                getPath(V);
                 break;
             }
 
-            lambda = lambda*1.005;
-//            if(loop == 0)
-//            for(Key k: V.E.keySet())
-//            {
-//                Vector.printV(V.get(k), " "+k.dst+" "+k.src, true);
-//                if(k.src == 5 && k.dst == 11)
-//                {
-//                    double[] v0 = V0.get(k);
-//                    double[] v = V.get(k);
-////                    if(v[3] != v0[3])
-//                    {
-//                        System.out.println(loop+" pt.spark.sSCC2.<init>() v(5-11)[3]"+ v[3]+" - " +v0[3]);
-//                    }
-//                }
-//            }
-//            for(Key k: U.E.keySet())
-//            {
-//                if(k.src == 5 && k.dst == 11)
-//                {
-//                    double[] v0 = U0.get(k);
-//                    double[] v = U.get(k);
-//                    if(v[3] != v0[3])
-//                    {
-//                        System.out.println(loop+" pt.spark.sSCC2.<init>() u(5-11)[3]"+ v[3]+" - " +v0[3]);
-//                    }
-//                }
-//            }
+//            lambda = lambda*1.005;
+
             X0 = Matrix.Copy(X);            
             V0 = V;
             U0 = U;
@@ -341,9 +285,11 @@ public class SCCNew2 extends Clustering {
             }
         }
         double[] sumd = Vector.sub(sumdi, sumdj);
-//        if(i==1)    Vector.printV(sumd,"X "+i,true);        
+//        if(i==1)    Vector.printV(sumd,loop+ " sum: ",true);        
         //Vector.plus(A[i], Vector.scale(xAvr, numberOfVertices));
         X[i] = Vector.scale(Vector.plus(B,sumd), 1./(1+numberOfVertices));
+        
+//        if(i==1)    Vector.printV(X[i],loop+ " X: ",true);
 //        if(loop <3)
 //        {
 //            System.out.println(i+ ": "+ Vector.norm(sumdi)+ " - "+Vector.norm(sumdj)+" - " +Vector.norm(X[i]));
@@ -420,6 +366,11 @@ public class SCCNew2 extends Clustering {
             double[] bbu = Vector.sub(Vector.sub(X[v.src], X[v.dst]), U.get(v));
             double w = Edge.getEdgeW(edges, v.src, v.dst);
             bbu = Vector.proxN2_2(bbu, lambda*w);
+//            double tmp = Vector.norm(bbu);
+//            if(tmp>0)
+//            {
+//                System.out.println("pt.paper.SCCNew2.updateV() "+ v.src+" - "+v.dst+": "+tmp);
+//            }
             ret.put(v.src, v.dst, bbu);
         });//
         return ret;
@@ -484,30 +435,35 @@ public class SCCNew2 extends Clustering {
             nz[i] = Vector.norm(V.get(b));
             if(nz[i]>0)
             {
-//                if(loop == 0)
-//                    System.out.println(i+" pt.paper.SCCNew2.checkStop() " + b.src+ " - "+b.dst+": "+nz[i]);
                 i++;
             }
         }
-        double nu[] = new double[U.E.size()];
-        i= 0;
-        for (Key b : U.E.keySet()) {
-            nu[i] = Vector.norm(U.get(b));
-            if(nu[i]>0)
-            {
-                i++;
-            }
-        }
-        
-        double nx[] = new double[X0.length];
-        i = 0;
-        for(double[] x: X0)
+        if(i== 0)
         {
-            nx[i] = Vector.norm(x);
+//            System.out.println(loop+" pt.paper.SCCNew2.checkStop() V = 0");
+            return true;
+        }
+
+
+//        double nu[] = new double[U.E.size()];
+//        i= 0;
+//        for (Key b : U.E.keySet()) {
+//            nu[i] = Vector.norm(U.get(b));
+//            if(nu[i]>0)
+//            {
+//                i++;
+//            }
+//        }
+        
+//        double nx[] = new double[X0.length];
+//        i = 0;
+//        for(double[] x: X0)
+//        {
+//            nx[i] = Vector.norm(x);
 //            if(loop ==1)
 //                System.out.println("pt.paper.SCCNew2.checkStop() "+i+": "+nx[i]);
-            i++;
-        }
+//            i++;
+//        }
 //        if (rho == 0) {
 //            System.err.println("new rho "+rho+": "+r+" - "+s +"\t"+ep+":"+ed+" ==== "+count);
 //            return true;
@@ -515,9 +471,10 @@ public class SCCNew2 extends Clustering {
 //        double noZ = Vector.norm(nz);
 //        if(loop<50)
 //        System.out.println("pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ+" - "+ Vector.norm(nx) +" - "+ Vector.norm(nu));
-//        DecimalFormat twoDForml = new DecimalFormat("0.00000000");
+//        DecimalFormat twoDForml = new DecimalFormat("0.000000000");
 //        noZ = (Double.isNaN(noZ))?0:Double.valueOf(twoDForml.format(noZ));
 //        if(noZ == 0.)
+//            System.out.println(loop+ " pt.paper.SCCNew2.checkStop() "+r+" - "+s +" - "+noZ);
 //            return true;
         
         return (r <= ep) && (s <= ed);
@@ -548,5 +505,55 @@ public class SCCNew2 extends Clustering {
             i++;    
         }
         return Vector.norm(x);
+    }
+
+    private void getPath(ListENode V) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<List<Integer>> cls = new LinkedList<>();
+        int[] isChecked = new int[numOfFeature];
+        for(int i =0; i< numberOfVertices; i++)
+        {
+            if(isChecked[i] ==0){
+                List<Integer> scls = new LinkedList<>();
+                Stack<Integer> path = new Stack();
+                scls.add(i);
+                path.add(i);
+                while(!path.empty())
+                {
+                    int current = path.peek();
+//                    System.out.println("pt.paper.SCCNew2.getPath() "+current);
+                    if(isChecked[current] > 0)
+                    {
+                        path.pop();
+                        continue;
+                    }
+                    for(Key k : V.E.keySet())
+                    {
+                        if(k.src ==current && !path.contains(k.dst) && (isChecked[k.dst]==0))
+                        {
+//                            System.out.println("pt.paper.SCCNew2.getPath() "+ k.src+" "+k.dst);  
+                            path.push(k.dst);
+                            scls.add(k.dst);
+                        }
+                        if(k.dst ==current && !path.contains(k.src) && (isChecked[k.src]==0))
+                        {
+//                            System.out.println("pt.paper.SCCNew2.getPath() "+ k.src+" "+k.dst);  
+                            path.push(k.src);
+                            scls.add(k.src);
+                        }
+                    }
+                    path.pop();
+                    isChecked[current]++;
+                }
+                if(scls.size()>0)
+                {
+                    cls.add(scls);
+                    if(scls.size()==1)
+                    System.out.println("pt.paper.SCCNew2.getPath() sub path "+scls.get(0));
+                }
+                isChecked[i]++;
+            }
+        }
+        System.out.println("pt.paper.SCCNew2.getPath() total "+cls.size());
     }
 }

@@ -296,15 +296,18 @@ public class Vector implements Cloneable, java.io.Serializable {
         double norm = Vector.norm(a);
         if(norm == 0)
         {
-            System.out.println("pt.paper.Vector.proxN2_2() zero");
+//            System.out.println("pt.paper.Vector.proxN2_2() zero");
             return a;
         }
-//        else
-        {
-            double rate = 1. - sic/norm;
-//            System.out.println("proxN2_2() " +norm +" "+rate);
-            return (rate>0) ? Vector.scale(a, rate): Vector.scale(a, 0);
-        }
+ 
+        double rate = 1. - sic/norm;
+        
+        DecimalFormat twoDForml = new DecimalFormat("0.0000000000");
+        rate = (Double.isNaN(rate))?0:Double.valueOf(twoDForml.format(rate));
+        
+//        System.out.println("proxN2_2() " +norm +" "+rate);
+        return (rate>0) ? Vector.scale(a, rate): Vector.scale(a, 0);
+
     }
     /**
      *
