@@ -158,7 +158,7 @@ public class sSCC2 {
              * - parallel checkstop, server update
              */
 //            System.out.println("pt.spark.sSCC2.run()  "+loop +": " + _rho0 + " - "+_lamda);
-
+            System.out.print(".");
             Broadcast<Double> rho0 = context.broadcast(_rho0);
             Broadcast<Double> lamda = context.broadcast(_lamda);
             Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
