@@ -94,7 +94,8 @@ public class SCCNew2 extends Clustering {
         int loop = 0; 
         while (loop < maxloop) {
 
-//            System.out.println("pt.paper.SCCNew.<loop>() " + loop +" lambda: "+lambda);
+            if(loop%300 ==0)
+            System.out.println(loop +" lambda: "+lambda);
 //            double [] nx = new double[numberOfVertices];
             for (int i = 0; i < numberOfVertices; i++) {             
                 updateX(i, V, U, B[i], loop);
@@ -116,7 +117,7 @@ public class SCCNew2 extends Clustering {
                 break;
             }
 
-//            lambda = lambda*1.005;
+            lambda = lambda*1.005;
 
             X0 = Matrix.Copy(X);            
             V0 = V;
@@ -438,11 +439,11 @@ public class SCCNew2 extends Clustering {
                 i++;
             }
         }
-        if(i== 0)
-        {
+//        if(i== 0)
+//        {
 //            System.out.println(loop+" pt.paper.SCCNew2.checkStop() V = 0");
-            return true;
-        }
+//            return true;
+//        }
 
 
 //        double nu[] = new double[U.E.size()];
