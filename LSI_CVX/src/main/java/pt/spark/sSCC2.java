@@ -57,10 +57,10 @@ public class sSCC2 {
     public sSCC2(JavaSparkContext context,
             double[][] A,// term-doc
             boolean hl,
-            String outFilePath, int maxloop) throws Exception {
+            String outFilePath, int maxloop,double ilamda ) throws Exception {
 
         
-        double _lamda = 1.05;
+        double lamda = ilamda;
         double _lamda2 = 0.01;
         double _eps_abs = 1e-5;
         double _eps_rel = 1e-5;
@@ -162,7 +162,7 @@ public class sSCC2 {
             if(loop%300 ==0)
                 System.out.println( loop+".");
             Broadcast<Double> rho0 = context.broadcast(_rho0);
-            Broadcast<Double> lamda = context.broadcast(_lamda);
+            Broadcast<Double> _lamda = context.broadcast(lamda);
             Broadcast<List<LocalEdgeNode>> _U = context.broadcast(U);
             Broadcast<List<LocalEdgeNode>> _V = context.broadcast(V);
 
@@ -182,7 +182,7 @@ public class sSCC2 {
 
             Broadcast<List<Tuple2<Integer, Vector>>> _x1 = context.broadcast(X1);
             
-            V=  uv.map((LocalEdgeNode v1) -> updateVNode(_x1.value(), v1, _U.value(), lamda.value(), E.value())).cache().collect();
+            V=  uv.map((LocalEdgeNode v1) -> updateVNode(_x1.value(), v1, _U.value(), _lamda.value(), E.value())).cache().collect();
             
             Broadcast<List<LocalEdgeNode>> _V1 = context.broadcast(V);
             
@@ -194,7 +194,7 @@ public class sSCC2 {
             if(checkStop(A, X0, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
             {
                 rho0.destroy();
-                lamda.destroy();
+                _lamda.destroy();
                 _V.destroy();
                 _U.destroy();
                 _x1.destroy();
@@ -202,7 +202,7 @@ public class sSCC2 {
                 break;
             }
 //update for next process
-            _lamda = _lamda * 1.005; 
+            lamda = lamda * 1.005; 
             
             V0= V;
             U0= U;
@@ -220,7 +220,7 @@ public class sSCC2 {
 //            fwt.close();
             
             rho0.destroy();
-            lamda.destroy();
+            _lamda.destroy();
             _V.destroy();
             _V1.destroy();
             _U.destroy();

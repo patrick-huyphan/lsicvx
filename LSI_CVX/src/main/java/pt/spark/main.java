@@ -47,9 +47,10 @@ public class main {
         double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
         String ouputdir = args[1]+"/"+System.currentTimeMillis();
         int numofQ = Integer.parseInt(args[2]);
-        int loop = Integer.parseInt(args[5]);
         boolean HL = (Integer.parseInt(args[3]) ==1)?true: false;
         boolean orthognomal = (Integer.parseInt(args[4]) ==1)?true: false;
+        int loop = Integer.parseInt(args[5]);
+        double lambda = Double.parseDouble(args[6]);
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
@@ -84,7 +85,7 @@ public class main {
         sc.setLogLevel("ERROR");
         
 //        List<Tuple2<Integer,Vector>> scc = 
-        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop);
+        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambda);
 
 //        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
