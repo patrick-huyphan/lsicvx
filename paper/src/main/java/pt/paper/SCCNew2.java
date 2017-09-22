@@ -306,7 +306,7 @@ public class SCCNew2 extends Clustering {
 //            System.out.print("Cluster " + i + ":\t");
             fw.append("Cluster " + i + ":\t");
             for (int j = 0; j < sub.size(); j++) {
-                System.out.print(sub.get(j) + "\t");
+//                System.out.print(sub.get(j) + "\t");
                 fw.append(sub.get(j) + "\t");
             }
             fw.append("\n");
