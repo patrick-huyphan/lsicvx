@@ -94,12 +94,11 @@ public class SCCNew2 extends Clustering {
         int loop = 0; 
         while (loop < maxloop) {
 
-            if(loop%300 ==0)
+            if(loop%200 ==0)
             System.out.println(loop +" lambda: "+lambda);
-//            double [] nx = new double[numberOfVertices];
+
             for (int i = 0; i < numberOfVertices; i++) {             
                 updateX(i, V, U, B[i], loop);
-//                nx[i] = Vector.norm(X[i]);
             }
 //            if(loop ==0)
 //                System.out.println("pt.paper.SCCNew2.<init>()   x0 "+ Vector.norm(nx));
