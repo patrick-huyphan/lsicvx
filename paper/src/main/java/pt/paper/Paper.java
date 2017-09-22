@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top) throws IOException, Exception {
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int startj) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -40,9 +40,9 @@ public class Paper {
         int loop = 8000;
         double slambda = 0.2;
         double st = 1;
-        for(int i = 0; i<20; i++)
+        for(int i = starti; i<20; i++)
         {
-            for(int j = 0; j< 100; j++)
+            for(int j = startj; j< 100; j++)
             {
                 double lambda = slambda*i;
                 double t = st+0.0025*j;
