@@ -65,7 +65,7 @@ public class main {
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
 
-        PaperRuner(D, Q, 10, Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
+        PaperRuner(D, Q, 10, 1, 15, 1, 20);//Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
 //        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -10, 0, docTerm[0].length);
