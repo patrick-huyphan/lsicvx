@@ -37,7 +37,7 @@ public class Paper {
 ////        printMat(echelon, false, "echelong");
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
-        int loop = 5000;
+        int loop = 8000;
         double slambda = 0.2;
         double st = 1;
         for(int i = 0; i<20; i++)
