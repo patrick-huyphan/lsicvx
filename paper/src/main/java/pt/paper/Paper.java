@@ -28,7 +28,7 @@ public class Paper {
 //        Matrix.printMat(Q, "Q init");
         
         double[][] echelon = Matrix.echelon(D);//
-        Clustering clt;
+        Clustering clt = null;
         LSI lsi;
 //        CSVFile.saveMatrixData("echelon", echelon, "echelon");
 
@@ -37,9 +37,14 @@ public class Paper {
 ////        printMat(echelon, false, "echelong");
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
-        int loop = 7500;
-        clt = new SCCNew2(termDocMat, 1.05, 0.05, 0.01, 1e-5, 1e-5, loop);
-        
+        int loop = 5000;
+        double lambda = 0.2;
+        for(int i = 0; i<20; i++)
+        {
+            
+            System.out.println(i+" SCC start "+(lambda*i));
+            clt = new SCCNew2(termDocMat, lambda*i, 0.05, 0.01, 1e-5, 1e-5, loop);
+        }
 //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
 
 //        SCC scc = new SCC(termDocMat, 3.5, 0.15, 0.25, 1e-3, 1e-3);
