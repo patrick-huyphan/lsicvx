@@ -64,7 +64,7 @@ public class SCCNew2 extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop) throws IOException, Exception {
+    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop, double t) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
@@ -92,6 +92,7 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[i], "X "+i, stop);
 //        X=A;
         int loop = 0; 
+        fw = new FileWriter("tmp/"+_lambda+"_"+t+"_SCC_Cluster.txt");
         while (loop < maxloop) {
 
             if(loop%200 ==0)
@@ -116,13 +117,24 @@ public class SCCNew2 extends Clustering {
                 break;
             }
 
-            lambda = lambda*1.005;
+            lambda = lambda*t;
 
+            if(loop %200 ==0)
+            {
+                double [][] tmp = Matrix.Copy(X);
+                for (int i = 0; i < numberOfVertices; i++) {
+                    Vector.formV(tmp[i], "0.000000000");
+                }
+                cluster = new ArrayList<>();
+                getCluster2(fw, loop, tmp);                
+            }
+            
             X0 = Matrix.Copy(X);            
             V0 = V;
             U0 = U;
             loop++;
         }
+        fw.close();
 //            Matrix.printMat(X, "SCC x "+i);
         for (int i = 0; i < numberOfVertices; i++) {
             Vector.formV(X[i], "0.000000000");
@@ -132,7 +144,7 @@ public class SCCNew2 extends Clustering {
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new ArrayList<>();
 
-        fw = new FileWriter("tmp/SCC_Cluster.txt");
+        fw = new FileWriter("tmp/SCC_ClusterF.txt");
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
@@ -255,6 +267,53 @@ public class SCCNew2 extends Clustering {
 
     }
 
+    public final void getCluster2(FileWriter fw, int loop, double [][]data) throws IOException {
+//        int  ret[] = new int[numberOfVertices];
+        HashMap<Integer, Integer> C = new HashMap<>();
+//        List<Integer>  intdex = new ArrayList<Integer>();
+        for (int i = 0; i < numberOfVertices; i++) {
+            if (!C.containsKey(i)) {
+                C.put(i, i);
+                for (int j = i + 1; j < numberOfVertices; j++) {
+                    if (!C.containsKey(j)) {
+                        if ((Vector.isSameVec(Matrix.getRow(data, i), Matrix.getRow(data, j)))) {
+                            C.put(j, i);
+                        }
+                    }
+                }
+            }
+        }
+//    	count--;
+//    	System.out.println("Num of sub mat: "+intdex.size());
+
+        for (int i = 0; i < numberOfVertices; i++) {
+            List<Integer> sub = new LinkedList<>();
+            for (int j = i; j < numberOfVertices; j++) {
+                if (C.get(j) == i) {
+                    sub.add(j);
+                }
+            }
+            if (!sub.isEmpty()) {
+                cluster.add(sub);
+            }
+        }
+//    	cluster.add(intdex);
+//Test    
+//        System.out.println("paper.SCC.getCluster() " + cluster.size());
+        fw.append("loop time "+ loop +"paper.SCC.getCluster() " + cluster.size() +"\n");
+        for (int i = 0; i < cluster.size(); i++) {
+            List<Integer> sub = cluster.get(i);
+//            System.out.print("Cluster " + i + ":\t");
+            fw.append("Cluster " + i + ":\t");
+            for (int j = 0; j < sub.size(); j++) {
+                System.out.print(sub.get(j) + "\t");
+                fw.append(sub.get(j) + "\t");
+            }
+            fw.append("\n");
+//            System.out.println("");
+        }
+
+    }
 
     /**
      * TODO: should update with optimize problem: 
