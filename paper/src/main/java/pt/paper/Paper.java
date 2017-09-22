@@ -45,7 +45,7 @@ public class Paper {
             for(int j = 0; j< 100; j++)
             {
                 double lambda = slambda*i;
-                double t = st+0.0025;
+                double t = st+0.0025*j;
                 System.out.println(i+" SCC start "+lambda);
                 clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, loop, t);
             }
