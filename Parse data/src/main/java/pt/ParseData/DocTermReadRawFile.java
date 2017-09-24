@@ -496,6 +496,9 @@ public class DocTermReadRawFile {
         BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + mTime+"_1_doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
         while (rd.readLine() != null) numOfDoc++;
         rd.close();
+        rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "query_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
+        while (rd.readLine() != null) numOfDoc++;
+        rd.close();
 
 //        BufferedReader 
         rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "keywordsList.txt"), "UTF8"));//(new FileReader(input + "keywordsList.txt"));
@@ -541,11 +544,12 @@ public class DocTermReadRawFile {
         // Create matrix doc - term.
         int i = 0, j=0;
 //        BufferedReader 
-        rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + mTime+"_1_doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
+
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "not_use_2.txt"),"UTF-8"));
         BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "use_2.txt"),"UTF-8"));
         BufferedWriter bwlog = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output + "loguse_2.txt"),"UTF-8"));
-        
+        // face data
+        rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + mTime+"_1_doc_Data.txt"), "UTF8"));//(new FileReader(input + "doc_Data.txt"));
         while ((s = rd.readLine()) != null) {
             st = new StringTokenizer(s, " |", false);
             
@@ -590,6 +594,54 @@ public class DocTermReadRawFile {
                 bw.append(j+"\t"+i+"\t"+termpd+"\t"+s+"\n");
             j++;
         } // while ends 
+        rd.close();
+        //qeury data
+        rd = new BufferedReader(new InputStreamReader(new FileInputStream(input + "query_Data.txt"), "UTF8"));
+        while ((s = rd.readLine()) != null) {
+            st = new StringTokenizer(s, " |", false);
+            
+//            System.out.print(i+":\t");
+            int termpd = 0; 
+            while (st.hasMoreTokens()) {
+                temp = st.nextToken();
+//                            System.out.println(temp+" "+keywordList.indexOf(temp));
+                temp = temp.replaceAll(" ", "");
+                int key = _keywordList.indexOf(keyMap.get(temp));
+                
+                if(keyMap.containsKey(temp) && key<countKeyword && i<numOfDoc)
+                {
+//                    System.out.println(temp+" "+key+ " "+keyMap.get(temp)+" "+coutK2[key]);
+                    countMatrixT[i][key] = countMatrixT[i][key] + 1;
+                    if(!coutK2.containsKey(key))
+                        coutK2.put(key, 1);
+                    else
+                        coutK2.replace(key, coutK2.get(key)+1);// [key] = coutK2[key]+1;
+                    termpd++;
+//                    System.out.print(key +"-"+countMatrix[i][key]+"\t");
+                }
+                else
+                {
+//                    bw3.append(temp+"\n");
+                    if(!keywordList1.containsKey(temp))
+                        keywordList1.put(temp,1);
+                    else
+                        keywordList1.replace(temp, keywordList1.get(temp)+1);
+//                    System.out.println(temp+" "+key+ " "+keyMap.get(temp));
+                    break;
+                }
+            } // while ends 
+//            System.out.println();
+            if(termpd>2)
+            {
+                bw2.append(s+"\n");
+                bwlog.append(j+"\t"+i+"\t"+termpd+"\t"+s+"\n");
+                i++;
+            }
+            else
+                bw.append(j+"\t"+i+"\t"+termpd+"\t"+s+"\n");
+            j++;
+        } // while ends 
+        
         rd.close();
         bw.close();
         bw2.close();

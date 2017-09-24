@@ -23,9 +23,10 @@ public class sParseData {
 
         String mtime = Long.toString(System.currentTimeMillis());
         
-        String input = "../data/OutputP/outputT2017_07_08_10_43_4798";
+        String input = "../data/OutputP/inputFaceData";
         String input2 = "../data/OutputP/input/";
         String fileOUname = "../data/OutputP/" + mtime + "/"; //
+        
         readRawData(input, input2,fileOUname, mtime, 5);    
 
     }
