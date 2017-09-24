@@ -20,20 +20,33 @@ public class sParseData {
   private static final Logger LOGGER = LoggerFactory.getLogger(sParseData.class);
 
     public static void main(String[] args) throws IOException {
-    readRawData("","");    
-    }
-    private static void readRawData(String input, String output) throws IOException
-    {
-        String fileOUname = "../data/OutputP/" + Long.toString(System.currentTimeMillis()) + "/"; //
-        String input2 = "../data/OutputP/outputT2017_07_08_10_43_4798"; 
-        new File(fileOUname).mkdir();
-        
-        DocTermReadRawFile readRawFile = new DocTermReadRawFile(input2);
-        
-//        int [][]data2 = readRawFile.calCountMat1st(fileOUname,5);        
-        int [][]data2 = readRawFile.calCountMat("../data/OutputP/input/", fileOUname, 5);
-        DocTermMatrixTF xx2 = DocTermMatrixTF.buildMat(3, data2);
 
-        CSVFile.saveMatrixData(fileOUname+"data_"+data2.length+"_"+data2[0].length, xx2.tdidf, "data");
+        String mtime = Long.toString(System.currentTimeMillis());
+        
+        String input = "../data/OutputP/outputT2017_07_08_10_43_4798";
+        String input2 = "../data/OutputP/input/";
+        String fileOUname = "../data/OutputP/" + mtime + "/"; //
+        readRawData(input, input2,fileOUname, mtime, 5);    
+
+    }
+    private static void readRawData(String input, String input2, String output, String mTime,int minLength) throws IOException
+    {
+
+        new File(output).mkdir();
+        
+        DocTermReadRawFile readRawFile = new DocTermReadRawFile(input, mTime);
+        {
+            int [][]data = readRawFile.calCountMat1st(output,input2,minLength);       
+            DocTermMatrixTF xx2 = DocTermMatrixTF.buildMat(3, data);
+
+            CSVFile.saveMatrixData(output+mTime+"_1_data_"+data.length+"_"+data[0].length, xx2.tdidf, "data");
+        }
+        {
+            int [][]data2 = readRawFile.calCountMat(input2,output, minLength);
+            DocTermMatrixTF xx2 = DocTermMatrixTF.buildMat(3, data2);
+
+           CSVFile.saveMatrixData(output+mTime+"_2_data_"+data2.length+"_"+data2[0].length, xx2.tdidf, "data");
+        }
+
     }
 }
