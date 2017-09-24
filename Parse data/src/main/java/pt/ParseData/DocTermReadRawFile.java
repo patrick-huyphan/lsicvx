@@ -35,7 +35,7 @@ public class DocTermReadRawFile {
 //    static String path = "/home/hduser/Dropbox/project/Big assignment/paper/data/out";
     //static String path = "/home/hduser/workspace/Java_prj/20160728/data/20news-18828/alt.atheism";
 //  static String path = "Corpus2";
-    public static List<String> keywordList;// = new ArrayList();
+
 
     public static File[] listOfFiles;// = folder.listFiles();
     public static int[][] countMatrix;
@@ -43,13 +43,13 @@ public class DocTermReadRawFile {
     
     public DocTermReadRawFile(String path, String _mtime) {
         File folder = new File(path);
-        keywordList = new ArrayList();
+//        keywordList = new ArrayList();
         listOfFiles = folder.listFiles();
         mTime = _mtime;
     }
 
     public int[][] calcCountMat(String output, int ntermPdoc) throws FileNotFoundException, IOException {
-
+        
         String s, temp;
         StringTokenizer st;
         int countKeyword = 0;
@@ -58,7 +58,7 @@ public class DocTermReadRawFile {
         Mystemmer stem = new Mystemmer();
         //  List keywordList = new  ArrayList();
 //        List<Integer> keywordListCount = new ArrayList();
-
+        List<String> keywordList = new LinkedList();
         StopWordList swl = new StopWordList();
 
         BufferedWriter bwAll = new BufferedWriter( new OutputStreamWriter(new FileOutputStream(output + "doc_Data.txt"),"UTF-8"));
@@ -257,6 +257,7 @@ public class DocTermReadRawFile {
         int numOfDoc = 0;
 //        keywordList = new ArrayList();
 //        List<Integer> keyCount = new ArrayList<>();
+        List<String> keywordList = new LinkedList();
         Mystemmer stem = new Mystemmer();
         //  List keywordList = new  ArrayList();
 //        List<Integer> keywordListCount = new ArrayList();
