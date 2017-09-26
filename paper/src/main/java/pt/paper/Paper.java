@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, int loop, boolean logSave, int stepSave,String output , boolean runADMM) throws IOException, Exception {
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, int loop, boolean logSave, int stepSave,String output , boolean runADMM) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -38,14 +38,13 @@ public class Paper {
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
         
-        double slambda = 0.2;
-        double st = 1;
+
         for(int i = starti; i<endi; i++)
         {
             for(int j = startj; j< endj; j++)
             {
                 double lambda = slambda*i;
-                double t = st+0.0025*j;
+                double t = st+sti*j;
                 System.out.println(i+" SCC start "+lambda);
                 clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, loop, t, logSave, stepSave,output);
                 

@@ -74,6 +74,10 @@ public class main {
         boolean logSave = false;// = (Integer.parseInt(args[8]) == 1);
         boolean runADMM =false;// = (Integer.parseInt(args[9]) == 1);
         
+        double slambda = 0.2;
+        double st = 1;
+        double sti = 0.0025;
+        
         BufferedReader br = new BufferedReader(new FileReader("config.txt"));
         while ((s = br.readLine()) != null) {
             String value[] = s.split(" : ");
@@ -117,6 +121,21 @@ public class main {
                 stepSave = Integer.parseInt(value[1].replaceAll(" ", ""));
                 System.out.println("stepSave: "+stepSave);
             }
+            if(value[0].contains("slambda"))
+            {
+                slambda = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("slambda: "+slambda);
+            }
+            if(value[0].contains("stlambda"))
+            {
+                st = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("stlambda: "+st);
+            }
+            if(value[0].contains("sti"))
+            {
+                sti = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("sti: "+sti);
+            }
             if(value[0].contains("saveLog"))
             {
                 logSave = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
@@ -152,7 +171,7 @@ public class main {
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
 
-        PaperRuner(D, Q, 10, si, ei, sj, ej, maxLoop, logSave, stepSave,"tmp/"+mtime, runADMM);
+        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti,maxLoop, logSave, stepSave,"tmp/"+mtime, runADMM);
 //Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
