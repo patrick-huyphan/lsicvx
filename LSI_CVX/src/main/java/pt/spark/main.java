@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import static com.google.common.base.Preconditions.checkArgument;
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import java.io.IOException;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Comparator;
 import org.apache.spark.mllib.linalg.Matrix;
 
@@ -41,16 +43,134 @@ public class main {
 //        checkArgument(args.length > 0, "Please provide the path of input file as first parameter.");
 
         
+
+        String s;
+        String dataFile = "";
+        // num of query
+        int numofQ = 0;// = Integer.parseInt(args[1]);
+        // start loop i
+        int si = 0;// = Integer.parseInt(args[2]);
+        int ei = 0;// = Integer.parseInt(args[3]);
+        // start loop j
+        int sj = 0;// = Integer.parseInt(args[4]);
+        int ej = 0;// = Integer.parseInt(args[5]);
         
+        int loop = 0;// = Integer.parseInt(args[6]);
+        int stepSave = 0;// = Integer.parseInt(args[7]);
+        boolean logSave = false;// = (Integer.parseInt(args[8]) == 1);
+        boolean runADMM =false;// = (Integer.parseInt(args[9]) == 1);
+        
+        double slambda = 0.2;
+        double st = 1;
+        double sti = 0.0025;
+        
+        String ouputdir ="";// args[1]+"/"+System.currentTimeMillis();
+//        int numofQ = Integer.parseInt(args[2]);
+        boolean HL = false;//(Integer.parseInt(args[3]) ==1);
+        boolean orthognomal = false;//(Integer.parseInt(args[4]) ==1);
+//        int loop = Integer.parseInt(args[5]);
+        double lambda = 0.2;//Double.parseDouble(args[6]);
+        
+        BufferedReader br = new BufferedReader(new FileReader("config.txt"));
+        while ((s = br.readLine()) != null) {
+            String value[] = s.split(" : ");
+            if(value[0].contains("input"))
+            {              
+                dataFile = value[1];
+                System.out.println("input: "+dataFile);
+            }
+            if(value[0].contains("output"))
+            {              
+                ouputdir = value[1];
+                System.out.println("output : "+ouputdir);
+            }
+            if(value[0].contains("numq"))
+            {
+                numofQ = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("numq: "+numofQ);
+            }
+            if(value[0].contains("si"))
+            {
+                si = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("start i: "+si);
+            }            
+            if(value[0].contains("ei"))
+            {
+                ei = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("end i: "+ei);
+            }
+            if(value[0].contains("sj"))
+            {
+                sj = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("start j: "+sj);
+            }
+            if(value[0].contains("ej"))
+            {
+                ej = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("end j: "+ej);
+            }
+            if(value[0].contains("maxloop"))
+            {
+                loop = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("maxloop: "+loop);
+            }
+            if(value[0].contains("stepSave"))
+            {
+                stepSave = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("stepSave: "+stepSave);
+            }
+            if(value[0].contains("slambda"))
+            {
+                slambda = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("slambda: "+slambda);
+            }
+            if(value[0].contains("stlambda"))
+            {
+                st = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("stlambda: "+st);
+            }
+            if(value[0].contains("sti"))
+            {
+                sti = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("sti: "+sti);
+            }
+            if(value[0].contains("saveLog"))
+            {
+                logSave = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("saveLog: "+value[1]);
+            }
+            if(value[0].contains("runADMM"))
+            {
+                runADMM = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("runADMM: "+value[1]);
+            }
+            if(value[0].contains("HL"))
+            {
+                HL = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("HL: "+value[1]);
+            }
+            if(value[0].contains("orthognomal"))
+            {
+                orthognomal = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("orthognomal: "+value[1]);
+            }     
+            if(value[0].contains("lambda"))
+            {
+                lambda = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("lambda: "+lambda);
+            }
+//                        System.out.println();
+        } // while ends 
+        br.close();
+
         String master = "local[*]";
-        
-        double[][] DQ = pt.paper.CSVFile.readMatrixData(args[0]);
-        String ouputdir = args[1]+"/"+System.currentTimeMillis();
-        int numofQ = Integer.parseInt(args[2]);
-        boolean HL = (Integer.parseInt(args[3]) ==1)?true: false;
-        boolean orthognomal = (Integer.parseInt(args[4]) ==1)?true: false;
-        int loop = Integer.parseInt(args[5]);
-        double lambda = Double.parseDouble(args[6]);
+//        double[][] DQ = null;
+//        if(dataFile.contains("Test"))
+//            DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
+//        else
+//            DQ = pt.paper.CSVFile.readMatrixData(dataFile);//"../data/data_696_1109.csv"); //data_697_3187
+        double[][] DQ = pt.paper.CSVFile.readMatrixData(dataFile);
+
         // currently, not support: matrix data should be prepared before
         // read output from parse data
         
