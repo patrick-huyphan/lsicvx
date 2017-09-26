@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static pt.paper.Clustering.MAX_LOOP;
 
 /**
@@ -64,7 +66,7 @@ public class SCCNew2 extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop, double t) throws IOException, Exception {
+    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop, double t, boolean logSave, int stepSave,String output) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
@@ -92,10 +94,10 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[i], "X "+i, stop);
 //        X=A;
         int loop = 0; 
-        fw = new FileWriter("tmp/"+_lambda+"_"+t+"_SCC_Cluster.txt");
+        fw = new FileWriter(output+"/"+_lambda+"_"+t+"_SCC_Cluster.txt");
         while (loop < maxloop) {
 
-            if(loop%200 ==0)
+            if(loop%stepSave ==0)
             System.out.println(loop +" lambda: "+lambda);
 
             for (int i = 0; i < numberOfVertices; i++) {             
@@ -107,8 +109,8 @@ public class SCCNew2 extends Clustering {
             V = updateV(V, U); //
             U = updateU(U, V, loop); //u-x+v
 //            Matrix.printMat(X, "SCC x "+loop);
-            if(loop<5)  
-            logData(loop, fw, U, V);          
+//            if(loop<5)  
+//            logData(loop, fw, U, V);          
 
             if (checkStop(X0, U0, V0, V, loop) && (loop > 1))
             {
@@ -119,15 +121,16 @@ public class SCCNew2 extends Clustering {
 
             lambda = lambda*t;
 
-            if(loop %200 ==0)
-            {
-                double [][] tmp = Matrix.Copy(X);
-                for (int i = 0; i < numberOfVertices; i++) {
-                    Vector.formV(tmp[i], "0.000000000");
+            if(logSave == true)
+                if(loop %stepSave ==0)
+                {
+                    double [][] tmp = Matrix.Copy(X);
+                    for (int i = 0; i < numberOfVertices; i++) {
+                        Vector.formV(tmp[i], "0.000000000");
+                    }
+                    cluster = new ArrayList<>();
+                    getCluster2(fw, loop, tmp);                
                 }
-                cluster = new ArrayList<>();
-                getCluster2(fw, loop, tmp);                
-            }
             
             X0 = Matrix.Copy(X);            
             V0 = V;
@@ -140,11 +143,11 @@ public class SCCNew2 extends Clustering {
             Vector.formV(X[i], "0.000000000");
 //            Vector.printV(X[i], "X[i] " + i, true);
         }
-        logData(loop, fw, U, V);
+        logData(loop, fw, U, V, output);
 //        CSVFile.saveMatrixData("SCC", X, "SCC");
         cluster = new ArrayList<>();
 
-        fw = new FileWriter("tmp/SCC_ClusterF.txt");
+        fw = new FileWriter(output+"/SCC_ClusterF.txt");
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
@@ -186,9 +189,9 @@ public class SCCNew2 extends Clustering {
 //            Vector.printV(X[j],"init X "+j,true);
     }
 
-    private void logData(int loop, FileWriter fw, ListENode U, ListENode V) throws IOException
+    private void logData(int loop, FileWriter fw, ListENode U, ListENode V, String output) throws IOException
     {
-        fw = new FileWriter("tmp/"+loop+"_X_data.txt");
+        fw = new FileWriter(output+"/"+loop+"_X_data.txt");
 
         for (int i = 0; i < numberOfVertices; i++) {
             for (int j = 0; j < numOfFeature; j++) {
@@ -223,46 +226,55 @@ public class SCCNew2 extends Clustering {
         fw.close();
     }
     @Override
-    public final void getCluster(FileWriter fw) {
-//        int  ret[] = new int[numberOfVertices];
-        HashMap<Integer, Integer> C = new HashMap<>();
-//        List<Integer>  intdex = new ArrayList<Integer>();
-        for (int i = 0; i < numberOfVertices; i++) {
-            if (!C.containsKey(i)) {
-                C.put(i, i);
-                for (int j = i + 1; j < numberOfVertices; j++) {
-                    if (!C.containsKey(j)) {
-                        if ((Vector.isSameVec(Matrix.getRow(X, i), Matrix.getRow(X, j)))) {
-                            C.put(j, i);
-                        }
+    public final void getCluster(FileWriter fw){
+  
+            //        int  ret[] = new int[numberOfVertices];
+            HashMap<Integer, Integer> C = new HashMap<>();
+    //        List<Integer>  intdex = new ArrayList<Integer>();
+    for (int i = 0; i < numberOfVertices; i++) {
+        if (!C.containsKey(i)) {
+            C.put(i, i);
+            for (int j = i + 1; j < numberOfVertices; j++) {
+                if (!C.containsKey(j)) {
+                    if ((Vector.isSameVec(Matrix.getRow(X, i), Matrix.getRow(X, j)))) {
+                        C.put(j, i);
                     }
                 }
             }
         }
-//    	count--;
-//    	System.out.println("Num of sub mat: "+intdex.size());
+    }
+    //    	count--;
+    //    	System.out.println("Num of sub mat: "+intdex.size());
 
-        for (int i = 0; i < numberOfVertices; i++) {
-            List<Integer> sub = new LinkedList<>();
-            for (int j = i; j < numberOfVertices; j++) {
-                if (C.get(j) == i) {
-                    sub.add(j);
-                }
-            }
-            if (!sub.isEmpty()) {
-                cluster.add(sub);
+    for (int i = 0; i < numberOfVertices; i++) {
+        List<Integer> sub = new LinkedList<>();
+        for (int j = i; j < numberOfVertices; j++) {
+            if (C.get(j) == i) {
+                sub.add(j);
             }
         }
+        if (!sub.isEmpty()) {
+            cluster.add(sub);
+        }
+    }
 //    	cluster.add(intdex);
-//Test    
-        System.out.println("paper.SCC.getCluster() " + cluster.size());
-        for (int i = 0; i < cluster.size(); i++) {
-            List<Integer> sub = cluster.get(i);
-            System.out.print("Cluster " + i + ":\t");
-            for (int j = 0; j < sub.size(); j++) {
-                System.out.print(sub.get(j) + "\t");
+//Test
+    System.out.println("paper.SCC.getCluster() " + cluster.size());
+      try {
+            fw.append("paper.SCC.getCluster() " + cluster.size() +"\n");
+            for (int i = 0; i < cluster.size(); i++) {
+                List<Integer> sub = cluster.get(i);
+                System.out.print("Cluster " + i + ":\t");
+                fw.append("Cluster " + i + ":\t");
+                for (int j = 0; j < sub.size(); j++) {
+                    System.out.print(sub.get(j) + "\t");
+                    fw.append(sub.get(j) + "\t");
+                }
+                System.out.println("");
+                fw.append("\n");
             }
-            System.out.println("");
+        } catch (IOException ex) {
+            Logger.getLogger(SCCNew2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

@@ -11,6 +11,9 @@ import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tint.IntFactory1D;
 import cern.colt.matrix.tint.IntFactory2D;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 //import com.joptimizer.exception.JOptimizerException;
 //import com.joptimizer.functions.BarrierFunction;
 //import com.joptimizer.functions.ConvexMultivariateRealFunction;
@@ -34,6 +37,7 @@ import cern.colt.matrix.tint.IntFactory2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import static pt.paper.Paper.PaperRuner;
 
@@ -53,26 +57,103 @@ public class main {
 //        jopSP();
 //        jopSCP();
 //        jopBIP();
+        // data file
+        String s;
+        String dataFile = "";
+        // num of query
+        int q = 0;// = Integer.parseInt(args[1]);
+        // start loop i
+        int si = 0;// = Integer.parseInt(args[2]);
+        int ei = 0;// = Integer.parseInt(args[3]);
+        // start loop j
+        int sj = 0;// = Integer.parseInt(args[4]);
+        int ej = 0;// = Integer.parseInt(args[5]);
         
-        double[][] DQ = CSVFile.readMatrixData("../data/data_696_1109.csv"); //data_697_3187
-//        double[][] DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
+        int maxLoop = 0;// = Integer.parseInt(args[6]);
+        int stepSave = 0;// = Integer.parseInt(args[7]);
+        boolean logSave = false;// = (Integer.parseInt(args[8]) == 1);
+        boolean runADMM =false;// = (Integer.parseInt(args[9]) == 1);
+        
+        BufferedReader br = new BufferedReader(new FileReader("config.txt"));
+        while ((s = br.readLine()) != null) {
+            String value[] = s.split(" : ");
+            if(value[0].contains("input"))
+            {              
+                dataFile = value[1];
+                System.out.println("input: "+dataFile);
+            }
+            if(value[0].contains("numq"))
+            {
+                q = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("numq: "+q);
+            }
+            if(value[0].contains("si"))
+            {
+                si = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("start i: "+si);
+            }            
+            if(value[0].contains("ei"))
+            {
+                ei = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("end i: "+ei);
+            }
+            if(value[0].contains("sj"))
+            {
+                sj = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("start j: "+sj);
+            }
+            if(value[0].contains("ej"))
+            {
+                ej = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("end j: "+ej);
+            }
+            if(value[0].contains("maxloop"))
+            {
+                maxLoop = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("maxloop: "+maxLoop);
+            }
+            if(value[0].contains("stepSave"))
+            {
+                stepSave = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("stepSave: "+stepSave);
+            }
+            if(value[0].contains("saveLog"))
+            {
+                logSave = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("saveLog: "+value[1]);
+            }
+            if(value[0].contains("runADMM"))
+            {
+                runADMM = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("runADMM: "+value[1]);
+            }
+            
+//                        System.out.println();
+        } // while ends 
+        br.close();
+        
+
+        
+        String mtime = Long.toString(System.currentTimeMillis());
+        new File("tmp/"+mtime).mkdir();
+        
+        double[][] DQ = null;
+        if(dataFile.contains("Test"))
+            DQ = Matrix.int2double(ReadData.readDataTest(data.inputJobSearch));
+        else
+            DQ = CSVFile.readMatrixData(dataFile);//"../data/data_696_1109.csv"); //data_697_3187
+//        
         int n = DQ.length;
-        int q = 10;
+        
 //        CSVFile.saveMatrixData("DQ", DQ, "DQ");
 
         double[][] D = Matrix.subMat(DQ, 0, n - q, 0, DQ[0].length);
 //        Matrix.printMat(D, "D init");
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
-        for(String s : args)
-        {
-            System.out.println("input: "+s);
-        }
-        int si = Integer.parseInt(args[0]);
-        int ei = Integer.parseInt(args[1]);
-        int sj = Integer.parseInt(args[2]);
-        int ej = Integer.parseInt(args[3]);
-        PaperRuner(D, Q, 10, si, ei, sj, ej);//Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
+
+        PaperRuner(D, Q, 10, si, ei, sj, ej, maxLoop, logSave, stepSave,"tmp/"+mtime, runADMM);
+//Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
 //        double[][] testD = Matrix.subMat(docTerm, 0, docTerm.length -10, 0, docTerm[0].length);

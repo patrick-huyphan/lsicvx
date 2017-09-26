@@ -1,0 +1,11 @@
+input : Test : ..\data\data_696_1109.csv 
+numq : 5 
+si : 1 
+ei : 2 
+sj : 1 
+ej : 2 
+maxloop : 1000 
+stepSave : 100 
+runADMM : 1
+saveLog : 0
+

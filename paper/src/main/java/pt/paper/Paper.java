@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj) throws IOException, Exception {
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, int loop, boolean logSave, int stepSave,String output , boolean runADMM) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -37,7 +37,7 @@ public class Paper {
 ////        printMat(echelon, false, "echelong");
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
-        int loop = 8000;
+        
         double slambda = 0.2;
         double st = 1;
         for(int i = starti; i<endi; i++)
@@ -47,102 +47,106 @@ public class Paper {
                 double lambda = slambda*i;
                 double t = st+0.0025*j;
                 System.out.println(i+" SCC start "+lambda);
-                clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, loop, t);
-            }
-        }
-//        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
+                clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, loop, t, logSave, stepSave,output);
+                
+                //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
+                if(runADMM)
+                {
+            //        SCC scc = new SCC(termDocMat, 3.5, 0.15, 0.25, 1e-3, 1e-3);
+            //        new SCC(scc.X, 3.5, 0.15, 0.25, 1e-3, 1e-3);
 
-//        SCC scc = new SCC(termDocMat, 3.5, 0.15, 0.25, 1e-3, 1e-3);
-//        new SCC(scc.X, 3.5, 0.15, 0.25, 1e-3, 1e-3);
+            //        clt = new kmean(termDocMat, 0.15, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
 
-//        clt = new kmean(termDocMat, 0.15, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
+            //        clt = new MSTClustering(termDocMat,0.28);
 
-//        clt = new MSTClustering(termDocMat,0.28);
-        
-//        FileWriter fw = new FileWriter("mst");
-//        List<List<Integer>> cluster = mst.kruskalAlgorithm_getCluster(0.42, fw);
-//        fw.close();
-        
+            //        FileWriter fw = new FileWriter("mst");
+            //        List<List<Integer>> cluster = mst.kruskalAlgorithm_getCluster(0.42, fw);
+            //        fw.close();
 
-////        List<Edge> E = buildE(termDocMat);
-////        int[][] subCluster = clusteringMST(termDocMat, E, 0);
-//
-        double[][] B = clt.presentMat;// getPresentMath(cluster); //
-//////        CSVFile.saveMatrixData("B", B, "B");
-//////        double[][] B = CSVFile.readMatrixData("B.csv");//
-//        Matrix.printMat(B, "B");
-//////        Matrix.printMat(D, "D");
-//        
-//        lsi = new CDNew(D, B, 0.005);
-//        double[][] X= Matrix.Transpose(lsi.X);
-//        double[][] A = Matrix.mul(D, X); //n*k
-//        Matrix.printMat(A, "LSI");
-//        double[][] Q2 = Matrix.mul(Q, X); 
-//        double[][] ret = Matrix.sim(A, Q2);
-//        Matrix.printMat(Matrix.Transpose(ret), "query 1");
-////
 
-        lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
+            ////        List<Edge> E = buildE(termDocMat);
+            ////        int[][] subCluster = clusteringMST(termDocMat, E, 0);
+            //
+                    double[][] B = clt.presentMat;// getPresentMath(cluster); //
+            //////        CSVFile.saveMatrixData("B", B, "B");
+            //////        double[][] B = CSVFile.readMatrixData("B.csv");//
+            //        Matrix.printMat(B, "B");
+            //////        Matrix.printMat(D, "D");
+            //        
+            //        lsi = new CDNew(D, B, 0.005);
+            //        double[][] X= Matrix.Transpose(lsi.X);
+            //        double[][] A = Matrix.mul(D, X); //n*k
+            //        Matrix.printMat(A, "LSI");
+            //        double[][] Q2 = Matrix.mul(Q, X); 
+            //        double[][] ret = Matrix.sim(A, Q2);
+            //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
+            ////
 
-        double[][] X2= Matrix.Transpose(lsi.X);
+                    lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
 
-//        for(int i = 0; i< X2.length; i++)
-//        {
-//            System.out.println(i+ ": "+ Vector.norm(X2[i]));
-//        }        
+                    double[][] X2= Matrix.Transpose(lsi.X);
 
-//        CSVFile.saveMatrixData("ADMM", X2, "X2");
-//        Matrix.printMat(X2, "Projection");
-        double[][] A2 = Matrix.mul(D, X2); //kn = km x mn
-//        CSVFile.saveMatrixData("LATEN", A2, "A2");
-//        Matrix.printMat(A2, "New mat");
-        double[][] Q22 = Matrix.mul(Q, X2);
-               
-//        Matrix.printMat(Q22, "New mat");
-        double[][] ret2 = Matrix.Transpose(Matrix.sim(A2, Q22));
-//        Matrix.printMat(ret2, "query result");
+            //        for(int i = 0; i< X2.length; i++)
+            //        {
+            //            System.out.println(i+ ": "+ Vector.norm(X2[i]));
+            //        }        
 
-//        for(int i = 0; i< Q22.length; i++)
-//        {
-//            System.out.println(i+ ": "+ Vector.norm(X2[i])+" - "+Vector.norm(A2[i])+" - "+Vector.norm(Q22[i])+" - "+Vector.norm(ret2[i]));
-//        }
-        
-        List<List<Edge>> res = new ArrayList<>();
-        
-        for(int i = 0; i< ret2[0].length; i++)
-        {
-            List<Edge> e = new ArrayList<>();
-            for(int j = 0; j< ret2.length; j++)
-            {
-                e.add(new Edge(i,j, ret2[j][i]));
-            }
-//            Collections.sort(e);
-            e.sort(new Comparator<Edge>() {
-                @Override
-                public int compare(Edge o1, Edge o2) {
-                       if(o1.weight>o2.weight) return -1;
-                       else if(o1.weight<o2.weight) return 1;
-                       else return 0;
+            //        CSVFile.saveMatrixData("ADMM", X2, "X2");
+            //        Matrix.printMat(X2, "Projection");
+                    double[][] A2 = Matrix.mul(D, X2); //kn = km x mn
+            //        CSVFile.saveMatrixData("LATEN", A2, "A2");
+            //        Matrix.printMat(A2, "New mat");
+                    double[][] Q22 = Matrix.mul(Q, X2);
+
+            //        Matrix.printMat(Q22, "New mat");
+                    double[][] ret2 = Matrix.Transpose(Matrix.sim(A2, Q22));
+            //        Matrix.printMat(ret2, "query result");
+
+            //        for(int i = 0; i< Q22.length; i++)
+            //        {
+            //            System.out.println(i+ ": "+ Vector.norm(X2[i])+" - "+Vector.norm(A2[i])+" - "+Vector.norm(Q22[i])+" - "+Vector.norm(ret2[i]));
+            //        }
+
+                    List<List<Edge>> res = new ArrayList<>();
+
+                    for(int i2 = 0; i2< ret2[0].length; i2++)
+                    {
+                        List<Edge> e = new ArrayList<>();
+                        for(int j2 = 0; j2< ret2.length; j2++)
+                        {
+                            e.add(new Edge(i2,j2, ret2[j2][i2]));
+                        }
+            //            Collections.sort(e);
+                        e.sort(new Comparator<Edge>() {
+                            @Override
+                            public int compare(Edge o1, Edge o2) {
+                                   if(o1.weight>o2.weight) return -1;
+                                   else if(o1.weight<o2.weight) return 1;
+                                   else return 0;
+                            }
+                        });
+                        List<Edge> e2 = new ArrayList<>();
+                        for(int k = 0; k<top; k++)
+                        {
+                            e2.add(e.get(k));
+                        }
+                        res.add(e2);
+                    }
+
+                    for(List<Edge> e : res)
+                    {
+                        System.out.println("pt.paper.Paper.PaperRuner()");
+                        for(Edge i2: e)
+                        {
+                            System.out.println(i2.scr+" "+i2.dst+":\t"+i2.weight);
+                        }
+                    }
+        //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
+        //          Matrix.printMat(clt.presentMat, "AMA");
                 }
-            });
-            List<Edge> e2 = new ArrayList<>();
-            for(int k = 0; k<top; k++)
-            {
-                e2.add(e.get(k));
-            }
-            res.add(e2);
-        }
-        
-        for(List<Edge> e : res)
-        {
-            System.out.println("pt.paper.Paper.PaperRuner()");
-            for(Edge i: e)
-            {
-                System.out.println(i.scr+" "+i.dst+":\t"+i.weight);
             }
         }
-//          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
-//          Matrix.printMat(clt.presentMat, "AMA");
+
     }
 
     public static void PaperRuner(double[][] D, String echelonFile) throws IOException {
