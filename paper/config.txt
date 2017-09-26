@@ -1,4 +1,4 @@
-input : Test : ..\data\data_696_1109.csv 
+input : ..\data\DQ.csv : ..\data\data_696_1109.csv 
 numq : 5 : s 
 si : 1 : s
 ei : 2 : s
