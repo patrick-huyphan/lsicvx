@@ -56,6 +56,7 @@ public class sADMM {
             double[][] B,//rowsListDocTermB, 
 //            String inputFilePath,
             boolean orthonormal,
+            double rho, double lamda, double e1, double e2,
 //            int loop,
             String outFilePath) {
         /**
@@ -65,6 +66,11 @@ public class sADMM {
         int m = D[0].length;
         int k = B[0].length;
 
+//        double rho = 0.04;
+//        double lamda = 0.8;
+//        double e1 = 0.005; 
+//        double e2 = 0.0001; 
+        
         // convert to colum data
         double D2[][] = LocalMatrix.Transpose(D);
         LinkedList<Tuple2<Integer, Vector>> rowsListDocTermD = new LinkedList<>();
@@ -101,6 +107,11 @@ public class sADMM {
         Broadcast<double[][]> _BtB = sc.broadcast(BtB);
         Broadcast<double[][]> _AtB = sc.broadcast(AtB);
         Broadcast<double[][]> _BtD = sc.broadcast(BtD);
+        Broadcast<Double> _rho = sc.broadcast(rho);
+        Broadcast<Double> _lambda = sc.broadcast(lamda);
+        Broadcast<Double> _e1 = sc.broadcast(e1);
+        Broadcast<Double> _e2 = sc.broadcast(e2);
+        
 //        Broadcast<Integer> loopb = sc.broadcast(loop);
         System.out.println("pt.spark.sADMM.run()");
         JavaRDD<Tuple2<Integer, Vector>> matI = sc.parallelize(rowsListDocTermD);
@@ -111,7 +122,8 @@ public class sADMM {
                             _n.value(), _m.value(), _k.value(),
                             _BtB.value(),
                             _AtB.value(),
-                            _BtD.value()
+                            _BtD.value(),
+                            _rho.value(), _lambda.value(), _e1.value(), _e2.value()
                     )
             );
         }
@@ -158,14 +170,18 @@ public class sADMM {
 //            double[][] Bt,
             double[][] BtB,
             double[][] AtB,
-            double[][] BtD
+            double[][] BtD,
+            double _rho,
+            double _lamda,
+            double e1, 
+            double e2 
     ) {
         
         // lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
-        double _rho = 0.04;
-        double _lamda = 0.8;
-        double e1 = 0.005; 
-        double e2 = 0.0001; 
+//        double _rho = 0.04;
+//        double _lamda = 0.8;
+//        double e1 = 0.005; 
+//        double e2 = 0.0001; 
         double [] Btd = LocalMatrix.getCol(BtD, id);
         NodeADMM xNode = new NodeADMM(
                 id,

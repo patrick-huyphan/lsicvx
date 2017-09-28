@@ -69,7 +69,12 @@ public class main {
         boolean HL = false;//(Integer.parseInt(args[3]) ==1);
         boolean orthognomal = false;//(Integer.parseInt(args[4]) ==1);
 //        int loop = Integer.parseInt(args[5]);
-        double lambda = 0.2;//Double.parseDouble(args[6]);
+        double lambdaSCC = 0.2;//Double.parseDouble(args[6]);
+        
+        double rho = 0.04;
+        double lambdaADMM = 0.8;
+        double e1 = 0.005; 
+        double e2 = 0.0001; 
         
         BufferedReader br = new BufferedReader(new FileReader("config.txt"));
         while ((s = br.readLine()) != null) {
@@ -156,8 +161,8 @@ public class main {
             }     
             if(value[0].contains("lambda"))
             {
-                lambda = Double.parseDouble(value[1].replaceAll(" ", ""));
-                System.out.println("lambda: "+lambda);
+                lambdaSCC = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("lambda: "+lambdaSCC);
             }
 //                        System.out.println();
         } // while ends 
@@ -205,12 +210,13 @@ public class main {
         sc.setLogLevel("ERROR");
         
 //        List<Tuple2<Integer,Vector>> scc = 
-        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambda);
+        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambdaSCC);
 
 //        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
         
-        sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, ouputdir);
+       
+        sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, rho, lambdaADMM, e1, e2, ouputdir);
 //        List<Tuple2<Integer,Vector>> reduceData = admm.retMat;
 //                new sADMM().run(sc, docTermData, sscc.presentMat, orthognomal, loop, 
 //                ouputdir);
