@@ -70,6 +70,7 @@ public class main {
         int ej = 0;// = Integer.parseInt(args[5]);
         
         boolean hl = true;
+        boolean ON = true;
         
         int maxLoop = 0;// = Integer.parseInt(args[6]);
         int stepSave = 0;// = Integer.parseInt(args[7]);
@@ -83,7 +84,7 @@ public class main {
         double admmLambda = 0.8;
         double admmRho = 0.04;
         double cdLambda = 0.05;
-        
+        int maxTimeADMM = 20;
         BufferedReader br = new BufferedReader(new FileReader(args[0]));
         while ((s = br.readLine()) != null) {
             String value[] = s.split(" : ");
@@ -177,7 +178,16 @@ public class main {
                 hl = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
                 System.out.println("hli: "+value[1]);
             }
-            
+            if(value[0].contains("ON"))
+            {
+                ON = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("O-N: "+value[1]);
+            }
+            if(value[0].contains("maxTimeADMM"))
+            {
+                maxTimeADMM = Integer.parseInt(value[1].replaceAll(" ", ""));
+                System.out.println("maxTimeADMM: "+maxTimeADMM);
+            }
 //                        System.out.println();
         } // while ends 
         br.close();
@@ -203,7 +213,7 @@ public class main {
 //        Matrix.printMat(Q, "Q init");
 
         PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti, hl, maxLoop, logSave, stepSave,"tmp/"+mtime
-                , runADMM, isADMM, admmLambda, admmRho, cdLambda);
+                , runADMM, isADMM, admmLambda, admmRho, ON, maxTimeADMM, cdLambda);
 //Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109

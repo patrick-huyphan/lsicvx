@@ -92,34 +92,45 @@ public abstract class Clustering{
                                 if(e.weight>maxS)
                                 {
                                     maxS = e.weight;
-                                    System.out.println("getPresentMat() H "+ e.dst+" "+e.scr+": "+e.weight);
+                                    
                                     shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
                                 }
                             }
                         }
                     }
+//                    System.out.println("getPresentMat() H "+ shotestCol);
                 }
                 else
                 {
-                    double minS = 1;
+                    double maxS = -1;
+                    double maxS2 = -1;
+                    int tmp = shotestCol;
                     for(Integer node: edgesL)
                     {
                         for(Edge e : edges)
                         {
                             if((e.dst == node || e.scr == node) && (edgesL.contains(e.dst) && edgesL.contains(e.scr)))
                             {
-                                if(minS>e.weight)
+                                if(maxS>e.weight)
                                 {
-                                    minS = e.weight;
-                                    System.out.println("getPresentMat()L "+ e.dst+" "+e.scr+": "+e.weight);
+                                    if(maxS2>e.weight){
+                                        maxS2 = maxS;
+                                        tmp = shotestCol;
+                                    }
+                                    
+                                    maxS = e.weight;
+//                                    System.out.println("getPresentMat()L "+ e.dst+" "+e.scr+": "+e.weight);
                                     shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
                                 }
+                                
                             }
                         }
                     }
+                    shotestCol = tmp;
+//                    System.out.println("getPresentMat()L "+ shotestCol);
                 }
             }
-//            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
+            System.out.println("\npaper.Paper.getPresentMath() "+j+" "+ shotestCol);
             
             for(int i = 0; i<numOfFeature  ; i++)
             {

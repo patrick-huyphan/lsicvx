@@ -23,7 +23,7 @@ import java.util.Collections;
 public class Paper {
 //    double[][] Q= {{}}; 
     public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, boolean hl,  int loop, boolean logSave, int stepSave,String output 
-            , boolean runADMM, boolean isADMM,double admmlambda, double admmRho,double cdlambda) throws IOException, Exception {
+            , boolean runADMM, boolean isADMM,double admmlambda, double admmRho, boolean isOrth, int maxTimeADMM, double cdlambda) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -75,8 +75,8 @@ public class Paper {
             //        Matrix.printMat(B, "B");
             //////        Matrix.printMat(D, "D");
             
-            if(!isADMM)
-                    lsi = new CDNew(D, B, cdlambda);
+//            if(!isADMM)
+//                    lsi = new CDNew(D, B, cdlambda);
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
@@ -84,8 +84,22 @@ public class Paper {
             //        double[][] ret = Matrix.sim(A, Q2);
             //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
             ////
-            else
-                    lsi = new ADMM(D, B, admmRho, admmlambda, 0.005, 0.0001);
+//            else
+            {
+                for (int ia = 0; ia< maxTimeADMM; ia++)
+                {
+                    double ltmp = admmlambda+ ia*0.1;
+                    if(!isADMM)
+                        lsi = new CDNew(D, B, cdlambda);
+            //        double[][] X= Matrix.Transpose(lsi.X);
+            //        double[][] A = Matrix.mul(D, X); //n*k
+            //        Matrix.printMat(A, "LSI");
+            //        double[][] Q2 = Matrix.mul(Q, X); 
+            //        double[][] ret = Matrix.sim(A, Q2);
+            //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
+            ////
+                    else
+                    lsi = new ADMM(D, B, admmRho, ltmp, 0.005, 0.0001, isOrth);
 
                     double[][] X2= Matrix.Transpose(lsi.X);
 
@@ -135,7 +149,7 @@ public class Paper {
                         }
                         res.add(e2);
                     }
-
+                    System.out.println("pt.paper.Paper.PaperRuner() lambda = "+ ltmp);    
                     for(List<Edge> e : res)
                     {
                         System.out.println("pt.paper.Paper.PaperRuner()");
@@ -146,6 +160,8 @@ public class Paper {
                     }
         //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
         //          Matrix.printMat(clt.presentMat, "AMA");
+                }
+            }
                 }
             }
         }
@@ -259,7 +275,7 @@ public class Paper {
 //        A = Matrix.mul(D, Matrix.Transpose(X));
 //        Matrix.printMat(A, "LSI2");
 
-        lsi = new ADMM(D, B, 4e-2, 70e-2, 1e-2, 1e-4);
+        lsi = new ADMM(D, B, 4e-2, 70e-2, 1e-2, 1e-4, true);
         double[][] X2= Matrix.Transpose(lsi.X);
         Matrix.printMat(X2, "LSI");
         double[][] A2 = Matrix.mul(D, X2); //kn = km x mn

@@ -7,12 +7,14 @@ ej : 6 : s
 slambda : 0.2 : s
 stlambda  : 1 : s
 sti : 0.0025 : s
-maxloop : 980 : s 
+maxloop : 951 : s 
 stepSave : 10 : s
-runfull : 1 : s
+runfull : 1 : run full
 saveLog : 1 : s
-isADMM : 1 : s
-hl : 0 : s
-lambdaADMM : 0.8 : s
+isADMM : 1 : run ADMM
+hl : 1 : s
+ON : 1 : s
+lambdaADMM : 0.2 : start lambda for ADMM
 rhoADMM : 0.04 : s
 lambdaCD : 0.005 : s
+maxTimeADMM : 15 : max loop for ADMM, each time increase 0.1

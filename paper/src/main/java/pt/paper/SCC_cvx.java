@@ -149,7 +149,7 @@ public class SCC_cvx extends Clustering {
         int uAdmm = 0;
         if(uAdmm==1)
         {
-            ADMM X1= new ADMM(A, A, rho, lambda, ea, ea);
+            ADMM X1= new ADMM(A, A, rho, lambda, ea, ea, false);
             X= X1.X;
         }
         else

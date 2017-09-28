@@ -34,10 +34,14 @@ public class ADMM extends LSI{
     double rho;
     DecimalFormat twoDForm = new DecimalFormat(" 0.00000000");
 //            lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
-    public ADMM(double [][] _Ddata, double [][] _Bdata, double _rho,double _lambda, double e1, double e2) {
+    public ADMM(double [][] _Ddata, double [][] _Bdata, double _rho,double _lambda, double e1, double e2, boolean isOrth) {
         super(_Ddata, _Bdata, _lambda);
-        B = Matrix.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
-
+        
+        if(isOrth)
+            B = Matrix.orthonormal( _Bdata);//Matrix.Transpose(_Bdata);
+//        else
+//            B = _Bdata;//Matrix.Transpose(_Bdata);
+        
         double[][] Bt = Matrix.Transpose(B); //[nk]->[kn]
         double[][] BtB = Matrix.IMtx(k);//Matrix.mul(Bt, B); //[kn]*[nk]=[kk]
         double[][] Am = Matrix.Transpose(BtB);
@@ -111,7 +115,7 @@ public class ADMM extends LSI{
 //            Vector.printV(x0, "x:"+ i+"-"+loop, true);
 //            }
                 if(checkStop(z, x0, u0, z0,e1,e2,k,m, AtB, loop, i) && loop>1){
-                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
+//                    System.out.println(i+" pt.paper.ADMM.admmProcess() stop 1 at "+ loop);
                     break;
                 }
 //                s = Vector.norm(Vector.sub(x, z));
