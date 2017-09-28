@@ -76,7 +76,11 @@ public class Paper {
             //////        Matrix.printMat(D, "D");
             
 //            if(!isADMM)
+//            {
+//                long start_time = System.nanoTime();
 //                    lsi = new CDNew(D, B, cdlambda);
+//                long end_time = System.nanoTime();    
+//            }
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
@@ -89,8 +93,15 @@ public class Paper {
                 for (int ia = 0; ia< maxTimeADMM; ia++)
                 {
                     double ltmp = admmlambda+ ia*0.1;
+                    System.out.println("pt.paper.Paper.PaperRuner() lambda = "+ ltmp); 
                     if(!isADMM)
-                        lsi = new CDNew(D, B, cdlambda);
+                    {
+                        long start_time = System.nanoTime();
+                            lsi = new CDNew(D, B, cdlambda);
+                        long end_time = System.nanoTime();   
+                        long time = end_time - start_time;
+                        System.out.println("CD pt.paper.Paper.PaperRuner() time "+ time);
+                    }
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
@@ -99,8 +110,13 @@ public class Paper {
             //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
             ////
                     else
-                    lsi = new ADMM(D, B, admmRho, ltmp, 0.005, 0.0001, isOrth);
-
+                    {
+                        long start_time = System.nanoTime();
+                        lsi = new ADMM(D, B, admmRho, ltmp, 0.005, 0.0001, isOrth);
+                        long end_time = System.nanoTime();
+                        long time = end_time - start_time;
+                        System.out.println(" ADMM pt.paper.Paper.PaperRuner() time "+ time);
+                    }
                     double[][] X2= Matrix.Transpose(lsi.X);
 
             //        for(int i = 0; i< X2.length; i++)
@@ -149,7 +165,7 @@ public class Paper {
                         }
                         res.add(e2);
                     }
-                    System.out.println("pt.paper.Paper.PaperRuner() lambda = "+ ltmp);    
+                       
                     for(List<Edge> e : res)
                     {
                         System.out.println("pt.paper.Paper.PaperRuner()");

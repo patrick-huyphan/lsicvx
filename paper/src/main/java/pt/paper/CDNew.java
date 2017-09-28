@@ -29,7 +29,7 @@ public class CDNew extends LSI{
     
     public CDNew(double _D[][], double _B[][], double lamda) {
         super(_D, _B,lamda);
-        System.out.println("CD() "+X.length+" "+X[0].length);
+//        System.out.println("CD() "+X.length+" "+X[0].length);
        
 //        B = _B;//Matrix.orthonormal( _B);
 //        X = Matrix.mul(Matrix.Transpose(B),D );
@@ -39,7 +39,7 @@ public class CDNew extends LSI{
                 X[i][j] = _D[i][j];//new Random().nextDouble();
             }
         }
-        Matrix.printMat(X, "init X");
+//        Matrix.printMat(X, "init X");
         //run m column of A
         
         boolean stop;// = false;
@@ -103,7 +103,7 @@ public class CDNew extends LSI{
             }
 //            Vector.printV(Matrix.getCol(X, i), "X"+i, true);
         }
-        Matrix.printMat(X, "ret");
+//        Matrix.printMat(X, "ret");
 //        return A;
     }
 
