@@ -76,7 +76,7 @@ public class main {
         double e1 = 0.005; 
         double e2 = 0.0001; 
         
-        BufferedReader br = new BufferedReader(new FileReader("config.txt"));
+        BufferedReader br = new BufferedReader(new FileReader(args[0]));
         while ((s = br.readLine()) != null) {
             String value[] = s.split(" : ");
             if(value[0].contains("input"))
