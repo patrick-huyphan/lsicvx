@@ -6,7 +6,7 @@ sj : 1 : s
 ej : 2 : s
 slambda : 0.2 : s
 stlambda  : 1 : s
-sti : 0.0025 : s
+sti : 1.005 : s
 maxloop : 3000 : s 
 stepSave : 100 : s
 runADMM : 1 : s
@@ -15,3 +15,4 @@ output : ..\output : output
 orthognomal : 1 : s
 HL : 1 : s
 lambda : 1.5 : s
+lambdaADMM : 1.5 : s

@@ -57,7 +57,7 @@ public class sSCC2 {
     public sSCC2(JavaSparkContext context,
             double[][] A,// term-doc
             boolean hl,
-            String outFilePath, int maxloop,double ilamda ) throws Exception {
+            String outFilePath, int maxloop,double ilamda , double t) throws Exception {
 
         
         double lamda = ilamda;
@@ -202,7 +202,7 @@ public class sSCC2 {
                 break;
             }
 //update for next process
-            lamda = lamda * 1.005; 
+            lamda = lamda * t; 
             
             V0= V;
             U0= U;

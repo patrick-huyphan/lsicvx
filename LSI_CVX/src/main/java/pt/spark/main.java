@@ -164,6 +164,11 @@ public class main {
                 lambdaSCC = Double.parseDouble(value[1].replaceAll(" ", ""));
                 System.out.println("lambda: "+lambdaSCC);
             }
+            if(value[0].contains("lambdaADMM"))
+            {
+                lambdaADMM = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("lambdaADMM: "+lambdaADMM);
+            }
 //                        System.out.println();
         } // while ends 
         br.close();
@@ -210,7 +215,7 @@ public class main {
         sc.setLogLevel("ERROR");
         
 //        List<Tuple2<Integer,Vector>> scc = 
-        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambdaSCC);
+        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambdaSCC, sti);
 
 //        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
