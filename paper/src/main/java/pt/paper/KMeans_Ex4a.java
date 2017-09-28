@@ -417,7 +417,7 @@ public class KMeans_Ex4a extends Clustering
      * @throws IOException 
      */
     
-    public KMeans_Ex4a(double [][] _data, double _lam ,int numOfC, int [] initC)throws IOException
+    public KMeans_Ex4a(double [][] _data, double _lam ,int numOfC, int [] initC, boolean hl)throws IOException
     {
         super(_data, _lam);
 
@@ -434,7 +434,7 @@ public class KMeans_Ex4a extends Clustering
         getCluster(fw);
         fw.close();
         
-        getPresentMat();
+        getPresentMat(hl);
     }
 //    public static void main(String[] args) throws IOException {
 //        double SAMPLES[][] = new double[][] {{1.0, 1.0, 1.0}, 

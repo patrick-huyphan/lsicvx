@@ -60,7 +60,7 @@ public class AMA extends Clustering{
         fw.close();
         
 //        presentMat= new double[cluster.size()][A[0].length];
-        getPresentMat();
+        getPresentMat(true);
     }
     
     @Override

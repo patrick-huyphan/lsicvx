@@ -69,6 +69,8 @@ public class main {
         int sj = 0;// = Integer.parseInt(args[4]);
         int ej = 0;// = Integer.parseInt(args[5]);
         
+        boolean hl = true;
+        
         int maxLoop = 0;// = Integer.parseInt(args[6]);
         int stepSave = 0;// = Integer.parseInt(args[7]);
         boolean logSave = false;// = (Integer.parseInt(args[8]) == 1);
@@ -170,6 +172,11 @@ public class main {
                 cdLambda = Double.parseDouble(value[1].replaceAll(" ", ""));
                 System.out.println("cdLambda: "+cdLambda);
             }
+            if(value[0].contains("hl"))
+            {
+                hl = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("hli: "+value[1]);
+            }
             
 //                        System.out.println();
         } // while ends 
@@ -195,7 +202,7 @@ public class main {
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
 
-        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti,maxLoop, logSave, stepSave,"tmp/"+mtime
+        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti, hl, maxLoop, logSave, stepSave,"tmp/"+mtime
                 , runADMM, isADMM, admmLambda, admmRho, cdLambda);
 //Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 

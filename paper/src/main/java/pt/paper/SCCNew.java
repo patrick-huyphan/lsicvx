@@ -139,7 +139,7 @@ public class SCCNew extends Clustering {
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
-        getPresentMat();
+        getPresentMat(true);
     }
 
     void init() {

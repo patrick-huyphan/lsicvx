@@ -61,8 +61,9 @@ public abstract class Clustering{
     
     /**
      * Get pair V has max sim in cluster, base on this pare, select H or L
+     * @param HL
      */
-    protected void getPresentMat()
+    protected void getPresentMat(boolean HL)
     {
         presentMat = new double[numOfFeature][cluster.size()];//[numberOfVertices];
 //        double[][] ret = new double[data[0].length][index.size()];
@@ -80,18 +81,39 @@ public abstract class Clustering{
             if(edgesL.size() > 1)
             {        
 //                double min = 100;
-                double maxS = -1;
-                for(Integer node: edgesL)
-                {
-                    for(Edge e : edges)
+                if(HL == true){
+                    double maxS = -1;
+                    for(Integer node: edgesL)
                     {
-                        if((e.dst == node || e.scr == node) && (edgesL.contains(e.dst) && edgesL.contains(e.scr)))
+                        for(Edge e : edges)
                         {
-                            if(e.weight>maxS)
+                            if((e.dst == node || e.scr == node) && (edgesL.contains(e.dst) && edgesL.contains(e.scr)))
                             {
-                                maxS = e.weight;
-//                                System.out.println("getPresentMat() "+ e.dst+" "+e.scr+": "+e.weight);
-                                shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
+                                if(e.weight>maxS)
+                                {
+                                    maxS = e.weight;
+                                    System.out.println("getPresentMat() H "+ e.dst+" "+e.scr+": "+e.weight);
+                                    shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    double minS = 1;
+                    for(Integer node: edgesL)
+                    {
+                        for(Edge e : edges)
+                        {
+                            if((e.dst == node || e.scr == node) && (edgesL.contains(e.dst) && edgesL.contains(e.scr)))
+                            {
+                                if(minS>e.weight)
+                                {
+                                    minS = e.weight;
+                                    System.out.println("getPresentMat()L "+ e.dst+" "+e.scr+": "+e.weight);
+                                    shotestCol = (Vector.norm(A[e.dst])>Vector.norm(A[e.scr]))?e.dst:e.scr;
+                                }
                             }
                         }
                     }

@@ -66,7 +66,7 @@ public class SCCNew2 extends Clustering {
      * @param _e2
      * @throws IOException
      */
-    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, int maxloop, double t, boolean logSave, int stepSave,String output) throws IOException, Exception {
+    public SCCNew2(double[][] _Matrix, double _lambda, double _lambda2, double _rho, double _e1, double _e2, boolean hl,int maxloop, double t, boolean logSave, int stepSave,String output) throws IOException, Exception {
         super(_Matrix, _lambda);
 //        edges = updateEdge(); // for paper data
         lambda2 = _lambda2;
@@ -151,7 +151,7 @@ public class SCCNew2 extends Clustering {
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
-        getPresentMat();
+        getPresentMat(hl);
     }
 
     void init() {

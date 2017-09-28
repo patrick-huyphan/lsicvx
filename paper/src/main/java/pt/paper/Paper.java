@@ -22,7 +22,7 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, int loop, boolean logSave, int stepSave,String output 
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, boolean hl,  int loop, boolean logSave, int stepSave,String output 
             , boolean runADMM, boolean isADMM,double admmlambda, double admmRho,double cdlambda) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
@@ -39,6 +39,8 @@ public class Paper {
 //
         double[][] termDocMat = Matrix.Transpose(echelon);          
         
+//        if(D.length == 94)
+//        clt = new KMeans_Ex4a(termDocMat, 0, 28, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40, 45,58,49,50,54,55,56,67,71,75, 76, 78, 80,81,89 ,90, 92 });
 
         for(int i = starti; i<endi; i++)
         {
@@ -47,7 +49,7 @@ public class Paper {
                 double lambda = slambda*i;
                 double t = st+sti*j;
                 System.out.println(i+" SCC start "+lambda);
-                clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, loop, t, logSave, stepSave,output);
+                clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, hl,loop, t, logSave, stepSave,output);
                 
                 //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
                 if(runADMM)

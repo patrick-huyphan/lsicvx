@@ -140,7 +140,7 @@ public class SCC_cvx extends Clustering {
         getCluster(fw);
         fw.close();
         presentMat = new double[cluster.size()][A[0].length];
-        getPresentMat();
+        getPresentMat(true);
     }
 
     // call ADMM to solve X1???
