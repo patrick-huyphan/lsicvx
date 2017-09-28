@@ -1,14 +1,17 @@
 input : ..\data\DQ.csv : ..\data\data_696_1109.csv 
 numq : 5 : s 
-si : 1 : s
-ei : 2 : s
-sj : 1 : s 
-ej : 2 : s
+si : 4 : s
+ei : 5 : s
+sj : 5 : s 
+ej : 6 : s
 slambda : 0.2 : s
 stlambda  : 1 : s
 sti : 0.0025 : s
-maxloop : 3000 : s 
-stepSave : 100 : s
-runADMM : 1 : s
+maxloop : 830 : s 
+stepSave : 10 : s
+runfull : 1 : s
 saveLog : 1 : s
-
+isADMM : 1 : s
+lambdaADMM : 0.8 : s
+rhoADMM : 0.04 : s
+lambdaCD : 0.005 : s

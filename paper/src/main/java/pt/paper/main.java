@@ -77,8 +77,12 @@ public class main {
         double slambda = 0.2;
         double st = 1;
         double sti = 0.0025;
+        boolean isADMM = true;
+        double admmLambda = 0.8;
+        double admmRho = 0.04;
+        double cdLambda = 0.05;
         
-        BufferedReader br = new BufferedReader(new FileReader("config.txt"));
+        BufferedReader br = new BufferedReader(new FileReader(args[0]));
         while ((s = br.readLine()) != null) {
             String value[] = s.split(" : ");
             if(value[0].contains("input"))
@@ -141,10 +145,30 @@ public class main {
                 logSave = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
                 System.out.println("saveLog: "+value[1]);
             }
-            if(value[0].contains("runADMM"))
+            if(value[0].contains("runfull"))
             {
                 runADMM = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
-                System.out.println("runADMM: "+value[1]);
+                System.out.println("runfull: "+value[1]);
+            }
+            if(value[0].contains("isADMM"))
+            {
+                isADMM = (Integer.parseInt(value[1].replaceAll(" ", "")) == 1);
+                System.out.println("sti: "+value[1]);
+            }
+            if(value[0].contains("lambdaADMM"))
+            {
+                admmLambda = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("admmLambda: "+admmLambda);
+            }
+            if(value[0].contains("rhoADMM"))
+            {
+                admmRho = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("admmRho: "+admmRho);
+            }
+            if(value[0].contains("lambdaCD"))
+            {
+                cdLambda = Double.parseDouble(value[1].replaceAll(" ", ""));
+                System.out.println("cdLambda: "+cdLambda);
             }
             
 //                        System.out.println();
@@ -171,7 +195,8 @@ public class main {
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
 
-        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti,maxLoop, logSave, stepSave,"tmp/"+mtime, runADMM);
+        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti,maxLoop, logSave, stepSave,"tmp/"+mtime
+                , runADMM, isADMM, admmLambda, admmRho, cdLambda);
 //Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109

@@ -22,7 +22,8 @@ import java.util.Collections;
  */
 public class Paper {
 //    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, int loop, boolean logSave, int stepSave,String output , boolean runADMM) throws IOException, Exception {
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, int loop, boolean logSave, int stepSave,String output 
+            , boolean runADMM, boolean isADMM,double admmlambda, double admmRho,double cdlambda) throws IOException, Exception {
         
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
@@ -71,8 +72,9 @@ public class Paper {
             //////        double[][] B = CSVFile.readMatrixData("B.csv");//
             //        Matrix.printMat(B, "B");
             //////        Matrix.printMat(D, "D");
-            //        
-            //        lsi = new CDNew(D, B, 0.005);
+            
+            if(!isADMM)
+                    lsi = new CDNew(D, B, cdlambda);
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
@@ -80,8 +82,8 @@ public class Paper {
             //        double[][] ret = Matrix.sim(A, Q2);
             //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
             ////
-
-                    lsi = new ADMM(D, B, 0.04, 0.8, 0.005, 0.0001);
+            else
+                    lsi = new ADMM(D, B, admmRho, admmlambda, 0.005, 0.0001);
 
                     double[][] X2= Matrix.Transpose(lsi.X);
 
