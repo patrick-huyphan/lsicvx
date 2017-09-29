@@ -1,5 +1,5 @@
-input : ..\..\data\data_838_1146.csv : DQ_94.csv : ..\data\data_696_1109.csv 
-numq : 5 : s 
+input : ../../data/data_838_1146.csv : DQ_94.csv : ..\data\data_696_1109.csv 
+numq : 38 : s 
 si : 1 : s
 ei : 2 : s
 sj : 1 : s 
@@ -11,7 +11,7 @@ maxloop : 6110 : s
 stepSave : 100 : s
 runADMM : 1 : s
 saveLog : 1 : s
-output : ..\output : output
+output : ../output : output
 orthognomal : 1 : s
 HL : 1 : s
 lambda : 1.5 : s

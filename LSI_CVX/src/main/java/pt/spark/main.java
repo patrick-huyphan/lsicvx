@@ -214,16 +214,19 @@ public class main {
         
         sc.setLogLevel("ERROR");
         
+        String mtime = Long.toString(System.currentTimeMillis());
+        
+        new File(ouputdir+"/"+mtime).mkdir();
 //        List<Tuple2<Integer,Vector>> scc = 
 long startTimefull = System.nanoTime();
 long startTimescc = System.nanoTime();
-        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambdaSCC, sti);
+        sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir+"/"+mtime, loop, lambdaSCC, sti);
 long endTimescc = System.nanoTime();
 //        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
         
 long startTimeADMM = System.nanoTime();       
-        sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, rho, lambdaADMM, e1, e2, ouputdir);
+        sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, rho, lambdaADMM, e1, e2, ouputdir+"/"+mtime);
 long endTimeADMM = System.nanoTime();
 //        List<Tuple2<Integer,Vector>> reduceData = admm.retMat;
 //                new sADMM().run(sc, docTermData, sscc.presentMat, orthognomal, loop, 
