@@ -1,5 +1,5 @@
-input : ..\data\data_820_1145.csv : ..\data\data_696_1109.csv 
-numq : 10 : s 
+input : ..\data\data_838_1146.csv : data_820_1145.csv : data_696_1109.csv 
+numq : 28 : s 
 si : 6 : s
 ei : 7 : s
 sj : 5 : s 
@@ -7,8 +7,8 @@ ej : 6 : s
 slambda : 0.2 : s
 stlambda  : 1 : s
 sti : 0.0025 : s
-maxloop : 8000 : s 
-stepSave : 100 : s
+maxloop : 6110 : s 
+stepSave : 7100 : s
 runfull : 1 : run full
 saveLog : 1 : s
 isADMM : 1 : run ADMM

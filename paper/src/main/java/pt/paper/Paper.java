@@ -46,11 +46,13 @@ public class Paper {
         {
             for(int j = startj; j< endj; j++)
             {
+                long start_timeF = System.nanoTime();
                 double lambda = slambda*i;
                 double t = st+sti*j;
                 System.out.println(i+" SCC start "+lambda);
+                long start_timeSCC = System.nanoTime();
                 clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, hl,loop, t, logSave, stepSave,output);
-                
+                long end_timeSCC = System.nanoTime();
                 //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
                 if(runADMM)
                 {
@@ -177,6 +179,10 @@ public class Paper {
         //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
         //          Matrix.printMat(clt.presentMat, "AMA");
                 }
+                long end_timef = System.nanoTime();
+                long time = end_timef - start_timeF;
+                System.out.println("pt.paper.Paper.PaperRuner() SCC+ "+( end_timeSCC-start_timeSCC));
+                System.out.println("pt.paper.Paper.PaperRuner() time+ "+time);
             }
                 }
             }
