@@ -215,13 +215,16 @@ public class main {
         sc.setLogLevel("ERROR");
         
 //        List<Tuple2<Integer,Vector>> scc = 
+long startTimefull = System.nanoTime();
+long startTimescc = System.nanoTime();
         sSCC2 sscc= new sSCC2(sc, termDocData, HL,ouputdir, loop, lambdaSCC, sti);
-
+long endTimescc = System.nanoTime();
 //        double[][] rowsListDocTermRd = sscc.presentMat;//new double[docTermData.length][docTermData[0].length];
         // read outpur from parse data and echelon and sSCC: Ax-B
         
-       
+long startTimeADMM = System.nanoTime();       
         sADMM admm = new sADMM(sc, docTermData, sscc.presentMat, orthognomal, rho, lambdaADMM, e1, e2, ouputdir);
+long endTimeADMM = System.nanoTime();
 //        List<Tuple2<Integer,Vector>> reduceData = admm.retMat;
 //                new sADMM().run(sc, docTermData, sscc.presentMat, orthognomal, loop, 
 //                ouputdir);
@@ -240,6 +243,11 @@ public class main {
         query(docTermData, 
                 query,
                 admm.retMat);
+
+        long endTimefull = System.nanoTime();
+        System.out.println("SCC time " +(endTimescc - startTimescc));
+        System.out.println("ADMM time " +(endTimeADMM - startTimeADMM));
+        System.out.println("FUll time " +(endTimefull - startTimefull));
     }
 
     private static void query(double[][] D,   //n*m
@@ -300,7 +308,7 @@ public class main {
                 System.out.println(i.sourcevertex+" "+i.destinationvertex+":\t"+i.weight);
             }
         }
-        
+
     }
 
 }

@@ -188,8 +188,8 @@ public class sSCC2 {
             
             U=  uv.map((LocalEdgeNode u1) -> updateUNode(_x1.value(), _V1.value(), _U.value(), u1 )).cache().collect();
             FileWriter fw = null;
-            if(loop<5)
-            logData(loop, fw, outFilePath, X1, U, V, numOfFeature);
+//            if(loop<5)
+//            logData(loop, fw, outFilePath, X1, U, V, numOfFeature);
 //checkstop            
             if(checkStop(A, X0, U0, V0, V, _eps_abs, _eps_rel, numberOfVertices, loop) && loop>1)
             {
@@ -231,19 +231,19 @@ public class sSCC2 {
 
 
 //        List<Tuple2<Integer, Vector>> retList2 = new LinkedList<>();
-        FileWriter fw = new FileWriter(outFilePath+"/X_data.txt");
+//        FileWriter fw = new FileWriter(outFilePath+"/X_data.txt");
         for (Tuple2<Integer, Vector> r: X0) {
            
             double[] tmp = LocalVector.formV(r._2, "0.000000000");
-            for (int j = 0; j < numOfFeature; j++) {
-                fw.append(tmp[j] + "\t");
-            }
-            fw.append("\n");
+//            for (int j = 0; j < numOfFeature; j++) {
+//                fw.append(tmp[j] + "\t");
+//            }
+//            fw.append("\n");
             
             retList.add(new Tuple2<Integer, Vector>(r._1, Vectors.dense(tmp)));
         }
 
-        fw.close();
+//        fw.close();
 
 //        double[][] retArray = new double[numOfFeature][numOfFeature];
 
