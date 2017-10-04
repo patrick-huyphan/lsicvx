@@ -95,7 +95,7 @@ public class ADMM extends LSI{
 //            double s, r;
             
             int loop = 0;
-            while(loop<146)//1489) 143 // long = short+1
+            while(loop<MAX_LOOP)//1489) 143 // long = short+1
             {
                 double[][] IMtxRho = Matrix.scale(BtB, rho);
                 double[][] iBtB_rho_Im = Matrix.invert(Matrix.plus(BtB, IMtxRho)); //[kk]
