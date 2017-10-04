@@ -82,8 +82,8 @@ public class NodeADMM {
         //init x, u ,v
 //            double[] x = new double[k]; //Matrix.getCol(BD, i);//new double[k]; //
         X = new double[k];//[m];
-        double[] z= LocalVector.rVector(k, 0.4);
-        double[] u = LocalVector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
+        double[] z= new double[k];//LocalVector.rVector(k, 0.4);
+        double[] u = new double[k];//LocalVector.scale(z, -0.05);//new double[k];//Vector.scale(z, -0.5);   // [k]; new double[k];
 //        double[] d=  _Ddata._2.toArray(); //LocalVector2D.getCol(D, id); //[n]*m
 //        double[] Btd= LocalMatrix.mul(Bt, d); //[nk]*[n] = k
 
