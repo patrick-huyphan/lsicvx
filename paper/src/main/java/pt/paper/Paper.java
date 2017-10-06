@@ -6,8 +6,11 @@
 package pt.paper;
 
 import com.sun.org.apache.regexp.internal.REUtil;
+import java.io.BufferedReader;
 import pt.DocTermBuilder.ReadingMultipleFile;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,19 +18,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 /**
  *
  * @author patrick_huy
  */
 public class Paper {
-//    double[][] Q= {{}}; 
-    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, boolean hl,  int loop, boolean logSave, int stepSave,String output 
-            , boolean runADMM, boolean isADMM,double admmlambda, double admmRho, boolean isOrth, int maxTimeADMM, double cdlambda) throws IOException, Exception {
-        
+//    double[][] Q= {{}};
+    public static void PaperRuner(double[][] D,double[][] Q, int top, int starti, int endi, int startj, int endj, double slambda, double st, double sti, boolean hl,  int loop, boolean logSave, int stepSave,String output
+            , boolean runADMM, boolean isADMM,double admmlambda, double admmRho, boolean isOrth, int maxTimeADMM, double cdlambda, String logFacebook, String facemess) throws IOException, Exception {
+
 //        Matrix.printMat(D, "D init");
 //        Matrix.printMat(Q, "Q init");
-        
+
         double[][] echelon = Matrix.echelon(D);//
         Clustering clt = null;
         LSI lsi;
@@ -37,8 +43,8 @@ public class Paper {
 
 ////        printMat(echelon, false, "echelong");
 //
-        double[][] termDocMat = Matrix.Transpose(echelon);          
-        
+        double[][] termDocMat = Matrix.Transpose(echelon);
+
 //        if(D.length == 94)
 //        clt = new KMeans_Ex4a(termDocMat, 0, 28, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40, 45,58,49,50,54,55,56,67,71,75, 76, 78, 80,81,89 ,90, 92 });
 
@@ -76,17 +82,17 @@ public class Paper {
             //////        double[][] B = CSVFile.readMatrixData("B.csv");//
             //        Matrix.printMat(B, "B");
             //////        Matrix.printMat(D, "D");
-            
+
 //            if(!isADMM)
 //            {
 //                long start_time = System.nanoTime();
 //                    lsi = new CDNew(D, B, cdlambda);
-//                long end_time = System.nanoTime();    
+//                long end_time = System.nanoTime();
 //            }
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
-            //        double[][] Q2 = Matrix.mul(Q, X); 
+            //        double[][] Q2 = Matrix.mul(Q, X);
             //        double[][] ret = Matrix.sim(A, Q2);
             //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
             ////
@@ -95,19 +101,19 @@ public class Paper {
                 for (int ia = 0; ia< maxTimeADMM; ia++)
                 {
                     double ltmp = admmlambda+ ia*0.1;
-                    System.out.println("pt.paper.Paper.PaperRuner() lambda = "+ ltmp); 
+                    System.out.println("pt.paper.Paper.PaperRuner() lambda = "+ ltmp);
                     if(!isADMM)
                     {
                         long start_time = System.nanoTime();
                             lsi = new CDNew(D, B, cdlambda);
-                        long end_time = System.nanoTime();   
+                        long end_time = System.nanoTime();
                         long time = end_time - start_time;
                         System.out.println("CD pt.paper.Paper.PaperRuner() time "+ time);
                     }
             //        double[][] X= Matrix.Transpose(lsi.X);
             //        double[][] A = Matrix.mul(D, X); //n*k
             //        Matrix.printMat(A, "LSI");
-            //        double[][] Q2 = Matrix.mul(Q, X); 
+            //        double[][] Q2 = Matrix.mul(Q, X);
             //        double[][] ret = Matrix.sim(A, Q2);
             //        Matrix.printMat(Matrix.Transpose(ret), "query 1");
             ////
@@ -124,7 +130,7 @@ public class Paper {
             //        for(int i = 0; i< X2.length; i++)
             //        {
             //            System.out.println(i+ ": "+ Vector.norm(X2[i]));
-            //        }        
+            //        }
 
             //        CSVFile.saveMatrixData("ADMM", X2, "X2");
             //        Matrix.printMat(X2, "Projection");
@@ -167,13 +173,20 @@ public class Paper {
                         }
                         res.add(e2);
                     }
-                       
+                    
+                    List<String> nodeInfo = readLogFace(logFacebook, res);
                     for(List<Edge> e : res)
                     {
                         System.out.println("pt.paper.Paper.PaperRuner()");
                         for(Edge i2: e)
                         {
-                            System.out.println(i2.scr+" "+i2.dst+":\t"+i2.weight);
+                            System.out.println(i2.scr+" "+i2.dst+":\t"+i2.weight +"\t"+ nodeInfo.get(i2.dst));
+                            BufferedReader rd1 = new BufferedReader(new FileReader( facemess+"\\"+nodeInfo.get(i2.dst)+".txt"));
+                            String s="";
+                            while ((s = rd1.readLine()) != null) {
+                                System.out.println(s);
+                            }
+                            rd1.close();
                         }
                     }
         //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);
@@ -190,6 +203,29 @@ public class Paper {
 
     }
 
+    public static List<String> readLogFace(String dirName, List<List<Edge>> queryRetList) throws FileNotFoundException, IOException
+    {
+//        HashMap<Integer, String> ret = new HashMap();
+        BufferedReader rd1 = new BufferedReader(new FileReader(dirName +"/loguse_2.txt"));
+        String s ="", st [];
+        List<Integer> docID = new LinkedList<>();
+        while ((s = rd1.readLine()) != null) {
+            st = s.split(" ");
+            docID.add(Integer.parseInt(st[0]));
+        }
+        rd1.close();
+
+        rd1 = new BufferedReader(new FileReader(dirName +"/log+Data1.txt"));
+        List<String> docID2 = new LinkedList<>();
+        while ((s = rd1.readLine()) != null) {
+            st = s.split(" ");
+            if(docID.contains(st[2]))
+                docID2.add(st[0]);
+        }
+        rd1.close();
+        
+        return docID2;
+    }
     public static void PaperRuner(double[][] D, String echelonFile) throws IOException {
 //        double[][] echelon = Matrix.echelon(D);//
 //        CSVFile.saveMatrixData("echelon", echelon, "echelon");
@@ -201,12 +237,12 @@ public class Paper {
         double[][] termDocMat = Matrix.Transpose(echelon);
 
 //        new KMeans_Ex4a(termDocMat, 0, 5);
-        
+
         Clustering clt = new MSTClustering(termDocMat,0.5);
 //        FileWriter fw = new FileWriter("mst");
 //        List<List<Integer>> cluster = mst.kruskalAlgorithm_getCluster(0.42, fw);
 //        fw.close();
-        
+
 
 ////        List<Edge> E = buildE(termDocMat);
 ////        int[][] subCluster = clusteringMST(termDocMat, E, 0);
@@ -215,13 +251,13 @@ public class Paper {
         CSVFile.saveMatrixData("B", B, "B");
 //        double[][] B = CSVFile.readMatrixData("B.csv");//
 //        Matrix.printMat(B, "B");
-        
+
         LSI lsi;
         lsi = new CD(D, B, 0.005);
         double[][] X= lsi.X;
         double[][] A = Matrix.mul(D, Matrix.Transpose(X));
         Matrix.printMat(A, "LSI");
-        
+
 //        lsi = new ADMM(D, B, 1e-2, 80e-2, 1e-3, 1e-3);
 //        X= lsi.X;
 //        A = Matrix.mul(D, Matrix.Transpose(X));
@@ -230,7 +266,7 @@ public class Paper {
     /*
 		Calculate sim from row vector, create list egde base on sim of row data, weighEgde = sim.
      */
-    
+
 
 
     /*
@@ -261,7 +297,7 @@ public class Paper {
 //            }
 //        return ret;
 //    }
-    
+
 
     public static void PaperRuner(double[][] D) throws IOException {
         double[][] echelon = Matrix.echelon(D);//
@@ -285,13 +321,13 @@ public class Paper {
         CSVFile.saveMatrixData("B", B, "B");
 //        double[][] B = CSVFile.readMatrixData("B.csv");//
 //        Matrix.printMat(B, "B");
-        
+
         LSI lsi;
         lsi = new CD(D, B, 0.005);
         double[][] X= Matrix.Transpose(lsi.X);
         double[][] A = Matrix.mul(D, X);
         Matrix.printMat(A, "LSI CD");
-        
+
 //        lsi = new ADMM(D, B, 1e-2, 80e-2, 1e-3, 1e-3);
 //        X= lsi.X;
 //        A = Matrix.mul(D, Matrix.Transpose(X));
@@ -304,6 +340,6 @@ public class Paper {
         Matrix.printMat(A2, "LSI2");
     }
 
-    
+
 
 }

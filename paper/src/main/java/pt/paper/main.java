@@ -85,6 +85,9 @@ public class main {
         double admmRho = 0.04;
         double cdLambda = 0.05;
         int maxTimeADMM = 20;
+        String logdata = "";
+        String facemess ="";
+        String outdir ="";
         BufferedReader br = new BufferedReader(new FileReader(args[0]));
         while ((s = br.readLine()) != null) {
             String value[] = s.split(" : ");
@@ -188,6 +191,21 @@ public class main {
                 maxTimeADMM = Integer.parseInt(value[1].replaceAll(" ", ""));
                 System.out.println("maxTimeADMM: "+maxTimeADMM);
             }
+            if(value[0].contains("logdata"))
+            {
+                logdata = value[1].replaceAll(" ", "");
+                System.out.println("logdata: "+logdata);
+            }
+            if(value[0].contains("facedata"))
+            {
+                facemess = value[1].replaceAll(" ", "");
+                System.out.println("facedata : "+facemess);
+            }
+            if(value[0].contains("outputdir"))
+            {
+                outdir = value[1].replaceAll(" ", "");
+                System.out.println("outputdir : "+outdir);
+            }               
 //                        System.out.println();
         } // while ends 
         br.close();
@@ -195,7 +213,7 @@ public class main {
 
         
         String mtime = Long.toString(System.currentTimeMillis());
-        new File("tmp/"+mtime).mkdir();
+        new File(outdir+mtime).mkdir();
         
         double[][] DQ = null;
         if(dataFile.contains("Test"))
@@ -212,8 +230,8 @@ public class main {
         double[][] Q = Matrix.subMat(DQ, n - q, q, 0, DQ[0].length);
 //        Matrix.printMat(Q, "Q init");
 
-        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti, hl, maxLoop, logSave, stepSave,"tmp/"+mtime
-                , runADMM, isADMM, admmLambda, admmRho, ON, maxTimeADMM, cdLambda);
+        PaperRuner(D, Q, 10, si, ei, sj, ej, slambda, st, sti, hl, maxLoop, logSave, stepSave,outdir+mtime
+                , runADMM, isADMM, admmLambda, admmRho, ON, maxTimeADMM, cdLambda, logdata,facemess);
 //Integer.getInteger(args[0]), Integer.getInteger(args[1]), Integer.getInteger(args[2]), Integer.getInteger(args[3]));
 
 //        double[][] docTerm = CSVFile.readMatrixData("../data/data_697_3187.csv"); //data_696_1109
