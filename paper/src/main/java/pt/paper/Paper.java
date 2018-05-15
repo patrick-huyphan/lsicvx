@@ -57,7 +57,7 @@ public class Paper {
                 double t = st+sti*j;
                 System.out.println(i+" SCC start "+lambda);
                 long start_timeSCC = System.nanoTime();
-                clt = new SCCNew2(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, hl,loop, t, logSave, stepSave,output);
+                clt = new ASCC(termDocMat, lambda, 0.05, 0.01, 1e-5, 1e-5, hl,loop, t, logSave, stepSave,output);
                 long end_timeSCC = System.nanoTime();
                 //        clt = new KMeans_Ex4a(termDocMat, 0, 24, new int[]{88, 2, 16, 30,21,24,26,84,34,35,40,58,49,50,54,55,56,67,71,75,80,81,90, 92 });
                 if(runADMM)
@@ -174,19 +174,19 @@ public class Paper {
                         res.add(e2);
                     }
                     
-                    List<String> nodeInfo = readLogFace(logFacebook, res);
+                    //List<String> nodeInfo = readLogFace(logFacebook, res);
                     for(List<Edge> e : res)
                     {
                         System.out.println("pt.paper.Paper.PaperRuner()");
                         for(Edge i2: e)
                         {
-                            System.out.println(i2.scr+" "+i2.dst+":\t"+i2.weight +"\t"+ nodeInfo.get(i2.dst));
-                            BufferedReader rd1 = new BufferedReader(new FileReader( facemess+"\\"+nodeInfo.get(i2.dst)+".txt"));
-                            String s="";
-                            while ((s = rd1.readLine()) != null) {
-                                System.out.println(s);
-                            }
-                            rd1.close();
+                            System.out.println(i2.scr+" "+i2.dst+":\t"+i2.weight);// +"\t"+ nodeInfo.get(i2.dst));
+                            //BufferedReader rd1 = new BufferedReader(new FileReader( facemess+"\\"+nodeInfo.get(i2.dst)+".txt"));
+                            //String s="";
+                            //while ((s = rd1.readLine()) != null) {
+                            //    System.out.println(s);
+                            //}
+                            //rd1.close();
                         }
                     }
         //          clt = new AMA(termDocMat, 2.4, 1e-3, 0.85, 5e-4, 5e-4);

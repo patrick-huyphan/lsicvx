@@ -133,7 +133,7 @@ public class NodeADMM {
         {
             ret[i] = (ret[i]>0)?ret[i]:0; // sastify A>0
         }
-        return LocalVector.scale(ret,2);
+        return ret; //LocalVector.scale(ret,2);
     }
     
     /*
@@ -159,11 +159,11 @@ public class NodeADMM {
     private double updateRho(double r, double s)
     {
         if(r>10*s)
-            rho =  Double.valueOf(twoDForm.format(rho* 1.5));//(r/s);//2*rho;
+            rho =  Double.valueOf(twoDForm.format(rho* 2));//(r/s);//2*rho;
         if(s>10*r)
         {
 //            System.err.println("s>r");
-            rho =  Double.valueOf(twoDForm.format(rho* 0.75));//(r/s);//rho/2;
+            rho =  Double.valueOf(twoDForm.format(rho* 0.5));//(r/s);//rho/2;
         }
 //        System.err.println("update rho "+rho);
         return rho;

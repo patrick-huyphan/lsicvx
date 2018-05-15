@@ -1,18 +1,18 @@
-input : ../../data/data_838_1146.csv : DQ_94.csv : ..\data\data_696_1109.csv 
-numq : 38 : s 
+input : ../../data/data_842_1146.csv : DQ_94.csv : ..\data\data_696_1109.csv 
+numq : 32 : s 
 si : 1 : s
 ei : 2 : s
 sj : 1 : s 
 ej : 2 : s
 slambda : 0.2 : s
 stlambda  : 1 : s
-sti : 1.005 : s
+sti : 1.0125 : s
 maxloop : 6110 : s 
-stepSave : 100 : s
+stepSave : 7100 : s
 runADMM : 1 : s
 saveLog : 1 : s
 output : ../output : output
 orthognomal : 1 : s
 HL : 1 : s
-lambda : 1.5 : s
-lambdaADMM : 1.5 : s
+lambda : 1.2000000000000002 : s
+lambdaADMM : 1.2 : s
